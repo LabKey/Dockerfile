@@ -58,6 +58,8 @@ RUN [ -n "${DEBUG}" ] && set -x; \
     mkdir -pv \
         /app/logs \
     \
+    && ln -sfv /proc/1/fd/1 /tmp/access.log \
+    \
     && env | sort | tee /buid.env;
 
 WORKDIR /app

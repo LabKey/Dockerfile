@@ -31,7 +31,12 @@ ENV DEBUG="${DEBUG}" \
     LABKEY_HOME=/app \
     \
     LABKEY_VERSION="${LABKEY_VERSION}" \
-    LABKEY_DISTRIBUTION="${LABKEY_DISTRIBUTION}"
+    LABKEY_DISTRIBUTION="${LABKEY_DISTRIBUTION}" \
+    \
+    MIN_JVM_MEMORY="1g" \
+    MAX_JVM_MEMORY="4g" \
+    \
+    JAVA_TIMEZONE=America/Los_Angeles
 
 ADD entrypoint.sh /entrypoint.sh
 

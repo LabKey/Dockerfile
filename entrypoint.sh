@@ -16,6 +16,17 @@ main() {
   cd "$LABKEY_HOME"
 
   exec java -jar app.jar \
+    "-Duser.timezone=${JAVA_TIMEZONE}" \
+    \
+    "-Xms${MIN_JVM_MEMORY}" \
+    "-Xmx${MAX_JVM_MEMORY}" \
+    \
+    -XX:-HeapDumpOnOutOfMemoryError \
+    \
+    -Djava.net.preferIPv4Stack=true \
+    \
+    -Dorg.apache.catalina.startup.EXIT_ON_INIT_FAILURE=true \
+    \
     "-Dlabkey.home=${LABKEY_HOME}" \
     "--spring.config.location=${LABKEY_HOME}/application.properties" \
     ;

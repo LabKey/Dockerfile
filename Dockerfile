@@ -35,6 +35,13 @@ ENV DEBUG="${DEBUG}" \
     LABKEY_VERSION="${LABKEY_VERSION}" \
     LABKEY_DISTRIBUTION="${LABKEY_DISTRIBUTION}" \
     \
+    SMTP_HOST=localhost \
+    SMTP_USER=root \
+    SMTP_PORT=25 \
+    SMTP_PASSWORD= \
+    SMTP_FROM= \
+    SMTP_STARTTLS= \
+    \
     MIN_JVM_MEMORY="1g" \
     MAX_JVM_MEMORY="4g" \
     \

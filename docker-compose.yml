@@ -1,2 +1,30 @@
 ---
 version: "3"
+
+services:
+  labkey:
+    image: labkey/samplemanagement
+    depends_on:
+      - postgres
+    ports:
+      - 8080:8080
+    volumes:
+      - ./mounts/files:/files
+    environment:
+      # - DEBUG=1
+      - LABKEY_PORT=8080
+      - POSTGRES_PASSWORD=fb4"1ee5#'f7ac323
+      - POSTGRES_HOST=postgres
+  postgres:
+    image: postgres:13
+    # silent postgres w/o needing to remake the container!
+    entrypoint:
+      - "/bin/bash"
+      - "-c"
+      - "docker-entrypoint.sh postgres >/dev/null 2>&1"
+    environment:
+      - POSTGRES_PASSWORD=fb4"1ee5#'f7ac323
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:

@@ -67,6 +67,36 @@ ADD "labkeyServer-${LABKEY_VERSION}.jar" \
 
 ADD application.properties /app/
 
+ENV HEALTHCHECK_INTERVAL="6s" \
+    HEALTHCHECK_TIMEOUT="10s" \
+    HEALTHCHECK_START="60s" \
+    HEALTHCHECK_RETRIES="10" \
+    \
+    HEALTHCHECK_METHOD_FLAG="head" \
+    HEALTHCHECK_USER_AGENT="Docker" \
+    HEALTHCHECK_HEADER_NAME="X-Healthcheck" \
+    HEALTHCHECK_HEADER_VALUE="true" \
+    HEALTHCHECK_ENDPOINT="/"
+
+HEALTHCHECK \
+    --interval=6s \
+    --timeout=10s \
+    --start-period=60s \
+    --retries=10 \
+    CMD [ \
+        "curl", \
+        "--${HEALTHCHECK_METHOD_FLAG}", \
+        "--user-agent", "'${HEALTHCHECK_USER_AGENT}'", \
+        "--header", "'${HEALTHCHECK_HEADER_NAME}: ${HEALTHCHECK_HEADER_VALUE}'", \
+        "-k", \
+        "-L", \
+        "--fail", \
+        "https://localhost:${LABKEY_PORT}${HEALTHCHECK_ENDPOINT}" \
+        "||" \
+        "exit 1" \
+    ]
+
+
 EXPOSE "${LABKEY_PORT}"
 
 ENTRYPOINT /entrypoint.sh

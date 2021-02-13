@@ -1,7 +1,17 @@
-FROM adoptopenjdk:15-jre
+# "unofficial" adoptopenjdk-- which is alpine-based
+ARG FROM_REPO_IMAGE=adoptopenjdk/openjdk15
+ARG FROM_TAG=alpine-jre
+
+# uncomment for "official" adoptopenjdk
+# ARG FROM_REPO_IMAGE=adoptopenjdk
+# ARG FROM_TAG=15-jre
+
+FROM ${FROM_REPO_IMAGE}:${FROM_TAG}
+
 LABEL maintainer="Labkey Systems Engineering <ops@labkey.com>"
 
-ENV SHELL=/bin/bash
+ARG FROM_TAG=alpine-jre
+ENV FROM_TAG="${FROM_TAG}"
 
 ARG DEBUG=
 ARG LABKEY_VERSION
@@ -25,6 +35,16 @@ ADD entrypoint.sh /entrypoint.sh
 
 RUN [ -n "${DEBUG}" ] && set -x; \
     set -eu; \
+    \
+    if echo "${FROM_TAG}" | grep -i 'alpine'; then \
+        apk update \
+        && apk add \
+            tomcat-native \
+            openssl \
+            ; \
+        [ -n "${DEBUG}" ] && apk add tree; \
+        apk upgrade; \
+    fi; \
     \
     mkdir -pv \
         /app/logs \

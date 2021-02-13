@@ -1,13 +1,12 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 if [ -n "${DEBUG:-}" ]; then
   set -x
 fi
 
-# bash strict mode
-set -euo pipefail
+set -eu
 
-function main() {
+main() {
 
   if env | grep -qs 'DEBUG=1' && grep -qs  -v 'DEBUG=1' /build.env; then
     echo 'DEBUG set at runtime, but not at build time'

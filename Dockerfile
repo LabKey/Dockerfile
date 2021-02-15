@@ -75,6 +75,7 @@ ADD "labkeyServer-${LABKEY_VERSION}.jar" \
     "app.jar"
 
 ADD application.properties /app/
+ADD log4j2.properties      /app/
 
 ENV HEALTHCHECK_INTERVAL="6s" \
     HEALTHCHECK_TIMEOUT="10s" \

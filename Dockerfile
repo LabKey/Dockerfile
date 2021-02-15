@@ -60,6 +60,16 @@ RUN [ -n "${DEBUG}" ] && set -x; \
             ; \
         [ -n "${DEBUG}" ] && apk add tree; \
         apk upgrade; \
+    else \
+        export DEBIAN_FRONTEND=noninteractive; \
+        apt-get update; \
+        apt-get -yq install \
+            libtcnative-1 \
+            openssl \
+            ; \
+        [ -n "${DEBUG}" ] && apt-get -yq install tree; \
+        apt-get -yq upgrade; \
+        apt-get -yq clean all; \
     fi; \
     \
     mkdir -pv \

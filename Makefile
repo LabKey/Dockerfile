@@ -2,10 +2,12 @@ SHELL := /usr/bin/env bash
 
 DEBUG ?=
 
+CACHE_FLAG ?= --no-cache
+
 AWS_ACCOUNT_ID ?=
 AWS_REGION ?=
 
-LABKEY_VERSION ?= 21.2-SNAPSHOT
+LABKEY_VERSION ?= 21.3-SNAPSHOT
 LABKEY_DISTRIBUTION ?= samplemanagement
 
 # repo/image:tags must be lowercase
@@ -22,12 +24,14 @@ BUILD_REMOTE_TAG := $(BUILD_REPO_URI)/$(BUILD_REPO_NAME):$(BUILD_VERSION)
 
 .EXPORT_ALL_VARIABLES:
 
+# default actions are: login, build, tag, then push
 all: login build tag push
 
 build:
 	docker build \
 		--rm \
 		--compress \
+		$(CACHE_FLAG) \
 		-t $(BUILD_LOCAL_TAG) \
 		-t $(BUILD_REPO_NAME):latest \
 		--build-arg 'DEBUG=$(DEBUG)' \
@@ -51,8 +55,9 @@ push:
 	docker push $(BUILD_REMOTE_TAG)
 
 up:
-	docker-compose up --abort-on-container-exit \
-		|| docker-compose down -v
+	docker-compose up \
+		--abort-on-container-exit \
+			|| docker-compose down -v
 
 up-build: build
 	docker-compose up \
@@ -63,5 +68,5 @@ down:
 	docker-compose down -v
 
 clean:
-	docker images | grep '$(BUILD_REPO_NAME)|<none>' \
+	docker images | grep -E '$(BUILD_REPO_NAME)|<none>' \
 		| awk '{print $$3}' | sort -u | xargs docker image rm -f

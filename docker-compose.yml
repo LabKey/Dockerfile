@@ -4,15 +4,22 @@ version: "3"
 services:
   labkey:
     image: labkey/samplemanagement
+    # build: {"context": ".", "args": ["LABKEY_VERSION=21.3-SNAPSHOT"]}
     depends_on:
       - postgres
     ports:
-      - 8080:8080
+      - 8443:8443
     volumes:
-      - ./mounts/files:/files
+      - ./mounts/files:/app/files
+      - ./mounts/modules:/app/externalModules
+      - ./mounts/logs:/app/logs
     environment:
       # - DEBUG=1
-      - LABKEY_PORT=8080
+
+      - TOMCAT_KEYSTORE_PASSWORD=a43b3fcf46121a
+      # - TOMCAT_KEYSTORE_ALIAS=tomcat
+      - CERT_ALIAS=tomcat
+
       - POSTGRES_PASSWORD=fb4"1ee5#'f7ac323
       - POSTGRES_HOST=postgres
   postgres:
@@ -24,13 +31,9 @@ services:
       - "docker-entrypoint.sh postgres >/dev/null 2>&1"
     environment:
       - POSTGRES_PASSWORD=fb4"1ee5#'f7ac323
-    volumes:
-      - pgdata:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
-volumes:
-  pgdata:

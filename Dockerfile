@@ -10,34 +10,55 @@ FROM ${FROM_REPO_IMAGE}:${FROM_TAG}
 
 LABEL maintainer="Labkey Systems Engineering <ops@labkey.com>"
 
+# have to re-assign these after FROM - must match above
 ARG FROM_TAG=alpine-jre
+# ARG FROM_TAG=15-jre
+
 ENV FROM_TAG="${FROM_TAG}"
 
 ARG DEBUG=
 ARG LABKEY_VERSION
 ARG LABKEY_DISTRIBUTION
 
-ENV POSTGRES_USER=postgres
+# values declared separately
+ENV POSTGRES_USER="postgres" \
+    \
+    CERT_ALIAS="tomcat"
 
 ENV DEBUG="${DEBUG}" \
     \
     POSTGRES_PASSWORD= \
-    POSTGRES_HOST=localhost \
-    POSTGRES_PORT=5432 \
+    POSTGRES_HOST="localhost" \
+    POSTGRES_PORT="5432" \
     POSTGRES_DB="${POSTGRES_USER}" \
     POSTGRES_PARAMETERS= \
     \
-    LABKEY_PORT=8443 \
-    LABKEY_HOME=/app \
+    LABKEY_PORT="8443" \
+    LABKEY_HOME="/app" \
     \
     LABKEY_MEK= \
     \
     LABKEY_VERSION="${LABKEY_VERSION}" \
     LABKEY_DISTRIBUTION="${LABKEY_DISTRIBUTION}" \
     \
-    SMTP_HOST=localhost \
-    SMTP_USER=root \
-    SMTP_PORT=25 \
+    TOMCAT_KEYSTORE_FILENAME="labkey.p12" \
+    TOMCAT_KEYSTORE_FORMAT="PKCS12" \
+    TOMCAT_KEYSTORE_ALIAS="${CERT_ALIAS}" \
+    TOMCAT_KEYSTORE_PASSWORD= \
+    \
+    TOMCAT_SSL_ENABLED_PROTOCOLS="TLSv1.2" \
+    TOMCAT_SSL_CIPHERS="TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_DSS_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_SHA256,TLS_ECDHE_RSA_WITH_AES_128_SHA,TLS_ECDHE_ECDSA_WITH_AES_128_SHA,TLS_ECDHE_RSA_WITH_AES_256_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_SHA384,TLS_ECDHE_RSA_WITH_AES_256_SHA,TLS_ECDHE_ECDSA_WITH_AES_256_SHA,TLS_DHE_RSA_WITH_AES_128_SHA256,TLS_DHE_RSA_WITH_AES_128_SHA,TLS_DHE_DSS_WITH_AES_128_SHA256,TLS_DHE_RSA_WITH_AES_256_SHA256,TLS_DHE_DSS_WITH_AES_256_SHA,TLS_DHE_RSA_WITH_AES_256_SHA" \
+    \
+    CERT_C="US" \
+    CERT_ST="Washington" \
+    CERT_L="Seattle" \
+    CERT_O="Business Inc." \
+    CERT_OU="IT" \
+    CERT_CN="localhost" \
+    \
+    SMTP_HOST="localhost" \
+    SMTP_USER="root" \
+    SMTP_PORT="25" \
     SMTP_PASSWORD= \
     SMTP_FROM= \
     SMTP_STARTTLS= \
@@ -45,12 +66,14 @@ ENV DEBUG="${DEBUG}" \
     MIN_JVM_MEMORY="1g" \
     MAX_JVM_MEMORY="4g" \
     \
-    JAVA_TIMEZONE=America/Los_Angeles
+    JAVA_TIMEZONE="America/Los_Angeles"
 
 ADD entrypoint.sh /entrypoint.sh
 
 RUN [ -n "${DEBUG}" ] && set -x; \
     set -eu; \
+    \
+    sort < $JAVA_HOME/release || true; \
     \
     if echo "${FROM_TAG}" | grep -i 'alpine'; then \
         apk update \
@@ -70,22 +93,28 @@ RUN [ -n "${DEBUG}" ] && set -x; \
         [ -n "${DEBUG}" ] && apt-get -yq install tree; \
         apt-get -yq upgrade; \
         apt-get -yq clean all; \
+        rm -rfv /var/lib/apt/lists/*; \
     fi; \
     \
     mkdir -pv \
-        /app/logs \
+        "${LABKEY_HOME}/logs" \
+        "${LABKEY_HOME}/startup" \
+        "${LABKEY_HOME}/externalModules" \
+        "${LABKEY_HOME}/files" \
     \
     && ln -sfv /proc/1/fd/1 /tmp/access.log \
     \
     && env | sort | tee /buid.env;
 
-WORKDIR /app
+WORKDIR "${LABKEY_HOME}"
 
 ADD "labkeyServer-${LABKEY_VERSION}.jar" \
     "app.jar"
 
-ADD application.properties /app/
-ADD log4j2.properties      /app/
+ADD application.properties "${LABKEY_HOME}/"
+ADD logging.properties "${LABKEY_HOME}/"
+# ADD *.properties "${LABKEY_HOME}/"
+ADD log4j2.xml "${LABKEY_HOME}/"
 
 ENV HEALTHCHECK_INTERVAL="6s" \
     HEALTHCHECK_TIMEOUT="10s" \
@@ -116,7 +145,12 @@ HEALTHCHECK \
         "exit 1" \
     ]
 
+VOLUME "${LABKEY_HOME}/externalModules"
+VOLUME "${LABKEY_HOME}/files"
+VOLUME "${LABKEY_HOME}/logs"
 
 EXPOSE "${LABKEY_PORT}"
+
+STOPSIGNAL SIGTERM
 
 ENTRYPOINT /entrypoint.sh

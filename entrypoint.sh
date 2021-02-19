@@ -9,6 +9,7 @@ fi
 keystore_pass="${TOMCAT_KEYSTORE_PASSWORD:-}"
 keystore_filename="${TOMCAT_KEYSTORE_FILENAME:-labkey.p12}"
 keystore_alias="${TOMCAT_KEYSTORE_ALIAS:-}"
+keystore_format="${TOMCAT_KEYSTORE_FORMAT:-}"
 
 main() {
 
@@ -23,6 +24,13 @@ main() {
     debug_string='true'
   fi
 
+  if [ -n "$TOMCAT_KEYSTORE_FORMAT" ]; then
+    openssl_format_flag="$(
+      echo "$TOMCAT_KEYSTORE_FORMAT" | tr '[[:upper:]]' '[[:lower:]]'
+    )"
+  else
+    openssl_format_flag='pkcs12'
+  fi
 
   cd "$LABKEY_HOME" || exit 1
 
@@ -44,7 +52,7 @@ main() {
     -subj "/C=${CERT_C:?}/ST=${CERT_ST:?}/L=${CERT_L}/O=${CERT_O}/OU=${CERT_OU}/CN=${CERT_CN}" \
       >/dev/null 2>&1
 
-  openssl pkcs12 \
+  openssl "$openssl_format_flag" \
       -export \
       -out "$keystore_filename" \
       -inkey 'privkey.pem' \
@@ -60,7 +68,7 @@ main() {
 
     env | sort
 
-    openssl pkcs12 \
+    openssl "$openssl_format_flag" \
       -nokeys \
       -info \
       -in "$keystore_filename" \
@@ -88,7 +96,8 @@ main() {
     -jar app.jar \
     \
     --server.ssl.key-store-password="${keystore_pass}" \
-    --trust.store.password="${keystore_pass}" \
+    --server.ssl.key-store="${LABKEY_HOME}/${TOMCAT_KEYSTORE_FILENAME}" \
+    --server.ssl.key-alias="${keystore_alias}" \
     \
     ;
 

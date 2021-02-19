@@ -114,8 +114,7 @@ ADD "labkeyServer-${LABKEY_VERSION}.jar" \
     "app.jar"
 
 ADD application.properties "${LABKEY_HOME}/config/"
-ADD logging.properties "${LABKEY_HOME}/"
-# ADD *.properties "${LABKEY_HOME}/"
+# ADD logging.properties "${LABKEY_HOME}/"
 ADD log4j2.xml "${LABKEY_HOME}/"
 
 ENV HEALTHCHECK_INTERVAL="6s" \

@@ -62,9 +62,7 @@ main() {
 
   exec java \
     \
-    -Dlog4j.configurationFile="${LABKEY_HOME}/log4j2.xml" \
-    \
-    "-Duser.timezone=${JAVA_TIMEZONE}" \
+    -Duser.timezone="${JAVA_TIMEZONE}" \
     \
     "-Xms${MIN_JVM_MEMORY}" \
     "-Xmx${MAX_JVM_MEMORY}" \
@@ -73,10 +71,11 @@ main() {
     \
     -Djava.net.preferIPv4Stack=true \
     \
-    -Dlabkey.home="${LABKEY_HOME}" \
-    -Dlabkey.log.home="${LABKEY_HOME}/logs" \
+    -Dlabkey.home="$LABKEY_HOME" \
+    \
     -Djava.io.tmpdir="$JAVA_TMPDIR" \
     \
+    -Dlog4j.configurationFile="${LABKEY_HOME}/log4j2.xml" \
     \
     -jar app.jar \
     \

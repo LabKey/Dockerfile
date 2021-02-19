@@ -2,6 +2,20 @@
 
 This repo contains a Dockerfile, `docker-compose.yml`, and various other files for creating a docker container of LabKey products.
 
+## Prequisites
+
+To fully use this repo, you will need installed:
+
+- Docker
+- `docker-compose`
+- GNU Make
+- AWS CLI
+
+## Building a Container
+
+This repo includes a `Makefile` who's aim is to ease the running of the neccessary commands for creating containers.
+The **default action** of the `Makefile` is to log into the AWS ECR service, build, tag, and push a docker container (the `all:` target) to an ECR repo.
+
 ## **_Disclaimer_**
 
 This repo is a work in progress. Do not run containers created from these sources in production. Containers created from these sources are untested.

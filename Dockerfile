@@ -2,7 +2,7 @@
 ARG FROM_REPO_IMAGE=adoptopenjdk/openjdk15
 ARG FROM_TAG=alpine-jre
 
-# uncomment for "official" adoptopenjdk
+# uncomment for "official" adoptopenjdk which is debian-based
 # ARG FROM_REPO_IMAGE=adoptopenjdk
 # ARG FROM_TAG=15-jre
 

@@ -24,9 +24,9 @@ main() {
     debug_string='true'
   fi
 
-  if [ -n "$TOMCAT_KEYSTORE_FORMAT" ]; then
+  if [ -n "$keystore_format" ]; then
     openssl_format_flag="$(
-      echo "$TOMCAT_KEYSTORE_FORMAT" | tr '[[:upper:]]' '[[:lower:]]'
+      echo "$keystore_format" | tr '[:upper:]' '[:lower:]'
     )"
   else
     openssl_format_flag='pkcs12'

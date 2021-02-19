@@ -155,4 +155,5 @@ EXPOSE "${LABKEY_PORT}"
 
 STOPSIGNAL SIGTERM
 
+# shell form e.g. executed w/ /bin/sh -c
 ENTRYPOINT /entrypoint.sh

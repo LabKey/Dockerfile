@@ -41,6 +41,8 @@ ENV DEBUG="${DEBUG}" \
     LABKEY_VERSION="${LABKEY_VERSION}" \
     LABKEY_DISTRIBUTION="${LABKEY_DISTRIBUTION}" \
     \
+    TOMCAT_BASE_DIR="/" \
+    \
     TOMCAT_KEYSTORE_FILENAME="labkey.p12" \
     TOMCAT_KEYSTORE_FORMAT="PKCS12" \
     TOMCAT_KEYSTORE_ALIAS="${CERT_ALIAS}" \
@@ -103,6 +105,7 @@ RUN [ -n "${DEBUG}" ] && set -x; \
         "${LABKEY_HOME}/externalModules" \
         "${LABKEY_HOME}/files" \
         "${LABKEY_HOME}/config" \
+        "${TOMCAT_BASE_DIR}" \
     \
     && ln -sfv /proc/1/fd/1 /tmp/access.log \
     \

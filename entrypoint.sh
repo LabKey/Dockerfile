@@ -17,7 +17,14 @@ main() {
     unset DEBUG
   fi
 
-  cd "$LABKEY_HOME"
+  debug_string='false'
+
+  if [ -n "$DEBUG" ]; then
+    debug_string='true'
+  fi
+
+
+  cd "$LABKEY_HOME" || exit 1
 
   if [ -z "$keystore_pass" ]; then
     keystore_pass="$(
@@ -75,6 +82,7 @@ main() {
     \
     -Djava.io.tmpdir="$JAVA_TMPDIR" \
     \
+    -Dlog4j.debug="$debug_string" \
     -Dlog4j.configurationFile="${LABKEY_HOME}/log4j2.xml" \
     \
     -jar app.jar \

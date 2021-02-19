@@ -10,9 +10,9 @@ services:
     ports:
       - 8443:8443
     volumes:
-      - ./mounts/files:/app/files
-      - ./mounts/modules:/app/externalModules
-      - ./mounts/logs:/app/logs
+      - ./mounts/files:/labkey/files
+      - ./mounts/modules:/labkey/externalModules
+      - ./mounts/logs:/labkey/logs
     environment:
       # - DEBUG=1
 

@@ -34,7 +34,7 @@ ENV DEBUG="${DEBUG}" \
     POSTGRES_PARAMETERS= \
     \
     LABKEY_PORT="8443" \
-    LABKEY_HOME="/app" \
+    LABKEY_HOME="/labkey" \
     \
     LABKEY_MEK= \
     LABKEY_GUID= \

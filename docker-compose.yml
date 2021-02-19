@@ -17,8 +17,7 @@ services:
       # - DEBUG=1
 
       - TOMCAT_KEYSTORE_PASSWORD=a43b3fcf46121a
-      # - TOMCAT_KEYSTORE_ALIAS=tomcat
-      - CERT_ALIAS=tomcat
+      - TOMCAT_KEYSTORE_ALIAS=tacmot
 
       - POSTGRES_PASSWORD=fb4"1ee5#'f7ac323
       - POSTGRES_HOST=postgres

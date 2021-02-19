@@ -20,10 +20,8 @@ ARG DEBUG=
 ARG LABKEY_VERSION
 ARG LABKEY_DISTRIBUTION
 
-# values declared separately
-ENV POSTGRES_USER="postgres" \
-    \
-    CERT_ALIAS="tomcat"
+# dependent ENVs declared separately
+ENV POSTGRES_USER="postgres"
 
 ENV DEBUG="${DEBUG}" \
     \
@@ -46,7 +44,7 @@ ENV DEBUG="${DEBUG}" \
     \
     TOMCAT_KEYSTORE_FILENAME="labkey.p12" \
     TOMCAT_KEYSTORE_FORMAT="PKCS12" \
-    TOMCAT_KEYSTORE_ALIAS="${CERT_ALIAS}" \
+    TOMCAT_KEYSTORE_ALIAS="tomcat" \
     TOMCAT_KEYSTORE_PASSWORD= \
     \
     TOMCAT_SSL_ENABLED_PROTOCOLS="TLSv1.2" \

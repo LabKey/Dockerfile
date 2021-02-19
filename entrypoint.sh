@@ -75,6 +75,8 @@ main() {
     \
     -Dlabkey.home="${LABKEY_HOME}" \
     -Dlabkey.log.home="${LABKEY_HOME}/logs" \
+    -Djava.io.tmpdir="$JAVA_TMPDIR" \
+    \
     \
     -jar app.jar \
     \

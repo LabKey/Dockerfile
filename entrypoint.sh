@@ -87,11 +87,13 @@ main() {
     -Djava.net.preferIPv4Stack=true \
     \
     -Dlabkey.home="$LABKEY_HOME" \
+    -Dlabkey.externalModulesDir="${LABKEY_HOME}/externalModules" \
     \
     -Djava.library.path=/usr/lib \
     \
     -Djava.security.egd=file:/dev/./urandom \
     \
+    -DsynchronousStartup \
     \
     -Djava.io.tmpdir="$JAVA_TMPDIR" \
     \

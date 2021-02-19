@@ -47,7 +47,7 @@ main() {
         >/dev/null 2>&1
 
   if [ -n "${DEBUG:-}" ]; then
-    tail -n+1 ./*.properties "${JAVA_HOME:-}"/release
+    tail -n+1 config/*.properties "${JAVA_HOME:-}"/release
 
     tree "$LABKEY_HOME"
 

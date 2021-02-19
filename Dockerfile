@@ -102,6 +102,7 @@ RUN [ -n "${DEBUG}" ] && set -x; \
         "${LABKEY_HOME}/startup" \
         "${LABKEY_HOME}/externalModules" \
         "${LABKEY_HOME}/files" \
+        "${LABKEY_HOME}/config" \
     \
     && ln -sfv /proc/1/fd/1 /tmp/access.log \
     \
@@ -112,7 +113,7 @@ WORKDIR "${LABKEY_HOME}"
 ADD "labkeyServer-${LABKEY_VERSION}.jar" \
     "app.jar"
 
-ADD application.properties "${LABKEY_HOME}/"
+ADD application.properties "${LABKEY_HOME}/config/"
 ADD logging.properties "${LABKEY_HOME}/"
 # ADD *.properties "${LABKEY_HOME}/"
 ADD log4j2.xml "${LABKEY_HOME}/"

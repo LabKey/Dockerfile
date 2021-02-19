@@ -88,10 +88,17 @@ main() {
     \
     -Dlabkey.home="$LABKEY_HOME" \
     \
+    -Djava.library.path=/usr/lib \
+    \
+    -Djava.security.egd=file:/dev/./urandom \
+    \
+    \
     -Djava.io.tmpdir="$JAVA_TMPDIR" \
     \
     -Dlog4j.debug="$debug_string" \
     -Dlog4j.configurationFile="${LABKEY_HOME}/log4j2.xml" \
+    \
+    -Dorg.apache.catalina.startup.EXIT_ON_INIT_FAILURE=true \
     \
     -jar app.jar \
     \

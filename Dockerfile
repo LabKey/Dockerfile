@@ -21,9 +21,13 @@ ARG LABKEY_VERSION
 ARG LABKEY_DISTRIBUTION
 
 # dependent ENVs declared separately
-ENV POSTGRES_USER="postgres"
+ENV POSTGRES_USER="postgres" \
+    \
+    TOMCAT_BASE_DIR="/"
 
 ENV DEBUG="${DEBUG}" \
+    \
+    CATALINA_HOME="${TOMCAT_BASE_DIR}" \
     \
     POSTGRES_PASSWORD= \
     POSTGRES_HOST="localhost" \
@@ -39,8 +43,6 @@ ENV DEBUG="${DEBUG}" \
     \
     LABKEY_VERSION="${LABKEY_VERSION}" \
     LABKEY_DISTRIBUTION="${LABKEY_DISTRIBUTION}" \
-    \
-    TOMCAT_BASE_DIR="/" \
     \
     TOMCAT_KEYSTORE_FILENAME="labkey.p12" \
     TOMCAT_KEYSTORE_FORMAT="PKCS12" \

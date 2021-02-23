@@ -8,7 +8,7 @@ ARG FROM_TAG=alpine-jre
 
 FROM ${FROM_REPO_IMAGE}:${FROM_TAG}
 
-LABEL maintainer="Labkey Systems Engineering <ops@labkey.com>"
+LABEL maintainer="LabKey Systems Engineering <ops@labkey.com>"
 
 # have to re-assign these after FROM - must match above
 ARG FROM_TAG=alpine-jre

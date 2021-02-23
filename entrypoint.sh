@@ -93,8 +93,6 @@ main() {
     \
     -Djava.security.egd=file:/dev/./urandom \
     \
-    -DsynchronousStartup \
-    \
     -Djava.io.tmpdir="$JAVA_TMPDIR" \
     \
     -Dlog4j.debug="$debug_string" \
@@ -103,6 +101,8 @@ main() {
     -Dorg.apache.catalina.startup.EXIT_ON_INIT_FAILURE=true \
     \
     -jar app.jar \
+    \
+    -DsynchronousStartup=true \
     \
     --server.ssl.key-store-password="${keystore_pass}" \
     --server.ssl.key-store="${LABKEY_HOME}/${TOMCAT_KEYSTORE_FILENAME}" \

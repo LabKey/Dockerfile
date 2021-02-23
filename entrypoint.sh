@@ -13,11 +13,6 @@ keystore_format="${TOMCAT_KEYSTORE_FORMAT:-}"
 
 main() {
 
-  if env | grep -qs 'DEBUG=1' && grep -qs  -v 'DEBUG=1' /build.env; then
-    echo 'DEBUG set at runtime, but not at build time, unsetting'
-    unset DEBUG
-  fi
-
   debug_string='false'
 
   if [ -n "$DEBUG" ]; then
@@ -32,7 +27,48 @@ main() {
     openssl_format_flag='pkcs12'
   fi
 
+  #
+  # relative paths below here are relative to LABKEY_HOME
+  #
   cd "$LABKEY_HOME" || exit 1
+
+  OLD_IFS="$IFS"
+  IFS="$(printf '\nx')" && IFS="${IFS%x}" # ensure IFS is a single newline
+  for key_value in $(
+      # list all LABKEY_* ENVs, ignore optional ones like GUID or MEK
+      env | grep -E '^LABKEY_' \
+        | grep -vE 'GUID' \
+        | grep -vE 'MEK' \
+        ;
+  ); do
+    if [ -z "${key_value#*=}" ]; then
+      >&2 echo "value required for '${key_value%%=*}'"
+      exit 1
+    fi
+  done
+  export IFS="$OLD_IFS"
+
+  if \
+    echo "$LABKEY_BASE_SERVER_URL" \
+      | grep -v -qs -E "https*://.+" \
+  ; then
+    >&2 echo "value for 'LABKEY_BASE_SERVER_URL' did not resemble a URI"
+    exit 1
+  fi
+
+  if \
+    echo "$LABKEY_BASE_SERVER_URL" \
+      | grep -v -qs -E ":${LABKEY_PORT}" \
+  ; then
+    >&2 echo "LABKEY_PORT (${LABKEY_PORT}) value did not appear in 'LABKEY_BASE_SERVER_URL'"
+    >&2 echo "LABKEY_BASE_SERVER_URL: '${LABKEY_BASE_SERVER_URL}'"
+    exit 1
+  fi
+
+  for prop_file in server/startup/*.properties; do
+    envsubst < "$prop_file" > "${prop_file}.tmp" \
+      && mv "${prop_file}.tmp" "$prop_file"
+  done
 
   if [ -z "$keystore_pass" ]; then
     keystore_pass="$(
@@ -61,11 +97,18 @@ main() {
       -passout "pass:${keystore_pass}" \
         >/dev/null 2>&1
 
+
   if [ -n "${DEBUG:-}" ]; then
-    tail -n+1 config/*.properties "${JAVA_HOME:-}"/release
+    tail -n+1 \
+      config/*.properties \
+      server/startup/*.properties \
+      "${JAVA_HOME:-}"/release
 
-    tree "$LABKEY_HOME"
+    if command -v tree >/dev/null 2>&1; then
+      tree "$LABKEY_HOME"
+    fi
 
+    sleep 1
     env | sort
 
     openssl "$openssl_format_flag" \
@@ -75,6 +118,7 @@ main() {
       -passin "pass:${keystore_pass}"
   fi
 
+  # shellcheck disable=SC2086
   exec java \
     \
     -Duser.timezone="${JAVA_TIMEZONE}" \
@@ -87,6 +131,7 @@ main() {
     -Djava.net.preferIPv4Stack=true \
     \
     -Dlabkey.home="$LABKEY_HOME" \
+    -Dlabkey.log.home="${LABKEY_HOME}/logs" \
     -Dlabkey.externalModulesDir="${LABKEY_HOME}/externalModules" \
     \
     -Djava.library.path=/usr/lib \
@@ -100,7 +145,11 @@ main() {
     \
     -Dorg.apache.catalina.startup.EXIT_ON_INIT_FAILURE=true \
     \
+    ${JAVA_PRE_JAR_EXTRA} \
+    \
     -jar app.jar \
+    \
+    ${JAVA_POST_JAR_EXTRA} \
     \
     -DsynchronousStartup=true \
     \

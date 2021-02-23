@@ -14,11 +14,19 @@
 
         <!-- <Logger name="org.apache" level="INFO"/> -->
 
-        <Logger name="org.labkey" level="INFO"/>
+        <!-- <Logger name="org.labkey" level="INFO"/> -->
+
+        <!--
+            set to DEBUG for startup property messages set to TRACE for values
+        -->
+        <!-- <Logger name="org.labkey.api.module.ModuleLoader" level="TRACE"/> -->
+
         <!-- <Logger name="org.labkey.api.data.DbScope" level="WARN"/>
+        <Logger name="org.labkey.api.data.SqlScriptExecutor" level="WARN"/>
         <Logger name="org.labkey.api.data.SqlScriptManager" level="WARN"/>
         <Logger name="org.labkey.api.data.SqlScriptRunner" level="WARN"/>
         <Logger name="org.labkey.api.module.ModuleLoader" level="ERROR"/>
+        <Logger name="org.labkey.api.search.SearchService" level="ERROR"/>
         <Logger name="org.labkey.api.view.ViewServlet" level="ERROR"/>
         <Logger name="org.labkey.audit" level="ERROR"/>
         <Logger name="org.labkey.search" level="ERROR"/> -->

@@ -23,6 +23,11 @@ ARG LABKEY_DISTRIBUTION
 # dependent ENVs declared separately
 ENV POSTGRES_USER="postgres" \
     \
+    LABKEY_PORT="8443" \
+    LABKEY_HOME="/labkey" \
+    LABKEY_DEFAULT_DOMAIN="localhost" \
+    LABKEY_SYSTEM_SHORT_NAME= \
+    \
     TOMCAT_BASE_DIR="/"
 
 ENV DEBUG="${DEBUG}" \
@@ -35,14 +40,18 @@ ENV DEBUG="${DEBUG}" \
     POSTGRES_DB="${POSTGRES_USER}" \
     POSTGRES_PARAMETERS= \
     \
-    LABKEY_PORT="8443" \
-    LABKEY_HOME="/labkey" \
-    \
     LABKEY_MEK= \
     LABKEY_GUID= \
     \
     LABKEY_VERSION="${LABKEY_VERSION}" \
     LABKEY_DISTRIBUTION="${LABKEY_DISTRIBUTION}" \
+    \
+    LABKEY_FILES_ROOT="${LABKEY_HOME}/files" \
+    \
+    LABKEY_COMPANY_NAME="${LABKEY_SYSTEM_SHORT_NAME}" \
+    LABKEY_SYSTEM_DESCRIPTION="${LABKEY_SYSTEM_SHORT_NAME}" \
+    LABKEY_SYSTEM_EMAIL_ADDRESS="do_not_reply@${LABKEY_DEFAULT_DOMAIN}" \
+    LABKEY_BASE_SERVER_URL="https://${LABKEY_DEFAULT_DOMAIN}:${LABKEY_PORT}" \
     \
     TOMCAT_KEYSTORE_FILENAME="labkey.p12" \
     TOMCAT_KEYSTORE_FORMAT="PKCS12" \
@@ -55,7 +64,7 @@ ENV DEBUG="${DEBUG}" \
     CERT_C="US" \
     CERT_ST="Washington" \
     CERT_L="Seattle" \
-    CERT_O="Business Inc." \
+    CERT_O="${LABKEY_COMPANY_NAME}" \
     CERT_OU="IT" \
     CERT_CN="localhost" \
     \
@@ -84,6 +93,7 @@ RUN [ -n "${DEBUG}" ] && set -x; \
         && apk add \
             tomcat-native \
             openssl \
+            gettext \
             ; \
         [ -n "${DEBUG}" ] && apk add tree; \
         apk upgrade; \
@@ -93,6 +103,7 @@ RUN [ -n "${DEBUG}" ] && set -x; \
         apt-get -yq install \
             libtcnative-1 \
             openssl \
+            gettext-base \
             ; \
         [ -n "${DEBUG}" ] && apt-get -yq install tree; \
         apt-get -yq upgrade; \
@@ -101,11 +112,11 @@ RUN [ -n "${DEBUG}" ] && set -x; \
     fi; \
     \
     mkdir -pv \
-        "${LABKEY_HOME}/logs" \
-        "${LABKEY_HOME}/startup" \
-        "${LABKEY_HOME}/externalModules" \
-        "${LABKEY_HOME}/files" \
+        "${LABKEY_FILES_ROOT}" \
         "${LABKEY_HOME}/config" \
+        "${LABKEY_HOME}/externalModules" \
+        "${LABKEY_HOME}/logs" \
+        "${LABKEY_HOME}/server/startup" \
         "${TOMCAT_BASE_DIR}" \
     \
     && ln -sfv /proc/1/fd/1 /tmp/access.log \
@@ -117,7 +128,17 @@ WORKDIR "${LABKEY_HOME}"
 ADD "labkeyServer-${LABKEY_VERSION}.jar" \
     "app.jar"
 
-ADD application.properties "${LABKEY_HOME}/config/"
+# add spring properties
+ADD application.properties config/
+
+# add basic + distribution startup properties
+ADD startup/basic.properties \
+    server/startup/50_basic.properties
+
+ADD "startup/${LABKEY_DISTRIBUTION}.properties" \
+    server/startup/49_distribution.properties
+
+# add logging config files
 # ADD logging.properties "${LABKEY_HOME}/"
 ADD log4j2.xml "${LABKEY_HOME}/"
 
@@ -150,8 +171,8 @@ HEALTHCHECK \
         "exit 1" \
     ]
 
+VOLUME "${LABKEY_FILES_ROOT}"
 VOLUME "${LABKEY_HOME}/externalModules"
-VOLUME "${LABKEY_HOME}/files"
 VOLUME "${LABKEY_HOME}/logs"
 
 EXPOSE "${LABKEY_PORT}"

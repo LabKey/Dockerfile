@@ -8,7 +8,7 @@ AWS_ACCOUNT_ID ?=
 AWS_REGION ?=
 
 LABKEY_VERSION ?= 21.3-SNAPSHOT
-LABKEY_DISTRIBUTION ?= samplemanagement
+LABKEY_DISTRIBUTION ?= community
 
 # repo/image:tags must be lowercase
 BUILD_VERSION := $(shell      echo '$(LABKEY_VERSION)'      | tr A-Z a-z)

@@ -145,13 +145,14 @@ main() {
     \
     -Dorg.apache.catalina.startup.EXIT_ON_INIT_FAILURE=true \
     \
+    -DsynchronousStartup=true \
+    -DterminateOnStartupFailure=true \
+    \
     ${JAVA_PRE_JAR_EXTRA} \
     \
     -jar app.jar \
     \
     ${JAVA_POST_JAR_EXTRA} \
-    \
-    -DsynchronousStartup=true \
     \
     --server.ssl.key-store-password="${keystore_pass}" \
     --server.ssl.key-store="${LABKEY_HOME}/${TOMCAT_KEYSTORE_FILENAME}" \

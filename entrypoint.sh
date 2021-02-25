@@ -19,13 +19,15 @@ main() {
     debug_string='true'
 
     #
-    # see log4j2.xml for default values
+    # see Dockerfile for default LOGGER_PATTERN value
     #
     # shellcheck disable=SC2034
     export \
       LOG_LEVEL_LABKEY_DEFAULT='INFO' \
       LOG_LEVEL_API_MODULE_MODULELOADER='TRACE' \
       LOG_LEVEL_API_SETTINGS='TRACE' \
+      \
+      LOGGER_PATTERN='%-80.80logger{79}'
 
     env | sort
   fi

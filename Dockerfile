@@ -81,7 +81,9 @@ ENV DEBUG="${DEBUG}" \
     JAVA_PRE_JAR_EXTRA= \
     JAVA_POST_JAR_EXTRA= \
     JAVA_TMPDIR="/var/tmp" \
-    JAVA_TIMEZONE="America/Los_Angeles"
+    JAVA_TIMEZONE="America/Los_Angeles" \
+    \
+    LOGGER_PATTERN="%-40.40logger{39}"
 
 ADD entrypoint.sh /entrypoint.sh
 

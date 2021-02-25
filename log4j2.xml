@@ -4,9 +4,9 @@
 
     <Appenders>
         <Console name="CONSOLE" target="SYSTEM_OUT">
-            <PatternLayout>
-                <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5.5p %5.5L --- [%15.15t] %-40.40logger{39} : %m%n%xEx</Pattern>
-            </PatternLayout>
+            <PatternLayout
+                pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5.5p %5.5L --- [%15.15t] ${env:LOGGER_PATTERN} : %m%n%xEx"
+            />
         </Console>
     </Appenders>
 

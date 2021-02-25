@@ -17,6 +17,17 @@ main() {
 
   if [ -n "$DEBUG" ]; then
     debug_string='true'
+
+    #
+    # see log4j2.xml for default values
+    #
+    # shellcheck disable=SC2034
+    export \
+      LOG_LEVEL_LABKEY_DEFAULT='INFO' \
+      LOG_LEVEL_API_MODULE_MODULELOADER='TRACE' \
+      LOG_LEVEL_API_SETTINGS='TRACE' \
+
+    env | sort
   fi
 
   if [ -n "$keystore_format" ]; then

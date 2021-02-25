@@ -14,12 +14,18 @@
 
         <!-- <Logger name="org.apache" level="INFO"/> -->
 
-        <!-- <Logger name="org.labkey" level="INFO"/> -->
+        <Logger name="org.labkey" level="${env:LOG_LEVEL_LABKEY_DEFAULT:-FATAL}"/>
 
         <!--
             set to DEBUG for startup property messages set to TRACE for values
         -->
-        <!-- <Logger name="org.labkey.api.module.ModuleLoader" level="TRACE"/> -->
+        <Logger name="org.labkey.api.module.ModuleLoader"
+                level="${env:LOG_LEVEL_API_MODULE_MODULELOADER:-WARN}"
+        />
+
+        <Logger name="org.labkey.api.settings"
+                level="${env:LOG_LEVEL_API_SETTINGS:-WARN}"
+        />
 
         <!-- <Logger name="org.labkey.api.data.DbScope" level="WARN"/>
         <Logger name="org.labkey.api.data.SqlScriptExecutor" level="WARN"/>
@@ -31,7 +37,7 @@
         <Logger name="org.labkey.audit" level="ERROR"/>
         <Logger name="org.labkey.search" level="ERROR"/> -->
 
-        <Root level="WARN">
+        <Root level="${env:LOG_LEVEL_DEFAULT:-FATAL}">
             <AppenderRef ref="CONSOLE"/>
         </Root>
     </Loggers>

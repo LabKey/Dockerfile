@@ -139,7 +139,6 @@ ADD "startup/${LABKEY_DISTRIBUTION}.properties" \
     server/startup/49_distribution.properties
 
 # add logging config files
-# ADD logging.properties "${LABKEY_HOME}/"
 ADD log4j2.xml "${LABKEY_HOME}/"
 
 ENV HEALTHCHECK_INTERVAL="6s" \

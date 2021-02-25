@@ -20,15 +20,15 @@ Building a container is as simple as `make build`:
 ```shell
 $make build
 docker build \
-	--rm \
-	--compress \
-	--no-cache \
-	-t labkey/community:21.3-snapshot \
-	-t labkey/community:latest \
-	--build-arg 'DEBUG=' \
-	--build-arg 'LABKEY_VERSION=21.3-SNAPSHOT' \
-	--build-arg 'LABKEY_DISTRIBUTION=community' \
-	.
+  --rm \
+  --compress \
+  --no-cache \
+  -t labkey/community:21.3-snapshot \
+  -t labkey/community:latest \
+  --build-arg 'DEBUG=' \
+  --build-arg 'LABKEY_VERSION=21.3-SNAPSHOT' \
+  --build-arg 'LABKEY_DISTRIBUTION=community' \
+  .
 Sending build context to Docker daemon  756.1MB
 ...
 Step 27/27 : ENTRYPOINT /entrypoint.sh

@@ -26,7 +26,7 @@ ENV POSTGRES_USER="postgres" \
     LABKEY_PORT="8443" \
     LABKEY_HOME="/labkey" \
     LABKEY_DEFAULT_DOMAIN="localhost" \
-    LABKEY_SYSTEM_SHORT_NAME= \
+    LABKEY_SYSTEM_SHORT_NAME="Sirius Cybernetics" \
     \
     TOMCAT_BASE_DIR="/"
 

@@ -92,16 +92,16 @@ A better description of the LabKey settings can be found [in the LabKey docs](ht
 | name                        | purpose                                                                                                  | default                  |
 | --------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------ |
 | LABKEY_BASE_SERVER_URL      | full URI LabKey will use to refer to itself                                                              | `https://localhost:8443` |
-| LABKEY_COMPANY_NAME         | name of your organization; appears in emails                                                             | `<empty>`                |
+| LABKEY_COMPANY_NAME         | name of your organization; appears in emails                                                             | `Sirius Cybernetics`     |
 | LABKEY_DEFAULT_DOMAIN       | (DNS) domain where the LabKey server resides                                                             | `localhost`              |
 | LABKEY_DISTRIBUTION         | "flavor" of labkey;                                                                                      | `community`              |
 | LABKEY_FILES_ROOT           | path within which will serve as the root of the "files" directory                                        | `/labkey/files`          |
 | LABKEY_GUID                 | LabKey [server GUID](https://www.labkey.org/Documentation/wiki-page.view?name=stagingServerTips#guid)    | `<empty>`                |
 | LABKEY_MEK                  | LabKey [master encryption key](https://www.labkey.org/Documentation/wiki-page.view?name=cpasxml#encrypt) | `<empty>`                |
 | LABKEY_PORT                 | port to which labkey will bind within the container                                                      | `8443`                   |
-| LABKEY_SYSTEM_DESCRIPTION   | brief description of server; appears in emails                                                           | `<empty>`                |
+| LABKEY_SYSTEM_DESCRIPTION   | brief description of server; appears in emails                                                           | `Sirius Cybernetics`     |
 | LABKEY_SYSTEM_EMAIL_ADDRESS | email address system email will be sent "from"                                                           | `do_not_reply@localhost` |
-| LABKEY_SYSTEM_SHORT_NAME    | name of server displayed in header                                                                       | `<empty>`                |
+| LABKEY_SYSTEM_SHORT_NAME    | name of server displayed in header                                                                       | `Sirius Cybernetics`     |
 
 ## Postgres
 

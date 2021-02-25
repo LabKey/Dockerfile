@@ -15,6 +15,9 @@ services:
       - ./mounts/logs:/labkey/logs
     environment:
       # - DEBUG=1
+      # - LABKEY_SYSTEM_SHORT_NAME=Sirius Cybernetics Corporation
+      # - LABKEY_COMPANY_NAME=Sirius Cybernetics Corporation
+      # - LABKEY_SYSTEM_DESCRIPTION=Sirius Cybernetics Corporation
 
       - POSTGRES_PASSWORD=fb4"1ee5#'f7ac323
       - POSTGRES_HOST=postgres

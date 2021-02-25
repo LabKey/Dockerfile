@@ -120,7 +120,6 @@ main() {
     fi
 
     sleep 1
-    env | sort
 
     openssl "$openssl_format_flag" \
       -nokeys \

@@ -78,6 +78,8 @@ ENV DEBUG="${DEBUG}" \
     MIN_JVM_MEMORY="1g" \
     MAX_JVM_MEMORY="4g" \
     \
+    JAVA_PRE_JAR_EXTRA= \
+    JAVA_POST_JAR_EXTRA= \
     JAVA_TMPDIR="/var/tmp" \
     JAVA_TIMEZONE="America/Los_Angeles"
 

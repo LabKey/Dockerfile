@@ -140,6 +140,8 @@ main() {
     \
     -XX:-HeapDumpOnOutOfMemoryError \
     \
+    -XX:ErrorFile="${LABKEY_HOME}/logs/error_%p.log" \
+    \
     -Djava.net.preferIPv4Stack=true \
     \
     -Dlabkey.home="$LABKEY_HOME" \

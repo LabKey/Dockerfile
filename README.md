@@ -165,7 +165,11 @@ In contrast to `application.properties`, the "startup properties" files housed i
 
 ## Tips
 
-You may enabled Chrome to accept self-signed certificates, such as the one generated within `entrypoint.sh`, by enabling [this Chrome flag](chrome://flags/#allow-insecure-localhost).
+You may enabled Chrome to accept self-signed certificates, such as the one generated within `entrypoint.sh`, by enabling this Chrome flag:
+
+```shell
+chrome://flags/#allow-insecure-localhost
+```
 
 Users of Mac OS will have more luck using GNU Make as installed by **Homebrew** and executed as `gmake`.
 

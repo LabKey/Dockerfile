@@ -155,6 +155,8 @@ main() {
     \
     -Djava.io.tmpdir="$JAVA_TMPDIR" \
     \
+    -Dlogback.debug="$debug_string" \
+    \
     -Dlog4j.debug="$debug_string" \
     -Dlog4j.configurationFile=log4j2.xml \
     \

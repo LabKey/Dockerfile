@@ -83,7 +83,12 @@ ENV DEBUG="${DEBUG}" \
     JAVA_TMPDIR="/var/tmp" \
     JAVA_TIMEZONE="America/Los_Angeles" \
     \
-    LOGGER_PATTERN="%-40.40logger{39}"
+    LOGGER_PATTERN="%-40.40logger{39}" \
+    LOG_LEVEL_DEFAULT= \
+    \
+    LOG_LEVEL_LABKEY_DEFAULT= \
+    LOG_LEVEL_API_MODULE_MODULELOADER= \
+    LOG_LEVEL_API_SETTINGS=
 
 ADD entrypoint.sh /entrypoint.sh
 

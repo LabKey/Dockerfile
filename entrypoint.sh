@@ -110,6 +110,7 @@ main() {
       -passout "pass:${keystore_pass}" \
         >/dev/null 2>&1
 
+  touch server/startup/newinstall
 
   if [ -n "${DEBUG:-}" ]; then
     tail -n+1 \
@@ -118,7 +119,7 @@ main() {
       "${JAVA_HOME:-}"/release
 
     if command -v tree >/dev/null 2>&1; then
-      tree "$LABKEY_HOME"
+      tree .
     fi
 
     sleep 1
@@ -155,7 +156,7 @@ main() {
     -Djava.io.tmpdir="$JAVA_TMPDIR" \
     \
     -Dlog4j.debug="$debug_string" \
-    -Dlog4j.configurationFile="${LABKEY_HOME}/log4j2.xml" \
+    -Dlog4j.configurationFile=log4j2.xml \
     \
     -Dorg.apache.catalina.startup.EXIT_ON_INIT_FAILURE=true \
     \
@@ -168,9 +169,9 @@ main() {
     \
     ${JAVA_POST_JAR_EXTRA} \
     \
-    --server.ssl.key-store-password="${keystore_pass}" \
-    --server.ssl.key-store="${LABKEY_HOME}/${TOMCAT_KEYSTORE_FILENAME}" \
-    --server.ssl.key-alias="${keystore_alias}" \
+    --server.ssl.key-store-password="$keystore_pass" \
+    --server.ssl.key-store="$TOMCAT_KEYSTORE_FILENAME" \
+    --server.ssl.key-alias="$keystore_alias" \
     \
     ;
 

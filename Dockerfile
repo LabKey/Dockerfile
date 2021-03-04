@@ -30,6 +30,8 @@ ENV POSTGRES_USER="postgres" \
     \
     TOMCAT_BASE_DIR="/"
 
+WORKDIR "${LABKEY_HOME}"
+
 ENV DEBUG="${DEBUG}" \
     \
     CATALINA_HOME="${TOMCAT_BASE_DIR}" \
@@ -122,10 +124,10 @@ RUN [ -n "${DEBUG}" ] && set -x; \
     \
     mkdir -pv \
         "${LABKEY_FILES_ROOT}" \
-        "${LABKEY_HOME}/config" \
-        "${LABKEY_HOME}/externalModules" \
-        "${LABKEY_HOME}/logs" \
-        "${LABKEY_HOME}/server/startup" \
+        "config" \
+        "externalModules" \
+        "logs" \
+        "server/startup" \
         "${TOMCAT_BASE_DIR}" \
     \
     && ln -sfv /proc/1/fd/1 /tmp/access.log \

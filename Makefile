@@ -68,5 +68,11 @@ clean:
 			&& find mounts/logs/ -name '*.log' -type f -print0 \
 				| xargs -0 -t truncate -s0
 
-test: up
-	./smoke.bash
+test: down
+	docker-compose up --detach;
+	@./smoke.bash \
+		&& printf "##teamcity[progressMessage '%s']\n" 'smoke test succeeded' \
+		|| printf "##teamcity[buildProblem description='%s' identity='%s']\n" \
+			'smoke test failed' \
+			'failure'
+	docker-compose down -v

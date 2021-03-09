@@ -72,3 +72,6 @@ clean:
 		| awk '{print $$3}' | sort -u | xargs docker image rm -f \
 			&& find mounts/logs/ -name '*.log' -type f -print0 \
 				| xargs -0 -t truncate -s0
+
+test: up
+	./smoke.bash

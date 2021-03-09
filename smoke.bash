@@ -18,6 +18,8 @@ function main() {
       exit 1
     fi
 
+    docker ps -a
+
     sleep 10
   done
 

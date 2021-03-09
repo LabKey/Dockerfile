@@ -11,7 +11,7 @@ function main() {
 
   RETRIES=0
 
-  until curl -v -k -L --fail "https://localhost:${HOST_PORT:-8443}"; do
+  until curl -k -L --fail "https://localhost:${HOST_PORT:-8443}"; do
     RETRIES=$(( RETRIES + 1 ))
 
     if [ "$RETRIES" -ge 5 ]; then

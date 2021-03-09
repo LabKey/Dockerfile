@@ -64,7 +64,7 @@ down:
 
 clean:
 	docker images | grep -E '$(BUILD_REPO_NAME)|<none>' \
-		| awk '{print $$3}' | sort -u | xargs docker image rm -f \
+		| awk '{print $$3}' | sort -u | xargs -r docker image rm -f \
 			&& find mounts/logs/ -name '*.log' -type f -print0 \
 				| xargs -0 -t truncate -s0
 

@@ -20,7 +20,7 @@ function main() {
 
     docker ps -a
 
-    sleep 10
+    sleep 30
   done
 
 }

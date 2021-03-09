@@ -7,7 +7,7 @@ CACHE_FLAG ?= --no-cache
 AWS_ACCOUNT_ID ?=
 AWS_REGION ?=
 
-LABKEY_VERSION ?= 21.3-SNAPSHOT
+LABKEY_VERSION ?= 21.4-SNAPSHOT
 LABKEY_DISTRIBUTION ?= community
 
 # repo/image:tags must be lowercase

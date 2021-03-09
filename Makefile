@@ -59,11 +59,6 @@ up:
 		--abort-on-container-exit \
 			|| docker-compose down -v
 
-up-build: build
-	docker-compose up \
-		--abort-on-container-exit \
-			|| docker-compose down -v
-
 down:
 	docker-compose down -v
 

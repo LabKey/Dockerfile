@@ -19,7 +19,7 @@ services:
       # - LABKEY_COMPANY_NAME=Sirius Cybernetics Corporation
       # - LABKEY_SYSTEM_DESCRIPTION=Sirius Cybernetics Corporation
 
-      - POSTGRES_PASSWORD=fb4"1ee5#'f7ac323
+      - POSTGRES_PASSWORD=a"placeholder#'password
       - POSTGRES_HOST=postgres
   postgres:
     image: postgres:13
@@ -29,7 +29,7 @@ services:
       - "-c"
       - "docker-entrypoint.sh postgres >/dev/null 2>&1"
     environment:
-      - POSTGRES_PASSWORD=fb4"1ee5#'f7ac323
+      - POSTGRES_PASSWORD=a"placeholder#'password
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 30s

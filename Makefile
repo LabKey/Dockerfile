@@ -44,6 +44,7 @@ build:
 		--rm \
 		--compress \
 		$(CACHE_FLAG) \
+		-t $(BUILD_REPO_NAME):latest \
 		-t $(BUILD_LOCAL_TAG) \
 		--build-arg 'DEBUG=$(DEBUG)' \
 		--build-arg 'LABKEY_VERSION=$(LABKEY_VERSION)' \
@@ -63,10 +64,6 @@ tag:
 		$(BUILD_REMOTE_TAG);
 
 	if [ -n "$(TAG_LATEST)" ]; then \
-		docker tag \
-			$(BUILD_LOCAL_TAG) \
-			$(BUILD_REPO_NAME):latest; \
-		\
 		docker tag \
 			$(BUILD_REPO_NAME):latest \
 			$(BUILD_REMOTE_REPO):latest; \

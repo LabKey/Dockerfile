@@ -1,5 +1,11 @@
 SHELL := /usr/bin/env bash
 
+ifeq ($(strip $(findstring Darwin,$(shell uname -a 2>&1 ; ))),)
+	_G :=
+else
+	_G := g
+endif
+
 DEBUG ?=
 
 CACHE_FLAG ?= --no-cache
@@ -83,9 +89,9 @@ down:
 
 clean:
 	docker images | grep -E '$(BUILD_REPO_NAME)|<none>' \
-		| awk '{print $$3}' | sort -u | xargs -r docker image rm -f \
-			&& find mounts/logs/ -name '*.log' -type f -print0 \
-				| xargs -r -0 -t truncate -s0
+		| awk '{print $$3}' | sort -u | $(_G)xargs -r docker image rm -f \
+			&& $(_G)find mounts/logs/ -name '*.log' -type f -print0 \
+				| $(_G)xargs -r -0 -t truncate -s0;
 
 test: down
 	docker-compose up --detach;

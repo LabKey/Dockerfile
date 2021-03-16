@@ -109,7 +109,7 @@ untagged: login
 	aws ecr \
 		list-images \
 		--query 'imageIds[?imageTag == ""].imageDigest' \
-		--repository-name labkey/samplemanagement \
+		--repository-name $(BUILD_REPO_NAME) \
 		--output text \
 			| $(_G)xargs \
 				-d $$'\t' \
@@ -118,6 +118,6 @@ untagged: login
 				-r \
 				aws ecr \
 					batch-delete-image \
-					--repository-name labkey/samplemanagement \
+					--repository-name $(BUILD_REPO_NAME) \
 					--image-ids 'imageDigest={}' \
 						| cat

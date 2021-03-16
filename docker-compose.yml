@@ -7,6 +7,7 @@ services:
     # build: {"context": ".", "args": ["LABKEY_VERSION=21.3-SNAPSHOT"]}
     depends_on:
       - postgres
+      - mailhog
     ports:
       - ${HOST_PORT:-8443}:8443
     volumes:
@@ -21,6 +22,10 @@ services:
 
       - POSTGRES_PASSWORD=a"placeholder#'password
       - POSTGRES_HOST=postgres
+
+      # - SMTP_HOST=mailhog
+      # - SMTP_PORT=1025
+
   postgres:
     image: postgres:13
     # silent postgres w/o needing to remake the container!
@@ -36,3 +41,11 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+
+  # mailhog:
+  #   image: mailhog/mailhog
+  #   logging:
+  #     driver: 'none'  # disable saving logs
+  #   ports:
+  #     - 1025:1025 # smtp server
+  #     - 8025:8025 # web ui

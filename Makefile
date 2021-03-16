@@ -104,3 +104,20 @@ test: down
 
 pull: login
 	docker pull $(BUILD_REMOTE_REPO):$(PULL_TAG)
+
+untagged: login
+	aws ecr \
+		list-images \
+		--query 'imageIds[?imageTag == ""].imageDigest' \
+		--repository-name labkey/samplemanagement \
+		--output text \
+			| $(_G)xargs \
+				-d $$'\t' \
+				-t \
+				-I{} \
+				-r \
+				aws ecr \
+					batch-delete-image \
+					--repository-name labkey/samplemanagement \
+					--image-ids 'imageDigest={}' \
+						| cat

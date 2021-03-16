@@ -51,7 +51,7 @@ build:
 		.
 
 login:
-	aws --region $(AWS_REGION) ecr get-login-password \
+	aws ecr get-login-password \
 		| docker login \
 			--username AWS \
 			--password-stdin \

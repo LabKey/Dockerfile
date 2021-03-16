@@ -4,6 +4,9 @@ DEBUG ?=
 
 CACHE_FLAG ?= --no-cache
 
+TAG_LATEST ?=
+PUSH_LATEST ?=
+
 AWS_ACCOUNT_ID ?=
 AWS_REGION ?=
 
@@ -16,9 +19,10 @@ BUILD_DISTRIBUTION := $(shell echo '$(LABKEY_DISTRIBUTION)' | tr A-Z a-z)
 
 BUILD_REPO_URI ?= $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com
 BUILD_REPO_NAME := labkey/$(BUILD_DISTRIBUTION)
+BUILD_REMOTE_REPO := $(BUILD_REPO_URI)/$(BUILD_REPO_NAME)
 
-BUILD_LOCAL_TAG :=                    $(BUILD_REPO_NAME):$(BUILD_VERSION)
-BUILD_REMOTE_TAG := $(BUILD_REPO_URI)/$(BUILD_REPO_NAME):$(BUILD_VERSION)
+BUILD_LOCAL_TAG := $(BUILD_REPO_NAME):$(BUILD_VERSION)
+BUILD_REMOTE_TAG := $(BUILD_REMOTE_REPO):$(BUILD_VERSION)
 
 .PHONY: all build tag login push up up-build down clean
 
@@ -33,7 +37,6 @@ build:
 		--compress \
 		$(CACHE_FLAG) \
 		-t $(BUILD_LOCAL_TAG) \
-		-t $(BUILD_REPO_NAME):latest \
 		--build-arg 'DEBUG=$(DEBUG)' \
 		--build-arg 'LABKEY_VERSION=$(LABKEY_VERSION)' \
 		--build-arg 'LABKEY_DISTRIBUTION=$(BUILD_DISTRIBUTION)' \
@@ -49,10 +52,24 @@ login:
 tag:
 	docker tag \
 		$(BUILD_LOCAL_TAG) \
-		$(BUILD_REMOTE_TAG)
+		$(BUILD_REMOTE_TAG);
+
+	if [ -n "$(TAG_LATEST)" ]; then \
+		docker tag \
+			$(BUILD_LOCAL_TAG) \
+			$(BUILD_REPO_NAME):latest; \
+		\
+		docker tag \
+			$(BUILD_REPO_NAME):latest \
+			$(BUILD_REMOTE_REPO):latest; \
+	fi
 
 push:
-	docker push $(BUILD_REMOTE_TAG)
+	docker push $(BUILD_REMOTE_TAG);
+
+	if [ -n "$(PUSH_LATEST)" ]; then \
+		docker push $(BUILD_REMOTE_REPO):latest; \
+	fi
 
 up:
 	docker-compose up \

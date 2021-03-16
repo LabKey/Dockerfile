@@ -77,7 +77,7 @@ up:
 			|| docker-compose down -v
 
 down:
-	docker-compose down -v
+	docker-compose down -v --remove-orphans
 
 clean:
 	docker images | grep -E '$(BUILD_REPO_NAME)|<none>' \

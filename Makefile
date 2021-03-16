@@ -7,6 +7,8 @@ CACHE_FLAG ?= --no-cache
 TAG_LATEST ?=
 PUSH_LATEST ?=
 
+PULL_TAG ?= latest
+
 AWS_ACCOUNT_ID ?=
 AWS_REGION ?=
 
@@ -93,3 +95,6 @@ test: down
 			'smoke test failed' \
 			'failure'
 	docker-compose down -v
+
+pull: login
+	docker pull $(BUILD_REMOTE_REPO):$(PULL_TAG)

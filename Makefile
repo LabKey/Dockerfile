@@ -32,6 +32,10 @@ BUILD_REMOTE_REPO := $(BUILD_REPO_URI)/$(BUILD_REPO_NAME)
 BUILD_LOCAL_TAG := $(BUILD_REPO_NAME):$(BUILD_VERSION)
 BUILD_REMOTE_TAG := $(BUILD_REMOTE_REPO):$(BUILD_VERSION)
 
+define tc
+$(shell printf "%steamcity[progressMessage '%s%n']" '##' '$1' ; )
+endef
+
 .PHONY: all build tag login push up up-build down clean
 
 .EXPORT_ALL_VARIABLES:
@@ -40,6 +44,7 @@ BUILD_REMOTE_TAG := $(BUILD_REMOTE_REPO):$(BUILD_VERSION)
 all: login build tag push
 
 build:
+	$(call tc,building docker container)
 	docker build \
 		--rm \
 		--compress \
@@ -52,6 +57,7 @@ build:
 		.
 
 login:
+	$(call tc,logging in to ECR)
 	aws ecr get-login-password \
 		| docker login \
 			--username AWS \
@@ -59,6 +65,7 @@ login:
 			$(BUILD_REPO_URI)
 
 tag:
+	$(call tc,tagging docker container)
 	docker tag \
 		$(BUILD_LOCAL_TAG) \
 		$(BUILD_REMOTE_TAG);
@@ -70,6 +77,7 @@ tag:
 	fi
 
 push:
+	$(call tc,pushing $(BUILD_REMOTE_TAG) docker container)
 	docker push $(BUILD_REMOTE_TAG);
 
 	if [ -n "$(PUSH_LATEST)" ]; then \
@@ -77,11 +85,13 @@ push:
 	fi
 
 up:
+	$(call tc,bringing up compose)
 	docker-compose up \
 		--abort-on-container-exit \
 			|| docker-compose down -v
 
 down:
+	$(call tc,tearing down compose)
 	docker-compose down -v --remove-orphans
 
 clean:
@@ -91,6 +101,7 @@ clean:
 				| $(_G)xargs -r -0 -t truncate -s0;
 
 test: down
+	$(call tc,running smoke tests)
 	docker-compose up --detach;
 	@./smoke.bash \
 		&& printf "##teamcity[progressMessage '%s']\n" 'smoke test succeeded' \
@@ -103,6 +114,7 @@ pull: login
 	docker pull $(BUILD_REMOTE_REPO):$(PULL_TAG)
 
 untagged: login
+	$(call tc,removing untagged images from remote repo)
 	aws ecr \
 		list-images \
 		--query 'imageIds[?imageTag == ""].imageDigest' \

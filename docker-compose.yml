@@ -3,7 +3,7 @@ version: "3"
 
 services:
   labkey:
-    image: ${COMPOSE_IMAGE:-labkey/samplemanagement}
+    image: ${COMPOSE_IMAGE:-labkey/community}
     # build: {"context": ".", "args": ["LABKEY_VERSION=21.3-SNAPSHOT"]}
     depends_on:
       - postgres

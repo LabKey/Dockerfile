@@ -20,6 +20,10 @@ services:
       # - LABKEY_COMPANY_NAME=Sirius Cybernetics Corporation
       # - LABKEY_SYSTEM_DESCRIPTION=Sirius Cybernetics Corporation
 
+
+      # - LABKEY_STARTUP_BASIC_EXTRA=
+      # - LABKEY_STARTUP_DISTRIBUTION_EXTRA=
+
       - POSTGRES_PASSWORD=a"placeholder#'password
       - POSTGRES_HOST=postgres
 

@@ -52,6 +52,7 @@ main() {
       env | grep -E '^LABKEY_' \
         | grep -vE 'GUID' \
         | grep -vE 'MEK' \
+        | grep -vE 'STARTUP' \
         ;
   ); do
     if [ -z "${key_value#*=}" ]; then

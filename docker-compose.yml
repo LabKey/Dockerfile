@@ -3,6 +3,7 @@ version: "3"
 
 services:
   labkey:
+    container_name: labkey
     image: ${COMPOSE_IMAGE:-labkey/community}
     # build: {"context": ".", "args": ["LABKEY_VERSION=21.3-SNAPSHOT"]}
     depends_on:
@@ -31,6 +32,7 @@ services:
       # - SMTP_PORT=1025
 
   postgres:
+    container_name: postgres
     image: postgres:13
     # silent postgres w/o needing to remake the container!
     entrypoint:
@@ -47,6 +49,7 @@ services:
       start_period: 40s
 
   # mailhog:
+  #   container_name: mailhog
   #   image: mailhog/mailhog
   #   logging:
   #     driver: 'none'  # disable saving logs

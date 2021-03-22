@@ -155,34 +155,37 @@ COPY "startup/${LABKEY_DISTRIBUTION}.properties" \
 # add logging config files
 COPY log4j2.xml "${LABKEY_HOME}/"
 
+# refrain from using shell significant characters in HEALTHCHECK_HEADER_*
 ENV HEALTHCHECK_INTERVAL="6s" \
     HEALTHCHECK_TIMEOUT="10s" \
     HEALTHCHECK_START="60s" \
     HEALTHCHECK_RETRIES="10" \
     \
-    HEALTHCHECK_METHOD_FLAG="head" \
+    HEALTHCHECK_METHOD_FLAG="get" \
     HEALTHCHECK_USER_AGENT="Docker" \
     HEALTHCHECK_HEADER_NAME="X-Healthcheck" \
     HEALTHCHECK_HEADER_VALUE="true" \
+    HEALTHCHECK_SECURITY_FLAG="-k" \
+    HEALTHCHECK_EXTRA_FLAGS="-s" \
+    \
     HEALTHCHECK_ENDPOINT="/"
 
 HEALTHCHECK \
-    --interval=6s \
-    --timeout=10s \
-    --start-period=60s \
+    --interval=5s \
+    --timeout=30s \
+    --start-period=30s \
     --retries=10 \
-    CMD [ \
-        "curl", \
-        "--${HEALTHCHECK_METHOD_FLAG}", \
-        "--user-agent", "'${HEALTHCHECK_USER_AGENT}'", \
-        "--header", "'${HEALTHCHECK_HEADER_NAME}: ${HEALTHCHECK_HEADER_VALUE}'", \
-        "-k", \
-        "-L", \
-        "--fail", \
-        "https://localhost:${LABKEY_PORT}${HEALTHCHECK_ENDPOINT}" \
-        "||" \
-        "exit 1" \
-    ]
+    CMD \
+        curl \
+            "--${HEALTHCHECK_METHOD_FLAG}" \
+            --user-agent "${HEALTHCHECK_USER_AGENT}" \
+            --header "${HEALTHCHECK_HEADER_NAME}: ${HEALTHCHECK_HEADER_VALUE}" \
+            "${HEALTHCHECK_SECURITY_FLAG}" \
+            ${HEALTHCHECK_EXTRA_FLAGS} \
+            -L \
+            --fail \
+            "https://localhost:${LABKEY_PORT}${HEALTHCHECK_ENDPOINT}" \
+            || exit 1
 
 VOLUME "${LABKEY_FILES_ROOT}"
 VOLUME "${LABKEY_HOME}/externalModules"

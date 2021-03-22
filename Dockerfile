@@ -92,7 +92,7 @@ ENV DEBUG="${DEBUG}" \
     LOG_LEVEL_API_MODULE_MODULELOADER= \
     LOG_LEVEL_API_SETTINGS=
 
-ADD entrypoint.sh /entrypoint.sh
+COPY entrypoint.sh /entrypoint.sh
 
 RUN [ -n "${DEBUG}" ] && set -x; \
     set -eu; \
@@ -136,21 +136,21 @@ RUN [ -n "${DEBUG}" ] && set -x; \
 
 WORKDIR "${LABKEY_HOME}"
 
-ADD "labkeyServer-${LABKEY_VERSION}.jar" \
+COPY "labkeyServer-${LABKEY_VERSION}.jar" \
     "app.jar"
 
 # add spring properties
-ADD application.properties config/
+COPY application.properties config/
 
 # add basic + distribution startup properties
-ADD startup/basic.properties \
+COPY startup/basic.properties \
     server/startup/50_basic.properties
 
-ADD "startup/${LABKEY_DISTRIBUTION}.properties" \
+COPY "startup/${LABKEY_DISTRIBUTION}.properties" \
     server/startup/49_distribution.properties
 
 # add logging config files
-ADD log4j2.xml "${LABKEY_HOME}/"
+COPY log4j2.xml "${LABKEY_HOME}/"
 
 ENV HEALTHCHECK_INTERVAL="6s" \
     HEALTHCHECK_TIMEOUT="10s" \

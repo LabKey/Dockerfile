@@ -70,15 +70,6 @@ main() {
     exit 1
   fi
 
-  if \
-    echo "$LABKEY_BASE_SERVER_URL" \
-      | grep -v -qs -E ":${LABKEY_PORT}" \
-  ; then
-    >&2 echo "LABKEY_PORT (${LABKEY_PORT}) value did not appear in 'LABKEY_BASE_SERVER_URL'"
-    >&2 echo "LABKEY_BASE_SERVER_URL: '${LABKEY_BASE_SERVER_URL}'"
-    exit 1
-  fi
-
   for prop_file in server/startup/*.properties; do
     envsubst < "$prop_file" > "${prop_file}.tmp" \
       && mv "${prop_file}.tmp" "$prop_file"

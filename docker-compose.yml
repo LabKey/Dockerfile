@@ -13,6 +13,7 @@ services:
       - ${HOST_PORT:-8443}:8443
     volumes:
       - ./mounts/files:/labkey/files
+      # - files:/labkey/files
       - ./mounts/modules:/labkey/externalModules
       - ./mounts/logs:/labkey/logs
     environment:
@@ -56,3 +57,37 @@ services:
   #   ports:
   #     - 1025:1025 # smtp server
   #     - 8025:8025 # web ui
+
+  # restic:
+  #   container_name: restic
+  #   image: restic/restic
+  #   depends_on:
+  #     - labkey
+  #     - minio
+  #   environment:
+  #     - AWS_ACCESS_KEY_ID=placeholder
+  #     - AWS_SECRET_ACCESS_KEY=placeholder
+  #     - RESTIC_PASSWORD_COMMAND=echo placeholder
+  #     - RESTIC_REPOSITORY=s3:http://minio:9000/backup
+  #   volumes:
+  #     - files:/backup
+  #   entrypoint: /bin/sh
+  #   command:
+  #     - -x
+  #     - -c
+  #     - 'restic init; while true; do restic backup /backup || exit 1; sleep 60; done'
+
+  # minio:
+  #   container_name: minio
+  #   image: minio/minio
+  #   environment:
+  #     - MINIO_ROOT_USER=placeholder
+  #     - MINIO_ROOT_PASSWORD=placeholder
+  #   command:
+  #     - server
+  #     - /data
+  #   volumes:
+  #     - ./mounts/backups:/data
+
+# volumes:
+#   files:

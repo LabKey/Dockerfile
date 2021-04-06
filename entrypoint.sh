@@ -24,7 +24,7 @@ main() {
     # shellcheck disable=SC2034
     export \
       LOG_LEVEL_LABKEY_DEFAULT='INFO' \
-      LOG_LEVEL_API_MODULE_MODULELOADER='TRACE' \
+      LOG_LEVEL_API_MODULELOADER='TRACE' \
       LOG_LEVEL_API_SETTINGS='TRACE' \
       \
       LOGGER_PATTERN='%-80.80logger{79}'

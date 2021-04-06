@@ -22,7 +22,7 @@
             set to DEBUG for startup property messages set to TRACE for values
         -->
         <Logger name="org.labkey.api.module.ModuleLoader"
-                level="${env:LOG_LEVEL_API_MODULE_MODULELOADER:-WARN}"
+                level="${env:LOG_LEVEL_API_MODULELOADER:-WARN}"
         />
 
         <Logger name="org.labkey.api.settings"

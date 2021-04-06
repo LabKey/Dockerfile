@@ -27,6 +27,8 @@ services:
       # - LABKEY_STARTUP_BASIC_EXTRA=
       # - LABKEY_STARTUP_DISTRIBUTION_EXTRA=
 
+      - LOGGER_PATTERN=%-80.80logger{79}
+
       - POSTGRES_PASSWORD=a"placeholder#'password
       - POSTGRES_HOST=postgres
 

@@ -6,6 +6,11 @@ services:
     container_name: labkey
     image: ${COMPOSE_IMAGE:-labkey/community}
     # build: {"context": ".", "args": ["LABKEY_VERSION=21.3-SNAPSHOT"]}
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '0.50'
+    #       memory: 1024M
     depends_on:
       - postgres
       # - mailhog
@@ -31,6 +36,9 @@ services:
 
       - POSTGRES_PASSWORD=a"placeholder#'password
       - POSTGRES_HOST=postgres
+
+      - MAX_JVM_RAM_PERCENT=75.0
+      - JAVA_PRE_JAR_EXTRA=-XX:+UseSerialGC -Xss512k
 
       # - SMTP_HOST=mailhog
       # - SMTP_PORT=1025
@@ -60,6 +68,11 @@ services:
   postgres:
     container_name: postgres
     image: postgres:13
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '0.25'
+    #       memory: 512M
     # silent postgres w/o needing to remake the container!
     entrypoint:
       - "/bin/bash"

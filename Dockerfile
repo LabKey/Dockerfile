@@ -130,7 +130,7 @@ RUN [ -n "${DEBUG}" ] && set -x; \
     fi; \
     \
     mkdir -pv \
-        "${LABKEY_FILES_ROOT}" \
+        "${LABKEY_FILES_ROOT}/@files" \
         "config" \
         "externalModules" \
         "logs" \
@@ -189,7 +189,7 @@ HEALTHCHECK \
             "https://localhost:${LABKEY_PORT}${HEALTHCHECK_ENDPOINT}" \
             || exit 1
 
-VOLUME "${LABKEY_FILES_ROOT}"
+VOLUME "${LABKEY_FILES_ROOT}/@files"
 VOLUME "${LABKEY_HOME}/externalModules"
 VOLUME "${LABKEY_HOME}/logs"
 

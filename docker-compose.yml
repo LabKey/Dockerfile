@@ -23,14 +23,19 @@ services:
       - ./mounts/logs:/labkey/logs
     environment:
       # - DEBUG=1
+
       # - LABKEY_SYSTEM_SHORT_NAME=Sirius Cybernetics Corporation
       # - LABKEY_COMPANY_NAME=Sirius Cybernetics Corporation
       # - LABKEY_SYSTEM_DESCRIPTION=Sirius Cybernetics Corporation
 
       # - TOMCAT_ENABLE_ACCESS_LOG=1
 
-      # - LABKEY_STARTUP_BASIC_EXTRA=
-      # - LABKEY_STARTUP_DISTRIBUTION_EXTRA=
+      - LOG_LEVEL_SPRING_WEB=INFO
+      - LOG_LEVEL_TOMCAT=DEBUG
+      - LOG_LEVEL_DEFAULT=DEBUG
+      - LOG_LEVEL_LABKEY_DEFAULT=DEBUG
+      - LOG_LEVEL_API_SETTINGS=DEBUG
+      - LOG_LEVEL_API_MODULELOADER=DEBUG
 
       - LOGGER_PATTERN=%-80.80logger{79}
 

@@ -35,6 +35,16 @@ services:
       # - SMTP_HOST=mailhog
       # - SMTP_PORT=1025
 
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_AUTH=true
+      - SMTP_PORT=587
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_STARTTLS=true
+
+      - LABKEY_SYSTEM_EMAIL_ADDRESS=${SMTP_FROM}
+      # - SMTP_FROM=
+
       # uncomment to enable CAS against labkey.org
       # - |
       #   LABKEY_STARTUP_BASIC_EXTRA='

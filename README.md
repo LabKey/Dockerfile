@@ -184,7 +184,7 @@ This repo is a work in progress. Do not run containers created from these source
 ### Reference
 
 - [Sample `application.properties` file](https://github.com/LabKey/server/blob/develop/server/configs/application.properties)
-- [Sample `pg.properties` file](https://github.com/LabKey/server/blob/develop/server/configs/application.properties) -- contains some values referenced in application.properties above
+- [Sample `pg.properties` file](https://github.com/LabKey/server/blob/develop/server/configs/pg.properties) -- contains some values referenced in application.properties above
 - [LabKey Bootstrap Properties](https://www.labkey.org/Documentation/wiki-page.view?name=bootstrapProperties)
 - [Dockerfile Reference](https://docs.docker.com/engine/reference/builder/)
 - [Compose file v3 Reference](https://docs.docker.com/compose/compose-file/compose-file-v3/)

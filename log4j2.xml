@@ -12,7 +12,9 @@
 
     <Loggers>
 
-        <!-- <Logger name="org.apache" level="INFO"/> -->
+        <Logger name="org.apache" level="${env:LOG_LEVEL_TOMCAT:-OFF}"/>
+
+        <Logger name="org.springframework.web" level="${env:LOG_LEVEL_SPRING_WEB:-OFF}"/>
 
         <Logger name="org.labkey" level="${env:LOG_LEVEL_LABKEY_DEFAULT:-FATAL}"/>
 

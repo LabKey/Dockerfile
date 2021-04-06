@@ -15,8 +15,8 @@ PUSH_LATEST ?=
 
 PULL_TAG ?= latest
 
-AWS_ACCOUNT_ID ?=
-AWS_REGION ?=
+AWS_ACCOUNT_ID ?= $(shell aws sts get-caller-identity | jq -r '.Account' | grep -E '[0-9]{12}' || exit 1)
+AWS_REGION ?= $(shell aws configure get region || exit 1)
 
 LABKEY_VERSION ?= 21.4-SNAPSHOT
 LABKEY_DISTRIBUTION ?= community

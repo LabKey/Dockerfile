@@ -173,7 +173,7 @@ chrome://flags/#allow-insecure-localhost
 
 Users of Mac OS will have more luck using GNU Make as installed by **Homebrew** and executed as `gmake`.
 
-  Q: Why is my labkey container "unhealthy"?
+Q: Why is my labkey container "unhealthy"?
 
 A: LabKey containers produced from this repo contain a `HEALTHCHECK` block which defines a simple "smoke" test Docker can use internally to determine if the container is healthy. The healthcheck built into this Dockerfile boils down to a `curl` to `localhost`-- but it can be customized based on a number of `HEALTHCHECK_*` ENVs that the Dockerfile defines. A customization that may be helpful would be to define a `HEALTHCHECK_HEADER_NAME` or `HEALTHCHECK_HEADER_USER_AGENT` that matches a value already filtered out of the access log by the application. Most container orchestrations tools either explicitely disable containers' built-in HEALTCHECKs or give you the option to disable able it. A succinct example of this is `docker-compose`'s own [healthcheck](https://docs.docker.com/compose/compose-file/compose-file-v3/#healthcheck) syntax.
 

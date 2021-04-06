@@ -146,7 +146,7 @@ main() {
     -Dlabkey.log.home="${LABKEY_HOME}/logs" \
     -Dlabkey.externalModulesDir="${LABKEY_HOME}/externalModules" \
     \
-    -Djava.library.path=/usr/lib \
+    -Djava.library.path=/usr/lib:/usr/lib/x86_64-linux-gnu \
     \
     -Djava.security.egd=file:/dev/./urandom \
     \

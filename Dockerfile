@@ -66,6 +66,8 @@ ENV DEBUG="${DEBUG}" \
     TOMCAT_SSL_PROTOCOL="TLS" \
     TOMCAT_SSL_ENABLED_PROTOCOLS="-TLSv1.3,+TLSv1.2" \
     \
+    TOMCAT_ENABLE_ACCESS_LOG= \
+    \
     CERT_C="US" \
     CERT_ST="Washington" \
     CERT_L="Seattle" \
@@ -132,8 +134,6 @@ RUN [ -n "${DEBUG}" ] && set -x; \
         "logs" \
         "server/startup" \
         "${TOMCAT_BASE_DIR}" \
-    \
-    && ln -sfv /proc/1/fd/1 /tmp/access.log \
     \
     && env | sort | tee /buid.env;
 

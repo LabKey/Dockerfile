@@ -83,6 +83,10 @@ main() {
     )"
   fi
 
+  if [ -n "$TOMCAT_ENABLE_ACCESS_LOG" ]; then
+    ln -sfv /proc/1/fd/1 /tmp/access.log
+  fi
+
   openssl req \
     -x509 \
     -newkey rsa:4096 \

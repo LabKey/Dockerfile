@@ -22,6 +22,7 @@ services:
       # - LABKEY_COMPANY_NAME=Sirius Cybernetics Corporation
       # - LABKEY_SYSTEM_DESCRIPTION=Sirius Cybernetics Corporation
 
+      # - TOMCAT_ENABLE_ACCESS_LOG=1
 
       # - LABKEY_STARTUP_BASIC_EXTRA=
       # - LABKEY_STARTUP_DISTRIBUTION_EXTRA=

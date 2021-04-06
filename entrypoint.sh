@@ -132,10 +132,11 @@ main() {
     \
     -Duser.timezone="${JAVA_TIMEZONE}" \
     \
-    "-Xms${MIN_JVM_MEMORY}" \
-    "-Xmx${MAX_JVM_MEMORY}" \
-    \
     -XX:-HeapDumpOnOutOfMemoryError \
+    \
+    -XX:MaxRAMPercentage="${MAX_JVM_RAM_PERCENT}" \
+    \
+    -XX:+UseContainerSupport \
     \
     -XX:ErrorFile="${LABKEY_HOME}/logs/error_%p.log" \
     \

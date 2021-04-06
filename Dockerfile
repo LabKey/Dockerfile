@@ -82,8 +82,7 @@ ENV DEBUG="${DEBUG}" \
     SMTP_FROM= \
     SMTP_STARTTLS= \
     \
-    MIN_JVM_MEMORY="1g" \
-    MAX_JVM_MEMORY="4g" \
+    MAX_JVM_RAM_PERCENT="90.0" \
     \
     JAVA_PRE_JAR_EXTRA= \
     JAVA_POST_JAR_EXTRA= \

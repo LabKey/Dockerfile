@@ -35,6 +35,18 @@ services:
       # - SMTP_HOST=mailhog
       # - SMTP_PORT=1025
 
+      # uncomment to enable CAS against labkey.org
+      # - |
+      #   LABKEY_STARTUP_BASIC_EXTRA='
+      #     CasAuthenticationProperties.ServerURL;startup = https://www.labkey.org/cas
+      #     CasAuthenticationProperties.AutoRedirect;startup = true
+      #     CasAuthenticationProperties.InvokeLogout;startup = true
+      #     CasAuthenticationProperties.Description;startup = configured_by_docker_compose
+      #     SiteSettings.experimentalFeature.disableGuestAccount = TRUE
+      #     UserRoles.${LABKEY_ACCOUNT_EMAIL} = org.labkey.api.security.roles.SiteAdminRole
+      #   '
+      # - LABKEY_STARTUP_DISTRIBUTION_EXTRA=
+
   postgres:
     container_name: postgres
     image: postgres:13

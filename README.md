@@ -51,7 +51,7 @@ This repo and Dockerfile have been built from the ground up to support LabKey pr
 Environment variables (ENVs) are used to control both halves of the lifecycle of the container: "build time" (when the container is built) and "run time" (when the container is being used after having been built). **As such, the list of Docker "build args" is pretty short;** being limited to just the base container to use w/ `FROM`, the distribution/version of LabKey, and `DEBUG`. Environment variables are instead used by scripts within the `Dockerfile` itself, and from within the `entrypoint.sh` script (which ultimately executes `java -jar`). The container will fail to start if any required `LABKEY_*` environment variables are not supplied as in the following:
 
 ```shell
-labkey_1    | value required for 'LABKEY_SYSTEM_DESCRIPTION'
+labkey      | value required for 'LABKEY_SYSTEM_DESCRIPTION'
 dockerfile_labkey_1 exited with code 1
 ```
 

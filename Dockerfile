@@ -153,7 +153,20 @@ COPY "startup/${LABKEY_DISTRIBUTION}.properties" \
     server/startup/49_distribution.properties
 
 # add logging config files
-COPY log4j2.xml "${LABKEY_HOME}/"
+COPY log4j2.xml log4j2.xml
+
+RUN [ -n "${DEBUG}" ] && set -x; \
+    set -eu; \
+    \
+    groupadd -r labkey \
+        --gid=2005; \
+    useradd -r \
+        -g labkey \
+        --uid=2005 \
+        --home-dir=${LABKEY_HOME} \
+        --shell=/bin/bash \
+        labkey; \
+    chown -Rc labkey:labkey ${LABKEY_HOME}
 
 # refrain from using shell significant characters in HEALTHCHECK_HEADER_*
 ENV HEALTHCHECK_INTERVAL="6s" \

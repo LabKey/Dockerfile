@@ -20,8 +20,6 @@ ARG DEBUG=
 ARG LABKEY_VERSION
 ARG LABKEY_DISTRIBUTION
 
-WORKDIR "${LABKEY_HOME}"
-
 # dependent ENVs declared separately
 ENV POSTGRES_USER="postgres" \
     \
@@ -101,6 +99,8 @@ ENV DEBUG="${DEBUG}" \
 
 COPY entrypoint.sh /entrypoint.sh
 
+WORKDIR "${LABKEY_HOME}"
+
 RUN [ -n "${DEBUG}" ] && set -x; \
     set -eu; \
     \
@@ -138,8 +138,6 @@ RUN [ -n "${DEBUG}" ] && set -x; \
         "${TOMCAT_BASE_DIR}" \
     \
     && env | sort | tee /buid.env;
-
-WORKDIR "${LABKEY_HOME}"
 
 COPY "labkeyServer-${LABKEY_VERSION}.jar" \
     "app.jar"

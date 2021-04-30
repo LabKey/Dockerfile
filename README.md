@@ -154,8 +154,7 @@ Since java can be picky about the position of CLI values, `JAVA_PRE_JAR_EXTRA` a
 | ------------------- | ----------------------------------------------------- | --------------------- |
 | JAVA_TIMEZONE       | java configured Timezone                              | `America/Los_Angeles` |
 | JAVA_TMPDIR         | java configured "temp" directory                      | `/var/tmp`            |
-| MAX_JVM_MEMORY      | java maximum heapsize (`-Xmx`)                        | `4g`                  |
-| MAX_JVM_MEMORY      | java maximum heapsize (`-Xmx`)                        | `4g`                  |
+| MAX_JVM_RAM_PERCENT | jvm maximum memory occupancy                          | `90.0`                |
 | JAVA_PRE_JAR_EXTRA  | additional CLI values to pass to `java` before `-jar` | `<empty>`             |
 | JAVA_POST_JAR_EXTRA | additional CLI values to pass to `java` after `-jar`  | `<empty>`             |
 

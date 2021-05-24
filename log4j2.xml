@@ -5,14 +5,16 @@
     <Appenders>
         <Console name="CONSOLE" target="SYSTEM_OUT">
             <PatternLayout
-                pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5.5p %5.5L --- [%15.15t] ${env:LOGGER_PATTERN} : %m%n%xEx"
+                pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} I %-5.5p %5.5L --- [%15.15t] ${env:LOGGER_PATTERN} : %m%n%xEx"
             />
         </Console>
     </Appenders>
 
     <Loggers>
 
-        <!-- <Logger name="org.apache" level="INFO"/> -->
+        <Logger name="org.apache" level="${env:LOG_LEVEL_TOMCAT:-OFF}"/>
+
+        <Logger name="org.springframework.web" level="${env:LOG_LEVEL_SPRING_WEB:-OFF}"/>
 
         <Logger name="org.labkey" level="${env:LOG_LEVEL_LABKEY_DEFAULT:-FATAL}"/>
 
@@ -20,7 +22,7 @@
             set to DEBUG for startup property messages set to TRACE for values
         -->
         <Logger name="org.labkey.api.module.ModuleLoader"
-                level="${env:LOG_LEVEL_API_MODULE_MODULELOADER:-WARN}"
+                level="${env:LOG_LEVEL_API_MODULELOADER:-WARN}"
         />
 
         <Logger name="org.labkey.api.settings"
@@ -31,11 +33,22 @@
         <Logger name="org.labkey.api.data.SqlScriptExecutor" level="WARN"/>
         <Logger name="org.labkey.api.data.SqlScriptManager" level="WARN"/>
         <Logger name="org.labkey.api.data.SqlScriptRunner" level="WARN"/>
+        <Logger name="org.labkey.api.data.JdbcCommand" level="WARN"/>
+        <Logger name="org.labkey.api.data.ConnectionWrapper" level="WARN"/>
         <Logger name="org.labkey.api.module.ModuleLoader" level="ERROR"/>
         <Logger name="org.labkey.api.search.SearchService" level="ERROR"/>
         <Logger name="org.labkey.api.view.ViewServlet" level="ERROR"/>
+        <Logger name="org.labkey.api.cache.ehcache" level="WARN"/>
+        <Logger name="org.labkey.api.data.queryprofiler" level="WARN"/>
+        <Logger name="org.labkey.core.admin.ActionsTsvWriter" level="WARN"/>
         <Logger name="org.labkey.audit" level="ERROR"/>
-        <Logger name="org.labkey.search" level="ERROR"/> -->
+        <Logger name="org.labkey.search" level="ERROR"/>
+        <Logger name="org.labkey.api.util" level="TRACE"/>
+        <Logger name="org.labkey.api.exp.xar.LsidUtils" level="WARN"/> -->
+
+        <Logger name="org.labkey.api.pipeline" level="${env:LOG_LEVEL_API_PIPELINE:-WARN}">
+            <AppenderRef ref="CONSOLE"/>
+        </Logger>
 
         <Root level="${env:LOG_LEVEL_DEFAULT:-FATAL}">
             <AppenderRef ref="CONSOLE"/>

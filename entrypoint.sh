@@ -24,7 +24,7 @@ main() {
     # shellcheck disable=SC2034
     export \
       LOG_LEVEL_LABKEY_DEFAULT='INFO' \
-      LOG_LEVEL_API_MODULE_MODULELOADER='TRACE' \
+      LOG_LEVEL_API_MODULELOADER='TRACE' \
       LOG_LEVEL_API_SETTINGS='TRACE' \
       \
       LOGGER_PATTERN='%-80.80logger{79}'
@@ -83,6 +83,10 @@ main() {
     )"
   fi
 
+  if [ -n "$TOMCAT_ENABLE_ACCESS_LOG" ]; then
+    ln -sfv /proc/1/fd/1 /tmp/access.log
+  fi
+
   openssl req \
     -x509 \
     -newkey rsa:4096 \
@@ -128,10 +132,11 @@ main() {
     \
     -Duser.timezone="${JAVA_TIMEZONE}" \
     \
-    "-Xms${MIN_JVM_MEMORY}" \
-    "-Xmx${MAX_JVM_MEMORY}" \
-    \
     -XX:-HeapDumpOnOutOfMemoryError \
+    \
+    -XX:MaxRAMPercentage="${MAX_JVM_RAM_PERCENT}" \
+    \
+    -XX:+UseContainerSupport \
     \
     -XX:ErrorFile="${LABKEY_HOME}/logs/error_%p.log" \
     \
@@ -141,7 +146,7 @@ main() {
     -Dlabkey.log.home="${LABKEY_HOME}/logs" \
     -Dlabkey.externalModulesDir="${LABKEY_HOME}/externalModules" \
     \
-    -Djava.library.path=/usr/lib \
+    -Djava.library.path=/usr/lib:/usr/lib/x86_64-linux-gnu \
     \
     -Djava.security.egd=file:/dev/./urandom \
     \

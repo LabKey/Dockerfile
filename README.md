@@ -51,7 +51,7 @@ This repo and Dockerfile have been built from the ground up to support LabKey pr
 Environment variables (ENVs) are used to control both halves of the lifecycle of the container: "build time" (when the container is built) and "run time" (when the container is being used after having been built). **As such, the list of Docker "build args" is pretty short;** being limited to just the base container to use w/ `FROM`, the distribution/version of LabKey, and `DEBUG`. Environment variables are instead used by scripts within the `Dockerfile` itself, and from within the `entrypoint.sh` script (which ultimately executes `java -jar`). The container will fail to start if any required `LABKEY_*` environment variables are not supplied as in the following:
 
 ```shell
-labkey_1    | value required for 'LABKEY_SYSTEM_DESCRIPTION'
+labkey      | value required for 'LABKEY_SYSTEM_DESCRIPTION'
 dockerfile_labkey_1 exited with code 1
 ```
 
@@ -154,8 +154,7 @@ Since java can be picky about the position of CLI values, `JAVA_PRE_JAR_EXTRA` a
 | ------------------- | ----------------------------------------------------- | --------------------- |
 | JAVA_TIMEZONE       | java configured Timezone                              | `America/Los_Angeles` |
 | JAVA_TMPDIR         | java configured "temp" directory                      | `/var/tmp`            |
-| MAX_JVM_MEMORY      | java maximum heapsize (`-Xmx`)                        | `4g`                  |
-| MAX_JVM_MEMORY      | java maximum heapsize (`-Xmx`)                        | `4g`                  |
+| MAX_JVM_RAM_PERCENT | jvm maximum memory occupancy                          | `90.0`                |
 | JAVA_PRE_JAR_EXTRA  | additional CLI values to pass to `java` before `-jar` | `<empty>`             |
 | JAVA_POST_JAR_EXTRA | additional CLI values to pass to `java` after `-jar`  | `<empty>`             |
 
@@ -173,7 +172,7 @@ chrome://flags/#allow-insecure-localhost
 
 Users of Mac OS will have more luck using GNU Make as installed by **Homebrew** and executed as `gmake`.
 
-  Q: Why is my labkey container "unhealthy"?
+Q: Why is my labkey container "unhealthy"?
 
 A: LabKey containers produced from this repo contain a `HEALTHCHECK` block which defines a simple "smoke" test Docker can use internally to determine if the container is healthy. The healthcheck built into this Dockerfile boils down to a `curl` to `localhost`-- but it can be customized based on a number of `HEALTHCHECK_*` ENVs that the Dockerfile defines. A customization that may be helpful would be to define a `HEALTHCHECK_HEADER_NAME` or `HEALTHCHECK_HEADER_USER_AGENT` that matches a value already filtered out of the access log by the application. Most container orchestrations tools either explicitely disable containers' built-in HEALTCHECKs or give you the option to disable able it. A succinct example of this is `docker-compose`'s own [healthcheck](https://docs.docker.com/compose/compose-file/compose-file-v3/#healthcheck) syntax.
 
@@ -184,10 +183,12 @@ This repo is a work in progress. Do not run containers created from these source
 ### Reference
 
 - [Sample `application.properties` file](https://github.com/LabKey/server/blob/develop/server/configs/application.properties)
-- [Sample `pg.properties` file](https://github.com/LabKey/server/blob/develop/server/configs/application.properties) -- contains some values referenced in application.properties above
+- [Sample `pg.properties` file](https://github.com/LabKey/server/blob/develop/server/configs/pg.properties) -- contains some values referenced in application.properties above
 - [LabKey Bootstrap Properties](https://www.labkey.org/Documentation/wiki-page.view?name=bootstrapProperties)
 - [Dockerfile Reference](https://docs.docker.com/engine/reference/builder/)
 - [Compose file v3 Reference](https://docs.docker.com/compose/compose-file/compose-file-v3/)
 - [`logback` "pattern" Reference](http://logback.qos.ch/manual/layouts.html#conversionWord)
 - [`log4j2` "pattern" Reference](https://logging.apache.org/log4j/log4j-2.0/manual/layouts.html)
 - [`log4j` Migration Reference](https://logging.apache.org/log4j/2.x/manual/migration.html)
+- [How the JVM Finally Plays Nice with Containers](https://www.atamanroman.dev/articles/usecontainersupport-to-the-rescue/)
+- ["how to reduce spring boot memory usage?"](https://stackoverflow.com/a/52993285)

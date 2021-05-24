@@ -6,6 +6,11 @@ services:
     container_name: labkey
     image: ${COMPOSE_IMAGE:-labkey/community}
     # build: {"context": ".", "args": ["LABKEY_VERSION=21.3-SNAPSHOT"]}
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '0.50'
+    #       memory: 1024M
     depends_on:
       - postgres
       # - mailhog
@@ -13,27 +18,66 @@ services:
       - ${HOST_PORT:-8443}:8443
     volumes:
       - ./mounts/files:/labkey/files
+      # - files:/labkey/files
       - ./mounts/modules:/labkey/externalModules
       - ./mounts/logs:/labkey/logs
     environment:
       # - DEBUG=1
+
       # - LABKEY_SYSTEM_SHORT_NAME=Sirius Cybernetics Corporation
       # - LABKEY_COMPANY_NAME=Sirius Cybernetics Corporation
       # - LABKEY_SYSTEM_DESCRIPTION=Sirius Cybernetics Corporation
 
+      # - TOMCAT_ENABLE_ACCESS_LOG=1
 
-      # - LABKEY_STARTUP_BASIC_EXTRA=
-      # - LABKEY_STARTUP_DISTRIBUTION_EXTRA=
+      - LOG_LEVEL_SPRING_WEB=INFO
+      - LOG_LEVEL_TOMCAT=DEBUG
+      - LOG_LEVEL_DEFAULT=DEBUG
+      - LOG_LEVEL_LABKEY_DEFAULT=DEBUG
+      - LOG_LEVEL_API_SETTINGS=DEBUG
+      - LOG_LEVEL_API_MODULELOADER=DEBUG
+
+      - LOGGER_PATTERN=%-80.80logger{79}
 
       - POSTGRES_PASSWORD=a"placeholder#'password
       - POSTGRES_HOST=postgres
 
+      - MAX_JVM_RAM_PERCENT=75.0
+      - JAVA_PRE_JAR_EXTRA=-XX:+UseSerialGC -Xss512k
+
       # - SMTP_HOST=mailhog
       # - SMTP_PORT=1025
+
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_AUTH=true
+      - SMTP_PORT=587
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_STARTTLS=true
+
+      - LABKEY_SYSTEM_EMAIL_ADDRESS=${SMTP_FROM}
+      # - SMTP_FROM=
+
+      # uncomment to enable CAS against labkey.org
+      # - |
+      #   LABKEY_STARTUP_BASIC_EXTRA='
+      #     CasAuthenticationProperties.ServerURL;startup = https://www.labkey.org/cas
+      #     CasAuthenticationProperties.AutoRedirect;startup = true
+      #     CasAuthenticationProperties.InvokeLogout;startup = true
+      #     CasAuthenticationProperties.Description;startup = configured_by_docker_compose
+      #     SiteSettings.experimentalFeature.disableGuestAccount = TRUE
+      #     UserRoles.${LABKEY_ACCOUNT_EMAIL} = org.labkey.api.security.roles.SiteAdminRole
+      #   '
+      # - LABKEY_STARTUP_DISTRIBUTION_EXTRA=
 
   postgres:
     container_name: postgres
     image: postgres:13
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '0.25'
+    #       memory: 512M
     # silent postgres w/o needing to remake the container!
     entrypoint:
       - "/bin/bash"
@@ -56,3 +100,37 @@ services:
   #   ports:
   #     - 1025:1025 # smtp server
   #     - 8025:8025 # web ui
+
+  # restic:
+  #   container_name: restic
+  #   image: restic/restic
+  #   depends_on:
+  #     - labkey
+  #     - minio
+  #   environment:
+  #     - AWS_ACCESS_KEY_ID=placeholder
+  #     - AWS_SECRET_ACCESS_KEY=placeholder
+  #     - RESTIC_PASSWORD_COMMAND=echo placeholder
+  #     - RESTIC_REPOSITORY=s3:http://minio:9000/backup
+  #   volumes:
+  #     - files:/backup
+  #   entrypoint: /bin/sh
+  #   command:
+  #     - -x
+  #     - -c
+  #     - 'restic init; while true; do restic backup /backup || exit 1; sleep 60; done'
+
+  # minio:
+  #   container_name: minio
+  #   image: minio/minio
+  #   environment:
+  #     - MINIO_ROOT_USER=placeholder
+  #     - MINIO_ROOT_PASSWORD=placeholder
+  #   command:
+  #     - server
+  #     - /data
+  #   volumes:
+  #     - ./mounts/backups:/data
+
+# volumes:
+#   files:

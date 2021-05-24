@@ -30,7 +30,7 @@ ENV POSTGRES_USER="postgres" \
     \
     TOMCAT_BASE_DIR="/"
 
-WORKDIR "${LABKEY_HOME}"
+ENV LABKEY_SYSTEM_EMAIL_ADDRESS="noreply@${LABKEY_DEFAULT_DOMAIN}"
 
 ENV DEBUG="${DEBUG}" \
     \
@@ -52,7 +52,6 @@ ENV DEBUG="${DEBUG}" \
     \
     LABKEY_COMPANY_NAME="${LABKEY_SYSTEM_SHORT_NAME}" \
     LABKEY_SYSTEM_DESCRIPTION="${LABKEY_SYSTEM_SHORT_NAME}" \
-    LABKEY_SYSTEM_EMAIL_ADDRESS="do_not_reply@${LABKEY_DEFAULT_DOMAIN}" \
     LABKEY_BASE_SERVER_URL="https://${LABKEY_DEFAULT_DOMAIN}:${LABKEY_PORT}" \
     \
     LABKEY_STARTUP_BASIC_EXTRA= \
@@ -64,7 +63,9 @@ ENV DEBUG="${DEBUG}" \
     \
     TOMCAT_SSL_CIPHERS="HIGH:!ADH:!EXP:!SSLv2:!SSLv3:!MEDIUM:!LOW:!NULL:!aNULL" \
     TOMCAT_SSL_PROTOCOL="TLS" \
-    TOMCAT_SSL_ENABLED_PROTOCOLS="TLSv1.3,TLSv1.2" \
+    TOMCAT_SSL_ENABLED_PROTOCOLS="-TLSv1.3,+TLSv1.2" \
+    \
+    TOMCAT_ENABLE_ACCESS_LOG= \
     \
     CERT_C="US" \
     CERT_ST="Washington" \
@@ -77,11 +78,11 @@ ENV DEBUG="${DEBUG}" \
     SMTP_USER="root" \
     SMTP_PORT="25" \
     SMTP_PASSWORD= \
-    SMTP_FROM= \
+    SMTP_FROM="${LABKEY_SYSTEM_EMAIL_ADDRESS}" \
     SMTP_STARTTLS= \
+    SMTP_AUTH="false" \
     \
-    MIN_JVM_MEMORY="1g" \
-    MAX_JVM_MEMORY="4g" \
+    MAX_JVM_RAM_PERCENT="90.0" \
     \
     JAVA_PRE_JAR_EXTRA= \
     JAVA_POST_JAR_EXTRA= \
@@ -92,10 +93,13 @@ ENV DEBUG="${DEBUG}" \
     LOG_LEVEL_DEFAULT= \
     \
     LOG_LEVEL_LABKEY_DEFAULT= \
-    LOG_LEVEL_API_MODULE_MODULELOADER= \
-    LOG_LEVEL_API_SETTINGS=
+    LOG_LEVEL_API_MODULELOADER= \
+    LOG_LEVEL_API_SETTINGS= \
+    LOG_LEVEL_API_PIPELINE=
 
 COPY entrypoint.sh /entrypoint.sh
+
+WORKDIR "${LABKEY_HOME}"
 
 RUN [ -n "${DEBUG}" ] && set -x; \
     set -eu; \
@@ -126,18 +130,14 @@ RUN [ -n "${DEBUG}" ] && set -x; \
     fi; \
     \
     mkdir -pv \
-        "${LABKEY_FILES_ROOT}" \
+        "${LABKEY_FILES_ROOT}/@files" \
         "config" \
         "externalModules" \
         "logs" \
         "server/startup" \
         "${TOMCAT_BASE_DIR}" \
     \
-    && ln -sfv /proc/1/fd/1 /tmp/access.log \
-    \
     && env | sort | tee /buid.env;
-
-WORKDIR "${LABKEY_HOME}"
 
 COPY "labkeyServer-${LABKEY_VERSION}.jar" \
     "app.jar"
@@ -153,7 +153,20 @@ COPY "startup/${LABKEY_DISTRIBUTION}.properties" \
     server/startup/49_distribution.properties
 
 # add logging config files
-COPY log4j2.xml "${LABKEY_HOME}/"
+COPY log4j2.xml log4j2.xml
+
+RUN [ -n "${DEBUG}" ] && set -x; \
+    set -eu; \
+    \
+    groupadd -r labkey \
+        --gid=2005; \
+    useradd -r \
+        -g labkey \
+        --uid=2005 \
+        --home-dir=${LABKEY_HOME} \
+        --shell=/bin/bash \
+        labkey; \
+    chown -Rc labkey:labkey ${LABKEY_HOME}
 
 # refrain from using shell significant characters in HEALTHCHECK_HEADER_*
 ENV HEALTHCHECK_INTERVAL="6s" \
@@ -168,7 +181,7 @@ ENV HEALTHCHECK_INTERVAL="6s" \
     HEALTHCHECK_SECURITY_FLAG="-k" \
     HEALTHCHECK_EXTRA_FLAGS="-s" \
     \
-    HEALTHCHECK_ENDPOINT="/"
+    HEALTHCHECK_ENDPOINT="/_/health"
 
 HEALTHCHECK \
     --interval=5s \
@@ -187,7 +200,7 @@ HEALTHCHECK \
             "https://localhost:${LABKEY_PORT}${HEALTHCHECK_ENDPOINT}" \
             || exit 1
 
-VOLUME "${LABKEY_FILES_ROOT}"
+VOLUME "${LABKEY_FILES_ROOT}/@files"
 VOLUME "${LABKEY_HOME}/externalModules"
 VOLUME "${LABKEY_HOME}/logs"
 

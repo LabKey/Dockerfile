@@ -2,6 +2,8 @@
 
 This repo contains a Dockerfile, `docker-compose.yml`, and various other files for creating a docker container of LabKey products. Please review this document and especially the "Tips" section below.
 
+!! Please review [the disclaimer](#disclaimer) below. !!
+
 ## Prerequisites
 
 To fully use this repo, you will need installed:

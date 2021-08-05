@@ -105,6 +105,21 @@ A better description of the LabKey settings can be found [in the LabKey docs](ht
 | LABKEY_SYSTEM_EMAIL_ADDRESS | email address system email will be sent "from"                                                           | `do_not_reply@localhost` |
 | LABKEY_SYSTEM_SHORT_NAME    | name of server displayed in header                                                                       | `Sirius Cybernetics`     |
 
+You can optionally bypass the initial user creation "wizard" by creating an initial user using the following environment variables. **At time of writing, there is no way to set the initial user's password.** Assuming valid SMTP configuration, the "forgot password" link can be used to accomplish this. Additionally, an API can be created for that user. If both `LABKEY_CREATE_INITIAL_USER` & `LABKEY_CREATE_INITIAL_USER_APIKEY` are set to a values other than empty strings, but `LABKEY_INITIAL_USER_APIKEY` is not set, a randomly generated string will be used. Setting `LABKEY_CREATE_INITIAL_USER_APIKEY` without having set `LABKEY_CREATE_INITIAL_USER` will result in NO initial user being added.
+
+**Creating an initial user API key in this way is discouraged as the API key will be output from the container in cleartext.**
+
+Initial user API key creation was implemented in LabKey Server 20.11.
+
+| name                              | purpose                                                                                  | default          |
+| --------------------------------- | ---------------------------------------------------------------------------------------- | ---------------- |
+| LABKEY_CREATE_INITIAL_USER        | set to a non-empty string to trigger initial user creation/bypass initial user wizard UI | `<empty>`        |
+| LABKEY_INITIAL_USER_EMAIL         | email to be used for initial user                                                        | "toor@localhost" |
+| LABKEY_INITIAL_USER_ROLE          | role to be used for initial user                                                         | "SiteAdminRole"  |
+| LABKEY_INITIAL_USER_GROUP         | group to be used for initial user                                                        | "Administrators" |
+| LABKEY_CREATE_INITIAL_USER_APIKEY | set to a non-empty string to also create an API key for the initial user                 | `<empty>`        |
+| LABKEY_INITIAL_USER_APIKEY        | value to be used as the API key for the initial user, generated if missing               | `<empty>`        |
+
 ## Postgres
 
 The `POSTGRES_*` default values are meant to match those of the [library/postgres](https://hub.docker.com/_/postgres) containers.

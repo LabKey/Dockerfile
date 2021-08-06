@@ -107,7 +107,9 @@ A better description of the LabKey settings can be found [in the LabKey docs](ht
 
 You can optionally bypass the initial user creation "wizard" by creating an initial user using the following environment variables. **At time of writing, there is no way to set the initial user's password.** Assuming valid SMTP configuration, the "forgot password" link can be used to accomplish this. Additionally, an API can be created for that user. If both `LABKEY_CREATE_INITIAL_USER` & `LABKEY_CREATE_INITIAL_USER_APIKEY` are set to a values other than empty strings, but `LABKEY_INITIAL_USER_APIKEY` is not set, a randomly generated string will be used. Setting `LABKEY_CREATE_INITIAL_USER_APIKEY` without having set `LABKEY_CREATE_INITIAL_USER` will result in NO initial user being added.
 
-**Creating an initial user API key in this way is discouraged as the API key will be output from the container in cleartext.**
+**Creating an initial user API key in this way will cause that API key to be output from the container in cleartext.**
+
+Initial user/API key creation is a powerful feature that can be a security concern. If you're using this feature, care should be taken when considering where the container's output (and thus the cleartext API key) is directed.
 
 Initial user API key creation was implemented in LabKey Server 20.11.
 

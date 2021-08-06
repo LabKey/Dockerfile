@@ -72,16 +72,16 @@ Setting `DEBUG` to any value will suffice: `docker build ... --build-arg DEBUG=1
 The `Dockerfile` currently supports 2 base-container operating systems, Alpine Linux and Debian-based Linux. Both of which originate from `adoptopenjdk`. Toggling between the two or overriding them can be achieved by changing the `FROM_REPO_IMAGE` and `FROM_TAG` Docker build args. The `Dockerfile` provides 2 examples:
 
 - "unofficial" adoptopenjdk-- which is alpine-based and
-  - FROM_REPO_IMAGE=adoptopenjdk/openjdk15
+  - FROM_REPO_IMAGE=adoptopenjdk/openjdk16
   - FROM_TAG=alpine-jre
 - "official" adoptopenjdk which is debian-based
   - FROM_REPO_IMAGE=adoptopenjdk
-  - FROM_TAG=15-jre
+  - FROM_TAG=16-jre
 
 | name            | purpose                                                | default                  |
 | --------------- | ------------------------------------------------------ | ------------------------ |
-| FROM_REPO_IMAGE | Docker repository & image to use as basis of container | `adoptopenjdk/openjdk15` |
-| FROM_TAG        | repository tag to use as basis of container            | `alpine-jre`             |
+| FROM_REPO_IMAGE | Docker repository & image to use as basis of container | `adoptopenjdk` |
+| FROM_TAG        | repository tag to use as basis of container            | `16-jre`             |
 
 ## LabKey
 

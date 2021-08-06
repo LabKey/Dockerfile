@@ -12,6 +12,16 @@ keystore_alias="${TOMCAT_KEYSTORE_ALIAS:-}"
 keystore_format="${TOMCAT_KEYSTORE_FORMAT:-}"
 
 main() {
+  random_string() {
+    length="${1:-32}"
+
+    # generate a random string 2 chars longer than request to weed out trailing
+    # equal signs common to openssl output and then trim out some
+    # shell-sensitive characters and then trim to desired length
+    openssl rand -base64 "$(( length + 2 ))" \
+      | tr '/' '#' | tr -d "'" | cut "-c1-${length}" | tr -d '\n' \
+        2>/dev/null
+  }
 
   debug_string='false'
 
@@ -49,10 +59,12 @@ main() {
   IFS="$(printf '\nx')" && IFS="${IFS%x}" # ensure IFS is a single newline
   for key_value in $(
       # list all LABKEY_* ENVs, ignore optional ones like GUID or MEK
-      env | grep -E '^LABKEY_' \
+      env \
+        | grep -E '^LABKEY_' \
         | grep -vE 'GUID' \
         | grep -vE 'MEK' \
         | grep -vE 'STARTUP' \
+        | grep -vE 'INITIAL_USER' \
         ;
   ); do
     if [ -z "${key_value#*=}" ]; then
@@ -70,17 +82,43 @@ main() {
     exit 1
   fi
 
+  if [ -n "$LABKEY_CREATE_INITIAL_USER" ]; then
+
+    >&2 echo  "initial user creation triggered for ${LABKEY_INITIAL_USER_EMAIL}"
+    >&2 echo  "use the \"forgot password\" link to set the initial user's password"
+
+    LABKEY_STARTUP_BASIC_EXTRA="$(
+      echo "
+        UserRoles.${LABKEY_INITIAL_USER_EMAIL};startup = org.labkey.api.security.roles.${LABKEY_INITIAL_USER_ROLE}
+        UserGroups.${LABKEY_INITIAL_USER_EMAIL};startup = ${LABKEY_INITIAL_USER_GROUP}
+      " | sed -e 's/\ \{2,\}//g'
+    )"
+
+    if [ -n "$LABKEY_CREATE_INITIAL_USER_APIKEY" ]; then
+      if [ -z "$LABKEY_INITIAL_USER_APIKEY" ]; then
+        generated_password="$(random_string)"
+
+        export LABKEY_INITIAL_USER_APIKEY="$generated_password"
+
+        >&2 echo  "generated initial user apikey: apikey|${LABKEY_INITIAL_USER_APIKEY}"
+      fi
+
+      LABKEY_STARTUP_BASIC_EXTRA="
+        ${LABKEY_STARTUP_BASIC_EXTRA}
+        ApiKey.${LABKEY_INITIAL_USER_EMAIL} = apikey|${LABKEY_INITIAL_USER_APIKEY}
+      "
+    fi
+
+    export LABKEY_STARTUP_BASIC_EXTRA
+  fi
+
   for prop_file in server/startup/*.properties; do
     envsubst < "$prop_file" > "${prop_file}.tmp" \
       && mv "${prop_file}.tmp" "$prop_file"
   done
 
   if [ -z "$keystore_pass" ]; then
-    keystore_pass="$(
-      openssl rand -base64 64 \
-        | tr '/' '#' | tr -d "'" \
-          | tr -d '\n' 2>/dev/null
-    )"
+    keystore_pass="$(random_string 64)"
   fi
 
   if [ -n "$TOMCAT_ENABLE_ACCESS_LOG" ]; then

@@ -11,6 +11,10 @@ To fully use this repo, you will need installed:
 - Docker
 - `docker-compose`
 - GNU Make
+- GNU Awk
+
+Optionally, to publish containers to AWS's ECR service using this repo's `Makefile`, you will need:
+
 - AWS CLI
 
 ## Building a Container

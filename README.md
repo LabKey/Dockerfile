@@ -19,6 +19,18 @@ Optionally, to publish containers to AWS's ECR service using this repo's `Makefi
 
 - AWS CLI
 
+**You will also need the `.jar` file of an embedded LabKey distribution.**
+
+A [`COPY` instruction](https://docs.docker.com/engine/reference/builder/#copy) in the Dockerfile expects this `.jar` file's filename to look like: "labkeyServer-${LABKEY_VERSION}.jar" (where `LABKEY_VERSION` is defined by the "LABKEY_VERSION" environment variable), and for it to be **in the root of this repo**. You will mostly likely _not_ need to rename the file, but you _will_ need to set `LABKEY_VERSION` according to the version within the file's name.
+
+You can obtain this file by following these steps:
+
+  1. Visit the [LabKey Server Community Edition downloads page](https://www.labkey.com/products-services/labkey-server/download-community-edition/labkey-server-community-edition-downloads) and fill in the required fields
+  2. Download the "experimental embedded" `.tar.gz` file
+  3. Uncompress the downloaded `.tar.gz` file
+  4. Find the `.jar` amongst the uncompressed files
+  5. Move/rename the `.jar` file into the root of this repo
+
 ## Building a Container
 
 This repo includes a `Makefile` who's aim is to ease the running of the necessary commands for creating containers. The **default action** of the `Makefile` is to log into the AWS ECR service, build, tag, and push a docker container (the `all:` target) to an ECR repo named after the chosen distribution.

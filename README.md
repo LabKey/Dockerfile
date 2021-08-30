@@ -50,7 +50,7 @@ Successfully tagged labkey/community:latest
 
 ## Whats different about this Dockerfile versus others?
 
-This repo and Dockerfile have been built from the ground up to support LabKey products that include Spring Boot/Embedded Tomcat which can be configured using `application.properties` files.
+This repo and Dockerfile have been built from the ground up to support LabKey products that include Spring Boot/Embedded Tomcat which can be configured using `application.properties` files. This change was made to simplify the installation of LabKey by reducing the dependencies required to get LabKey products off the ground. And to increase the configurability of LabKey products running within containers.
 
 ## Crucial Environment Variables
 

@@ -201,7 +201,7 @@ A: LabKey containers produced from this repo contain a `HEALTHCHECK` block which
 
 ## **_Disclaimer_**
 
-This repo is a work in progress. Do not run containers created from these sources in production. Containers created from these sources are untested. Until further work is done, integrations with LabKey products that traditionally have rely on OS configuration such as R scripts/reports will NOT work.
+This repo is a work in progress. Containers created from these sources are untested. Until further work is done, integrations with LabKey products that traditionally have relied on OS configuration such as R reports or Python scripts will **NOT** work.
 
 ### Reference
 

@@ -2,7 +2,9 @@
 
 This repo contains a Dockerfile, `docker-compose.yml`, and various other files for creating a docker container of LabKey products. Please review this document and especially the "Tips" section below.
 
-!! Please review [the disclaimer](#disclaimer) below. !!
+## **_Disclaimer_**
+
+This repo is a work in progress. Containers created from these sources are untested. Until further work is done, integrations with LabKey products that traditionally have relied on OS configuration such as R reports or Python scripts will **NOT** work.
 
 ## Prerequisites
 
@@ -11,7 +13,23 @@ To fully use this repo, you will need installed:
 - Docker
 - `docker-compose`
 - GNU Make
+- GNU Awk
+
+Optionally, to publish containers to AWS's ECR service using this repo's `Makefile`, you will need:
+
 - AWS CLI
+
+**You will also need the `.jar` file of an embedded LabKey distribution.**
+
+A [`COPY` instruction](https://docs.docker.com/engine/reference/builder/#copy) in the Dockerfile expects this `.jar` file's filename to look like: "labkeyServer-${LABKEY_VERSION}.jar" (where `LABKEY_VERSION` is defined by the "LABKEY_VERSION" environment variable), and for it to be **in the root of this repo**. You will mostly likely _not_ need to rename the file, but you _will_ need to set `LABKEY_VERSION` according to the version within the file's name.
+
+You can obtain this file by following these steps:
+
+  1. Visit the [LabKey Server Community Edition downloads page](https://www.labkey.com/products-services/labkey-server/download-community-edition/labkey-server-community-edition-downloads) and fill in the required fields
+  2. Download the "experimental embedded" `.tar.gz` file
+  3. Uncompress the downloaded `.tar.gz` file
+  4. Find the `.jar` amongst the uncompressed files
+  5. Move/rename the `.jar` file into the root of this repo
 
 ## Building a Container
 
@@ -44,7 +62,7 @@ Successfully tagged labkey/community:latest
 
 ## Whats different about this Dockerfile versus others?
 
-This repo and Dockerfile have been built from the ground up to support LabKey products that include Spring Boot/Embedded Tomcat which can be configured using `application.properties` files.
+This repo and Dockerfile have been built from the ground up to support LabKey products that include Spring Boot/Embedded Tomcat which can be configured using `application.properties` files. This change was made to simplify the installation of LabKey by reducing the dependencies required to get LabKey products off the ground. And to increase the configurability of LabKey products running within containers.
 
 ## Crucial Environment Variables
 
@@ -193,11 +211,7 @@ Users of Mac OS will have more luck using GNU Make as installed by **Homebrew** 
 
 Q: Why is my labkey container "unhealthy"?
 
-A: LabKey containers produced from this repo contain a `HEALTHCHECK` block which defines a simple "smoke" test Docker can use internally to determine if the container is healthy. The healthcheck built into this Dockerfile boils down to a `curl` to `localhost`-- but it can be customized based on a number of `HEALTHCHECK_*` ENVs that the Dockerfile defines. A customization that may be helpful would be to define a `HEALTHCHECK_HEADER_NAME` or `HEALTHCHECK_HEADER_USER_AGENT` that matches a value already filtered out of the access log by the application. Most container orchestrations tools either explicitely disable containers' built-in HEALTCHECKs or give you the option to disable able it. A succinct example of this is `docker-compose`'s own [healthcheck](https://docs.docker.com/compose/compose-file/compose-file-v3/#healthcheck) syntax.
-
-## **_Disclaimer_**
-
-This repo is a work in progress. Do not run containers created from these sources in production. Containers created from these sources are untested. Until further work is done, integrations with LabKey products that traditionally have rely on OS configuration such as R scripts/reports will NOT work.
+A: LabKey containers produced from this repo contain a [`HEALTHCHECK` instruction](https://docs.docker.com/engine/reference/builder/#healthcheck) which defines a simple "smoke" test Docker can use internally to determine if the container is healthy. The healthcheck built into this Dockerfile boils down to a `curl` to `localhost`-- but it can be customized based on a number of `HEALTHCHECK_*` ENVs that the Dockerfile defines. A customization that may be helpful would be to define a `HEALTHCHECK_HEADER_NAME` or `HEALTHCHECK_HEADER_USER_AGENT` that matches a value already filtered out of the access log by the application. Most container orchestrations tools either explicitely disable containers' built-in HEALTCHECKs or give you the option to disable able it. A succinct example of this is `docker-compose`'s own [healthcheck](https://docs.docker.com/compose/compose-file/compose-file-v3/#healthcheck) syntax.
 
 ### Reference
 

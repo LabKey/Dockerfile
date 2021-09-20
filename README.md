@@ -25,8 +25,8 @@ A [`COPY` instruction](https://docs.docker.com/engine/reference/builder/#copy) i
 
 You can obtain this file by following these steps:
 
-  1. Visit the [LabKey Server Community Edition downloads page](https://www.labkey.com/products-services/labkey-server/download-community-edition/labkey-server-community-edition-downloads) and fill in the required fields
-  2. Download the "experimental embedded" `.tar.gz` file
+  1. Visit the [LabKey Server Community Edition downloads page](https://www.labkey.com/products-services/labkey-server/download-community-edition/) and fill in the required fields
+  2. Download the "Embedded Tomcat Beta Installer" `.tar.gz` file
   3. Uncompress the downloaded `.tar.gz` file
   4. Find the `.jar` amongst the uncompressed files
   5. Move/rename the `.jar` file into the root of this repo

@@ -70,8 +70,9 @@ services:
       #   '
       # - LABKEY_STARTUP_DISTRIBUTION_EXTRA=
 
-      - LABKEY_CREATE_INITIAL_USER=1
-      - LABKEY_CREATE_INITIAL_USER_APIKEY=1
+      # If these parameters are set or set to null use provided; else set values to create initial user
+      - LABKEY_CREATE_INITIAL_USER=${LABKEY_CREATE_INITIAL_USER-1}
+      - LABKEY_CREATE_INITIAL_USER_APIKEY=${LABKEY_CREATE_INITIAL_USER_APIKEY-1}
 
   postgres:
     container_name: postgres

@@ -36,13 +36,13 @@ You can obtain this file by following these steps:
      
        `git clobe https://github.com/LabKey/Dockerfile.git`
   1. Copy in the labkey community embedded `.jar` file to the same directory as the repo (see above on how to obtain)
-  1. Export the minimal required environment variables or edit and source the sample_envs.sh
+  1. Export the minimal required environment variables or edit and source the quickstart_envs.sh
   
         `export LABKEY_VERSION="21.9.0"` ... 
      
         or
      
-        `source ./sample_envs.sh`
+        `source ./quickstart_envs.sh`
   1. Run the Make Build command to create the container
 
         `make build`

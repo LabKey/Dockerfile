@@ -10,8 +10,8 @@ This repo is a work in progress. Containers created from these sources are untes
 
 To fully use this repo, you will need installed:
 
-- Docker
-- `docker-compose`
+- Docker >= v20.10.9 recommended 
+- `docker-compose` >= v1.29.2 recommended
 - GNU Make
 - GNU Awk
 
@@ -31,9 +31,32 @@ You can obtain this file by following these steps:
   4. Find the `.jar` amongst the uncompressed files
   5. Move/rename the `.jar` file into the root of this repo
 
+## TL;DR  ... Quick Start 
+  1. Clone the repo to a local directory on a machine with docker installed
+     
+       `git clobe https://github.com/LabKey/Dockerfile.git`
+  1. Copy in the labkey community embedded `.jar` file to the same directory as the repo (see above on how to obtain)
+  1. Export the minimal required environment variables or edit and source the sample_envs.sh
+  
+        `export LABKEY_VERSION="21.9.0"` ... 
+     
+        or
+     
+        `source ./sample_envs.sh`
+  1. Run the Make Build command to create the container
+
+        `make build`
+
+  1. Run the Make Up command to start the container using the makefile docker-compose settings
+
+        `make up`
+
+  1. After a few minutes LabKey should be available by opening a browser window and connecting to https://localhost:8443
+  1. Explore 
+
 ## Building a Container
 
-This repo includes a `Makefile` who's aim is to ease the running of the necessary commands for creating containers. The **default action** of the `Makefile` is to log into the AWS ECR service, build, tag, and push a docker container (the `all:` target) to an ECR repo named after the chosen distribution.
+This repo includes a `Makefile` which aim is to ease the running of the necessary commands for creating containers. The **default action** of the `Makefile` is to log into the AWS ECR service, build, tag, and push a docker container (the `all:` target) to an ECR repo named after the chosen distribution.
 
 Building a container is as simple as `make build`:
 
@@ -60,7 +83,7 @@ Successfully tagged labkey/community:21.3-snapshot
 Successfully tagged labkey/community:latest
 ```
 
-## Whats different about this Dockerfile versus others?
+## What's different about this Dockerfile versus others?
 
 This repo and Dockerfile have been built from the ground up to support LabKey products that include Spring Boot/Embedded Tomcat which can be configured using `application.properties` files. This change was made to simplify the installation of LabKey by reducing the dependencies required to get LabKey products off the ground. And to increase the configurability of LabKey products running within containers.
 
@@ -163,6 +186,9 @@ These replace values previously housed in `context.xml` (`ROOT.xml` or `labkey.x
 | SMTP_PASSWORD | SMTP password configuration | `<empty>`   |
 | SMTP_PORT     | SMTP port configuration     | `25`        |
 | SMTP_USER     | SMTP user configuration     | `root`      |
+| SMTP_FROM     | SMTP from email address     | `<empty>`   |
+| SMTP_AUTH     | SMTP Auth flag              |  `false`    |
+| SMTP_STARTTLS | SMTP STARTTLS flag          | `<empty>`   |
 
 ## SSL/Keystore/Self-signed Cert
 
@@ -201,13 +227,13 @@ In contrast to `application.properties`, the "startup properties" files housed i
 
 ## Tips
 
-You may enabled Chrome to accept self-signed certificates, such as the one generated within `entrypoint.sh`, by enabling this Chrome flag:
+You may enable Chrome to accept self-signed certificates, such as the one generated within `entrypoint.sh`, by enabling this Chrome flag:
 
 ```shell
 chrome://flags/#allow-insecure-localhost
 ```
 
-Users of Mac OS will have more luck using GNU Make as installed by **Homebrew** and executed as `gmake`.
+Users of macOS will have more luck using GNU Make as installed by **Homebrew** and executed as `gmake`.
 
 Q: Why is my labkey container "unhealthy"?
 

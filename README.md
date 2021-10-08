@@ -34,7 +34,7 @@ You can obtain this file by following these steps:
 ## TL;DR  ... Quick Start 
   1. Clone the repo to a local directory on a machine with docker installed
      
-       `git clobe https://github.com/LabKey/Dockerfile.git`
+       `git clone https://github.com/LabKey/Dockerfile.git`
   1. Copy in the labkey community embedded `.jar` file to the same directory as the repo (see above on how to obtain)
   1. Export the minimal required environment variables or edit and source the quickstart_envs.sh
   

@@ -130,7 +130,7 @@ Original locations for these configuration details range from XML file contents 
 
 A better description of the LabKey settings can be found [in the LabKey docs](https://www.labkey.org/Documentation/wiki-page.view?name=customizeLook#properties).
 
-`LABKEY_GUID` and `LABKEY_MEK` are only relevant if you are attempting to created/run a container destined to connect to a pre-existing database belonging to a pre-existing LabKey.
+`LABKEY_GUID` and `LABKEY_EK` are only relevant if you are attempting to created/run a container destined to connect to a pre-existing database belonging to a pre-existing LabKey.
 
 | name                        | purpose                                                                                                  | default                  |
 | --------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------ |
@@ -140,7 +140,7 @@ A better description of the LabKey settings can be found [in the LabKey docs](ht
 | LABKEY_DISTRIBUTION         | "flavor" of labkey;                                                                                      | `community`              |
 | LABKEY_FILES_ROOT           | path within which will serve as the root of the "files" directory                                        | `/labkey/files`          |
 | LABKEY_GUID                 | LabKey [server GUID](https://www.labkey.org/Documentation/wiki-page.view?name=stagingServerTips#guid)    | `<empty>`                |
-| LABKEY_MEK                  | LabKey [master encryption key](https://www.labkey.org/Documentation/wiki-page.view?name=cpasxml#encrypt) | `<empty>`                |
+| LABKEY_EK                  | LabKey [encryption key](https://www.labkey.org/Documentation/wiki-page.view?name=cpasxml#encrypt) | `<empty>`                |
 | LABKEY_PORT                 | port to which labkey will bind within the container                                                      | `8443`                   |
 | LABKEY_SYSTEM_DESCRIPTION   | brief description of server; appears in emails                                                           | `Sirius Cybernetics`     |
 | LABKEY_SYSTEM_EMAIL_ADDRESS | email address system email will be sent "from"                                                           | `do_not_reply@localhost` |

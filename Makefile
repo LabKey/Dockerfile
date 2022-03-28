@@ -20,6 +20,7 @@ AWS_REGION ?= $(shell aws configure get region || exit 1)
 
 LABKEY_VERSION ?= 21.5-SNAPSHOT
 LABKEY_DISTRIBUTION ?= community
+LABKEY_EK ?= 123abc456
 
 # repo/image:tags must be lowercase
 BUILD_VERSION := $(shell      echo '$(LABKEY_VERSION)'      | tr A-Z a-z)
@@ -55,6 +56,7 @@ build:
 		--build-arg 'DEBUG=$(DEBUG)' \
 		--build-arg 'LABKEY_VERSION=$(LABKEY_VERSION)' \
 		--build-arg 'LABKEY_DISTRIBUTION=$(BUILD_DISTRIBUTION)' \
+		--build-arg 'LABKEY_EK=$(LABKEY_EK)' \
 		.
 
 login:

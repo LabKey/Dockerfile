@@ -74,8 +74,6 @@ services:
       - LABKEY_CREATE_INITIAL_USER=${LABKEY_CREATE_INITIAL_USER-1}
       - LABKEY_CREATE_INITIAL_USER_APIKEY=${LABKEY_CREATE_INITIAL_USER_APIKEY-1}
 
-      - LABKEY_EK=${LABKEY_EK}
-
   postgres:
     container_name: postgres
     image: postgres:13

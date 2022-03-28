@@ -16,6 +16,3 @@ export SMTP_FROM="root@localhost"
 export LABKEY_CREATE_INITIAL_USER=""
 export LABKEY_CREATE_INITIAL_USER_APIKEY=""
 
-## LABKEY_EK must be set for startup
-export LABKEY_EK="1234"
-

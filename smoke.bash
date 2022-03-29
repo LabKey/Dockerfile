@@ -15,7 +15,7 @@ function main() {
     RETRIES=$(( RETRIES + 1 ))
 
     if [ "$RETRIES" -ge 5 ]; then
-      docker logs labkey > labkey-container-log.txt
+      docker logs
       exit 1
     fi
 

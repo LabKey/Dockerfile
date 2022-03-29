@@ -1,18 +1,17 @@
-# uncomment for "unofficial" adoptopenjdk-- which is alpine-based
-# ARG FROM_REPO_IMAGE=adoptopenjdk/openjdk16
-# ARG FROM_TAG=alpine-jre
+# main eclipse-temurin jre, which is debian-based
+ARG FROM_REPO_IMAGE=eclipse-temurin
+ARG FROM_TAG=17-jre
 
-# "official" adoptopenjdk which is debian-based
-ARG FROM_REPO_IMAGE=adoptopenjdk
-ARG FROM_TAG=16-jre
+# uncomment for alpine-based eclipse-temurin jre
+# ARG FROM_TAG=17-jre-alpine
 
 FROM ${FROM_REPO_IMAGE}:${FROM_TAG}
 
 LABEL maintainer="LabKey Systems Engineering <ops@labkey.com>"
 
 # have to re-assign these after FROM - must match above
-# ARG FROM_TAG=alpine-jre
-ARG FROM_TAG=16-jre
+# ARG FROM_TAG=17-jre-alpine
+ARG FROM_TAG=17-jre
 
 ENV FROM_TAG="${FROM_TAG}"
 

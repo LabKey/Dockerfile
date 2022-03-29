@@ -27,11 +27,12 @@ You can obtain this file by following these steps:
 
   1. Visit the [LabKey Server Community Edition downloads page](https://www.labkey.com/products-services/labkey-server/download-community-edition/) and fill in the required fields
   2. Download the "Embedded Tomcat Beta Installer" `.tar.gz` file
-  3. Uncompress the downloaded `.tar.gz` file
-  4. Find the `.jar` amongst the uncompressed files
-  5. Move/rename the `.jar` file into the root of this repo
+  3. Extract the `.jar` into the root of the repo: 
+
+     `tar -xzf [path/to/.tar.gz] --include='LabKey*labkeyServer*.jar' --strip-components 1 -C [path/to/repo/]`
 
 ## TL;DR  ... Quick Start 
+  1. brew install docker docker-compose jq awscli
   1. Clone the repo to a local directory on a machine with docker installed
      
        `git clone https://github.com/LabKey/Dockerfile.git`
@@ -52,6 +53,10 @@ You can obtain this file by following these steps:
         `make up`
 
   1. After a few minutes LabKey should be available by opening a browser window and connecting to https://localhost:8443
+  1. enable Chrome to accept self-signed certificates, such as the one generated within `entrypoint.sh`, by enabling this Chrome flag:
+      ```shell
+      chrome://flags/#allow-insecure-localhost
+      ```
   1. Explore 
 
 ## Building a Container
@@ -70,7 +75,8 @@ docker build \
   -t labkey/community:latest \
   --build-arg 'DEBUG=' \
   --build-arg 'LABKEY_VERSION=21.3-SNAPSHOT' \
-  --build-arg 'LABKEY_DISTRIBUTION=community' \
+  --build-arg 'LABKEY_DISTRIBUTION=community'
+  --build-arg 'LABKEY_EK=123abc456' \
   .
 Sending build context to Docker daemon  756.1MB
 ...
@@ -130,7 +136,7 @@ Original locations for these configuration details range from XML file contents 
 
 A better description of the LabKey settings can be found [in the LabKey docs](https://www.labkey.org/Documentation/wiki-page.view?name=customizeLook#properties).
 
-`LABKEY_GUID` and `LABKEY_EK` are only relevant if you are attempting to created/run a container destined to connect to a pre-existing database belonging to a pre-existing LabKey.
+`LABKEY_GUID` is only relevant if you are attempting to created/run a container destined to connect to a pre-existing database belonging to a pre-existing LabKey.
 
 | name                        | purpose                                                                                                  | default                  |
 | --------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------ |
@@ -140,7 +146,7 @@ A better description of the LabKey settings can be found [in the LabKey docs](ht
 | LABKEY_DISTRIBUTION         | "flavor" of labkey;                                                                                      | `community`              |
 | LABKEY_FILES_ROOT           | path within which will serve as the root of the "files" directory                                        | `/labkey/files`          |
 | LABKEY_GUID                 | LabKey [server GUID](https://www.labkey.org/Documentation/wiki-page.view?name=stagingServerTips#guid)    | `<empty>`                |
-| LABKEY_EK                  | LabKey [encryption key](https://www.labkey.org/Documentation/wiki-page.view?name=cpasxml#encrypt) | `<empty>`                |
+| LABKEY_EK                  | LabKey [encryption key](https://www.labkey.org/Documentation/wiki-page.view?name=cpasxml#encrypt) | `123abc456`                |
 | LABKEY_PORT                 | port to which labkey will bind within the container                                                      | `8443`                   |
 | LABKEY_SYSTEM_DESCRIPTION   | brief description of server; appears in emails                                                           | `Sirius Cybernetics`     |
 | LABKEY_SYSTEM_EMAIL_ADDRESS | email address system email will be sent "from"                                                           | `do_not_reply@localhost` |
@@ -226,12 +232,6 @@ Since java can be picky about the position of CLI values, `JAVA_PRE_JAR_EXTRA` a
 In contrast to `application.properties`, the "startup properties" files housed in `startup/`, are LabKey's own implementation of `.properties` file(s) and generally are less feature rich that Springs'. Environment Variable substitution for example does not function within LabKey `.properties` files, which is why `gettext` is required for `entrypoint.sh`'s use of `envsubst`.
 
 ## Tips
-
-You may enable Chrome to accept self-signed certificates, such as the one generated within `entrypoint.sh`, by enabling this Chrome flag:
-
-```shell
-chrome://flags/#allow-insecure-localhost
-```
 
 Users of macOS will have more luck using GNU Make as installed by **Homebrew** and executed as `gmake`.
 

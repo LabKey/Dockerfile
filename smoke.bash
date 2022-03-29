@@ -8,7 +8,6 @@ fi
 set -euo pipefail
 
 function main() {
-  touch labkey-container-log.txt
   RETRIES=0
 
   until curl -k -L --fail "https://localhost:${HOST_PORT:-8443}"; do

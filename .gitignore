@@ -3,3 +3,4 @@ mounts/files/*
 !mounts/files/.gitkeep
 mounts/modules/*
 !mounts/modules/.gitkeep
+pgdata/

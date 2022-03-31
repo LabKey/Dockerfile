@@ -3,7 +3,7 @@ version: "3"
 
 services:
   labkey:
-    container_name: labkey-${DISTRO:-labkey}
+    container_name: labkey-${IDENT:-labkey}
     image: ${COMPOSE_IMAGE:-labkey/community}
     # build: {"context": ".", "args": ["LABKEY_VERSION=21.3-SNAPSHOT"]}
     # deploy:
@@ -75,7 +75,7 @@ services:
       - LABKEY_CREATE_INITIAL_USER_APIKEY=${LABKEY_CREATE_INITIAL_USER_APIKEY-1}
 
   postgres:
-    container_name: pg-${DISTRO:-labkey}
+    container_name: pg-${IDENT:-labkey}
     image: postgres:13
     # deploy:
     #   resources:
@@ -96,7 +96,7 @@ services:
       retries: 3
       start_period: 40s
     volumes:
-      - ./pgdata/${DISTRO:-postgres}-data:/var/lib/postgresql/data
+      - ./pgdata/${IDENT:-postgres}-data:/var/lib/postgresql/data
 
   # mailhog:
   #   container_name: mailhog

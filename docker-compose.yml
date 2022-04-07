@@ -39,7 +39,7 @@ services:
 
       - LOGGER_PATTERN=%-80.80logger{79}
 
-      - POSTGRES_PASSWORD=a"placeholder#'password
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-a"placeholder#'password}
       - POSTGRES_HOST=postgres
 
       - MAX_JVM_RAM_PERCENT=75.0
@@ -88,7 +88,7 @@ services:
       - "-c"
       - "docker-entrypoint.sh postgres >/dev/null 2>&1"
     environment:
-      - POSTGRES_PASSWORD=a"placeholder#'password
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-a"placeholder#'password}
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 30s
@@ -97,6 +97,8 @@ services:
       start_period: 40s
     volumes:
       - ./pgdata/${IDENT:-postgres}-data:/var/lib/postgresql/data
+    ports:
+      - ${PG_PORT:-54321}:5432
 
   # mailhog:
   #   container_name: mailhog

@@ -4,3 +4,4 @@ mounts/files/*
 mounts/modules/*
 !mounts/modules/.gitkeep
 pgdata/
+*.sql

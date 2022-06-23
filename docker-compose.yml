@@ -3,8 +3,7 @@ version: "3"
 
 services:
   labkey:
-    container_name: labkey-${IDENT:-labkey}
-    image: ${COMPOSE_IMAGE:-labkey/community}
+    image: labkey/community
     # build: {"context": ".", "args": ["LABKEY_VERSION=21.3-SNAPSHOT"]}
     # deploy:
     #   resources:
@@ -12,7 +11,7 @@ services:
     #       cpus: '0.50'
     #       memory: 1024M
     depends_on:
-      - postgres
+      - pg-labkey
       # - mailhog
     ports:
       - ${HOST_PORT:-8443}:8443
@@ -29,7 +28,7 @@ services:
       # - LABKEY_SYSTEM_DESCRIPTION=Sirius Cybernetics Corporation
 
       # - TOMCAT_ENABLE_ACCESS_LOG=1
-
+      - COMPOSE_PROJECT_NAME=labkey
       - LOG_LEVEL_SPRING_WEB=INFO
       - LOG_LEVEL_TOMCAT=DEBUG
       - LOG_LEVEL_DEFAULT=DEBUG
@@ -40,7 +39,7 @@ services:
       - LOGGER_PATTERN=%-80.80logger{79}
 
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-a"placeholder#'password}
-      - POSTGRES_HOST=postgres
+      - POSTGRES_HOST=pg-labkey
 
       - MAX_JVM_RAM_PERCENT=75.0
       - JAVA_PRE_JAR_EXTRA=-XX:+UseSerialGC -Xss512k
@@ -74,8 +73,7 @@ services:
       - LABKEY_CREATE_INITIAL_USER=${LABKEY_CREATE_INITIAL_USER-1}
       - LABKEY_CREATE_INITIAL_USER_APIKEY=${LABKEY_CREATE_INITIAL_USER_APIKEY-1}
 
-  postgres:
-    container_name: pg-${IDENT:-labkey}
+  pg-labkey:
     image: postgres:13
     # deploy:
     #   resources:
@@ -88,6 +86,106 @@ services:
       - "-c"
       - "docker-entrypoint.sh postgres >/dev/null 2>&1"
     environment:
+      - COMPOSE_PROJECT_NAME=labkey
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-a"placeholder#'password}
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    volumes:
+      - ./pgdata/postgres-data:/var/lib/postgresql/data
+    ports:
+      - ${PG_PORT:-54321}:5432
+
+
+# below are for internal LabKey testing
+  allpg:
+    image: ${COMPOSE_IMAGE:-labkey/community}
+    # build: {"context": ".", "args": ["LABKEY_VERSION=21.3-SNAPSHOT"]}
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '0.50'
+    #       memory: 1024M
+    depends_on:
+      - pg-allpg
+      # - mailhog
+    ports:
+      - ${HOST_PORT:-8443}:8443
+    volumes:
+      - ./mounts/files:/labkey/files
+      # - files:/labkey/files
+      - ./mounts/modules:/labkey/externalModules
+      - ./mounts/logs:/labkey/logs
+    environment:
+      # - DEBUG=1
+
+      # - LABKEY_SYSTEM_SHORT_NAME=Sirius Cybernetics Corporation
+      # - LABKEY_COMPANY_NAME=Sirius Cybernetics Corporation
+      # - LABKEY_SYSTEM_DESCRIPTION=Sirius Cybernetics Corporation
+
+      # - TOMCAT_ENABLE_ACCESS_LOG=1
+      - COMPOSE_PROJECT_NAME=allpg
+      - LOG_LEVEL_SPRING_WEB=INFO
+      - LOG_LEVEL_TOMCAT=DEBUG
+      - LOG_LEVEL_DEFAULT=DEBUG
+      - LOG_LEVEL_LABKEY_DEFAULT=DEBUG
+      - LOG_LEVEL_API_SETTINGS=DEBUG
+      - LOG_LEVEL_API_MODULELOADER=DEBUG
+
+      - LOGGER_PATTERN=%-80.80logger{79}
+
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-a"placeholder#'password}
+      - POSTGRES_HOST=pg-allpg
+
+      - MAX_JVM_RAM_PERCENT=75.0
+      - JAVA_PRE_JAR_EXTRA=-XX:+UseSerialGC -Xss512k
+
+      # - SMTP_HOST=mailhog
+      # - SMTP_PORT=1025
+
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_AUTH=true
+      - SMTP_PORT=587
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_STARTTLS=true
+
+      - LABKEY_SYSTEM_EMAIL_ADDRESS=${SMTP_FROM}
+      # - SMTP_FROM=
+
+      # uncomment to enable CAS against labkey.org
+      # - |
+      #   LABKEY_STARTUP_BASIC_EXTRA='
+      #     CasAuthenticationProperties.ServerURL;startup = https://www.labkey.org/cas
+      #     CasAuthenticationProperties.AutoRedirect;startup = true
+      #     CasAuthenticationProperties.InvokeLogout;startup = true
+      #     CasAuthenticationProperties.Description;startup = configured_by_docker_compose
+      #     SiteSettings.experimentalFeature.disableGuestAccount = TRUE
+      #     UserRoles.${LABKEY_ACCOUNT_EMAIL} = org.labkey.api.security.roles.SiteAdminRole
+      #   '
+      # - LABKEY_STARTUP_DISTRIBUTION_EXTRA=
+
+      # If these parameters are set or set to null use provided; else set values to create initial user
+      - LABKEY_CREATE_INITIAL_USER=${LABKEY_CREATE_INITIAL_USER-1}
+      - LABKEY_CREATE_INITIAL_USER_APIKEY=${LABKEY_CREATE_INITIAL_USER_APIKEY-1}
+
+  pg-allpg:
+    image: postgres:13
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '0.25'
+    #       memory: 512M
+    # silent postgres w/o needing to remake the container!
+    entrypoint:
+      - "/bin/bash"
+      - "-c"
+      - "docker-entrypoint.sh postgres >/dev/null 2>&1"
+    environment:
+      - COMPOSE_PROJECT_NAME=allpg
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-a"placeholder#'password}
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
@@ -99,6 +197,203 @@ services:
       - ./pgdata/${IDENT:-postgres}-data:/var/lib/postgresql/data
     ports:
       - ${PG_PORT:-54321}:5432
+
+  enterprise:
+    image: ${COMPOSE_IMAGE:-labkey/community}
+    # build: {"context": ".", "args": ["LABKEY_VERSION=21.3-SNAPSHOT"]}
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '0.50'
+    #       memory: 1024M
+    depends_on:
+      - pg-enterprise
+      # - mailhog
+    ports:
+      - ${HOST_PORT:-8443}:8443
+    volumes:
+      - ./mounts/files:/labkey/files
+      # - files:/labkey/files
+      - ./mounts/modules:/labkey/externalModules
+      - ./mounts/logs:/labkey/logs
+    environment:
+      # - DEBUG=1
+
+      # - LABKEY_SYSTEM_SHORT_NAME=Sirius Cybernetics Corporation
+      # - LABKEY_COMPANY_NAME=Sirius Cybernetics Corporation
+      # - LABKEY_SYSTEM_DESCRIPTION=Sirius Cybernetics Corporation
+
+      # - TOMCAT_ENABLE_ACCESS_LOG=1
+      - COMPOSE_PROJECT_NAME=enterprise
+      - LOG_LEVEL_SPRING_WEB=INFO
+      - LOG_LEVEL_TOMCAT=DEBUG
+      - LOG_LEVEL_DEFAULT=DEBUG
+      - LOG_LEVEL_LABKEY_DEFAULT=DEBUG
+      - LOG_LEVEL_API_SETTINGS=DEBUG
+      - LOG_LEVEL_API_MODULELOADER=DEBUG
+
+      - LOGGER_PATTERN=%-80.80logger{79}
+
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-a"placeholder#'password}
+      - POSTGRES_HOST=pg-enterprise
+
+      - MAX_JVM_RAM_PERCENT=75.0
+      - JAVA_PRE_JAR_EXTRA=-XX:+UseSerialGC -Xss512k
+
+      # - SMTP_HOST=mailhog
+      # - SMTP_PORT=1025
+
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_AUTH=true
+      - SMTP_PORT=587
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_STARTTLS=true
+
+      - LABKEY_SYSTEM_EMAIL_ADDRESS=${SMTP_FROM}
+      # - SMTP_FROM=
+
+      # uncomment to enable CAS against labkey.org
+      # - |
+      #   LABKEY_STARTUP_BASIC_EXTRA='
+      #     CasAuthenticationProperties.ServerURL;startup = https://www.labkey.org/cas
+      #     CasAuthenticationProperties.AutoRedirect;startup = true
+      #     CasAuthenticationProperties.InvokeLogout;startup = true
+      #     CasAuthenticationProperties.Description;startup = configured_by_docker_compose
+      #     SiteSettings.experimentalFeature.disableGuestAccount = TRUE
+      #     UserRoles.${LABKEY_ACCOUNT_EMAIL} = org.labkey.api.security.roles.SiteAdminRole
+      #   '
+      # - LABKEY_STARTUP_DISTRIBUTION_EXTRA=
+
+      # If these parameters are set or set to null use provided; else set values to create initial user
+      - LABKEY_CREATE_INITIAL_USER=${LABKEY_CREATE_INITIAL_USER-1}
+      - LABKEY_CREATE_INITIAL_USER_APIKEY=${LABKEY_CREATE_INITIAL_USER_APIKEY-1}
+
+  pg-enterprise:
+    image: postgres:13
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '0.25'
+    #       memory: 512M
+    # silent postgres w/o needing to remake the container!
+    entrypoint:
+      - "/bin/bash"
+      - "-c"
+      - "docker-entrypoint.sh postgres >/dev/null 2>&1"
+    environment:
+      - COMPOSE_PROJECT_NAME=enterprise
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-a"placeholder#'password}
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    volumes:
+      - ./pgdata/${IDENT:-postgres}-data:/var/lib/postgresql/data
+    ports:
+      - ${PG_PORT:-54321}:5432
+
+  samplemanagement:
+    image: ${COMPOSE_IMAGE:-labkey/community}
+    # build: {"context": ".", "args": ["LABKEY_VERSION=21.3-SNAPSHOT"]}
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '0.50'
+    #       memory: 1024M
+    depends_on:
+      - pg-samplemanagement
+      # - mailhog
+    ports:
+      - ${HOST_PORT:-8443}:8443
+    volumes:
+      - ./mounts/files:/labkey/files
+      # - files:/labkey/files
+      - ./mounts/modules:/labkey/externalModules
+      - ./mounts/logs:/labkey/logs
+    environment:
+      # - DEBUG=1
+
+      # - LABKEY_SYSTEM_SHORT_NAME=Sirius Cybernetics Corporation
+      # - LABKEY_COMPANY_NAME=Sirius Cybernetics Corporation
+      # - LABKEY_SYSTEM_DESCRIPTION=Sirius Cybernetics Corporation
+
+      # - TOMCAT_ENABLE_ACCESS_LOG=1
+      - COMPOSE_PROJECT_NAME=samplemanagement
+      - LOG_LEVEL_SPRING_WEB=INFO
+      - LOG_LEVEL_TOMCAT=DEBUG
+      - LOG_LEVEL_DEFAULT=DEBUG
+      - LOG_LEVEL_LABKEY_DEFAULT=DEBUG
+      - LOG_LEVEL_API_SETTINGS=DEBUG
+      - LOG_LEVEL_API_MODULELOADER=DEBUG
+
+      - LOGGER_PATTERN=%-80.80logger{79}
+
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-a"placeholder#'password}
+      - POSTGRES_HOST=pg-samplemanagement
+
+      - MAX_JVM_RAM_PERCENT=75.0
+      - JAVA_PRE_JAR_EXTRA=-XX:+UseSerialGC -Xss512k
+
+      # - SMTP_HOST=mailhog
+      # - SMTP_PORT=1025
+
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_AUTH=true
+      - SMTP_PORT=587
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_STARTTLS=true
+
+      - LABKEY_SYSTEM_EMAIL_ADDRESS=${SMTP_FROM}
+      # - SMTP_FROM=
+
+      # uncomment to enable CAS against labkey.org
+      # - |
+      #   LABKEY_STARTUP_BASIC_EXTRA='
+      #     CasAuthenticationProperties.ServerURL;startup = https://www.labkey.org/cas
+      #     CasAuthenticationProperties.AutoRedirect;startup = true
+      #     CasAuthenticationProperties.InvokeLogout;startup = true
+      #     CasAuthenticationProperties.Description;startup = configured_by_docker_compose
+      #     SiteSettings.experimentalFeature.disableGuestAccount = TRUE
+      #     UserRoles.${LABKEY_ACCOUNT_EMAIL} = org.labkey.api.security.roles.SiteAdminRole
+      #   '
+      # - LABKEY_STARTUP_DISTRIBUTION_EXTRA=
+
+      # If these parameters are set or set to null use provided; else set values to create initial user
+      - LABKEY_CREATE_INITIAL_USER=${LABKEY_CREATE_INITIAL_USER-1}
+      - LABKEY_CREATE_INITIAL_USER_APIKEY=${LABKEY_CREATE_INITIAL_USER_APIKEY-1}
+
+  pg-samplemanagement:
+    image: postgres:13
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '0.25'
+    #       memory: 512M
+    # silent postgres w/o needing to remake the container!
+    entrypoint:
+      - "/bin/bash"
+      - "-c"
+      - "docker-entrypoint.sh postgres >/dev/null 2>&1"
+    environment:
+      - COMPOSE_PROJECT_NAME=samplemanagement
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-a"placeholder#'password}
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    volumes:
+      - ./pgdata/${IDENT:-postgres}-data:/var/lib/postgresql/data
+    ports:
+      - ${PG_PORT:-54321}:5432
+
+
+# below can optionally be added to services above as needed
 
   # mailhog:
   #   container_name: mailhog

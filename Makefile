@@ -12,6 +12,7 @@ CACHE_FLAG ?= --no-cache
 
 TAG_LATEST ?=
 PUSH_LATEST ?=
+IDENT ?= labkey
 
 PULL_TAG ?= latest
 
@@ -89,13 +90,31 @@ push:
 
 up:
 	$(call tc,bringing up compose)
-	docker-compose up \
+	docker compose up labkey \
 		--abort-on-container-exit \
-			|| docker-compose down -v
+			|| docker compose stop labkey pg-labkey
+
+up-allpg:
+	$(call tc,bringing up compose)
+	docker compose up allpg \
+		--abort-on-container-exit \
+			|| docker compose stop allpg pg-allpg
+
+up-enterprise:
+	$(call tc,bringing up compose)
+	docker compose up enterprise \
+		--abort-on-container-exit \
+			|| docker compose stop enterprise pg-enterprise
+
+up-samplemanagement:
+	$(call tc,bringing up compose)
+	docker compose up samplemanagement \
+		--abort-on-container-exit \
+			|| docker compose stop samplemanagement pg-samplemanagement
 
 down:
 	$(call tc,tearing down compose)
-	docker-compose down -v --remove-orphans
+	docker compose down -v --remove-orphans
 
 clean:
 	docker images | grep -E '$(BUILD_REPO_NAME)|<none>' \
@@ -105,13 +124,13 @@ clean:
 
 test: down
 	$(call tc,running smoke tests)
-	docker-compose up --detach;
+	docker compose up --detach;
 	@./smoke.bash \
 		&& printf "##teamcity[progressMessage '%s']\n" 'smoke test succeeded' \
 		|| printf "##teamcity[buildProblem description='%s' identity='%s']\n" \
 			'smoke test failed' \
 			'failure'
-	docker-compose down -v
+	docker compose down -v
 
 pull: login
 	docker pull $(BUILD_REMOTE_REPO):$(PULL_TAG)

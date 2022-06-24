@@ -120,7 +120,7 @@ clean:
 
 test: down
 	$(call tc,running smoke tests)
-	docker-compose up --detach;
+	docker-compose up --detach labkey;
 	@./smoke.bash \
 		&& printf "##teamcity[progressMessage '%s']\n" 'smoke test succeeded' \
 		|| printf "##teamcity[buildProblem description='%s' identity='%s']\n" \

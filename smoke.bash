@@ -14,7 +14,7 @@ function main() {
     RETRIES=$(( RETRIES + 1 ))
 
     if [ "$RETRIES" -ge 5 ]; then
-      docker logs labkey
+      docker logs ${BUILD_DISTRIBUTION:-labkey}
       exit 1
     fi
 

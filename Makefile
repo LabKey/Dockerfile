@@ -116,7 +116,8 @@ clean:
 	docker images | grep -E '$(BUILD_REPO_NAME)|<none>' \
 		| awk '{print $$3}' | sort -u | $(_G)xargs -r docker image rm -f \
 			&& $(_G)find mounts/logs/ -name '*.log' -type f -print0 \
-				| $(_G)xargs -r -0 -t truncate -s0;
+				| $(_G)xargs -r -0 -t truncate -s0 \
+			&& rm -rf pgdata;
 
 test: down
 	$(call tc,running smoke tests)

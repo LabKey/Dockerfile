@@ -4,6 +4,7 @@ version: "3"
 services:
   community:
     image: labkey/community
+    container_name: ${IDENT:-labkey}
     # build: {"context": ".", "args": ["LABKEY_VERSION=21.3-SNAPSHOT"]}
     # deploy:
     #   resources:
@@ -101,6 +102,7 @@ services:
 # below are for internal LabKey testing
   allpg:
     image: ${COMPOSE_IMAGE:-labkey/community}
+    container_name: ${IDENT:-allpg}
     # build: {"context": ".", "args": ["LABKEY_VERSION=21.3-SNAPSHOT"]}
     # deploy:
     #   resources:
@@ -196,6 +198,7 @@ services:
 
   enterprise:
     image: ${COMPOSE_IMAGE:-labkey/community}
+    container_name: ${IDENT:-enterprise}
     # build: {"context": ".", "args": ["LABKEY_VERSION=21.3-SNAPSHOT"]}
     # deploy:
     #   resources:
@@ -291,6 +294,7 @@ services:
 
   samplemanagement:
     image: ${COMPOSE_IMAGE:-labkey/community}
+    container_name: ${IDENT:-samplemanagement}
     # build: {"context": ".", "args": ["LABKEY_VERSION=21.3-SNAPSHOT"]}
     # deploy:
     #   resources:

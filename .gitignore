@@ -5,3 +5,4 @@ mounts/modules/*
 !mounts/modules/.gitkeep
 pgdata/
 *.sql
+.vscode

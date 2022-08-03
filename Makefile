@@ -120,14 +120,13 @@ clean:
 
 test: down
 	$(call tc,running smoke tests)
-	docker-compose up --detach ${BUILD_DISTRIBUTION};
+	IDENT=${BUILD_DISTRIBUTION} docker-compose up --detach ${BUILD_DISTRIBUTION};
 	@./smoke.bash \
 		&& printf "##teamcity[progressMessage '%s']\n" 'smoke test succeeded' \
 		|| printf "##teamcity[buildProblem description='%s' identity='%s']\n" \
 			'smoke test failed' \
 			'failure'
-	docker-compose down -v
-	rm -rf pgdata
+	IDENT=${BUILD_DISTRIBUTION} docker-compose down -v
 
 pull: login
 	docker pull $(BUILD_REMOTE_REPO):$(PULL_TAG)

@@ -292,9 +292,9 @@ services:
     ports:
       - ${PG_PORT:-54321}:5432
 
-  samplemanagement:
+  lims_starter:
     image: ${COMPOSE_IMAGE:-labkey/community}
-    container_name: ${IDENT:-samplemanagement}
+    container_name: ${IDENT:-lims_starter}
     # build: {"context": ".", "args": ["LABKEY_VERSION=21.3-SNAPSHOT"]}
     # deploy:
     #   resources:
@@ -302,7 +302,7 @@ services:
     #       cpus: '0.50'
     #       memory: 1024M
     depends_on:
-      - pg-samplemanagement
+      - pg-lims_starter
       # - mailhog
     ports:
       - ${HOST_PORT:-8443}:8443
@@ -329,7 +329,7 @@ services:
       - LOGGER_PATTERN=%-80.80logger{79}
 
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-a"placeholder#'password}
-      - POSTGRES_HOST=pg-samplemanagement
+      - POSTGRES_HOST=pg-lims_starter
 
       - MAX_JVM_RAM_PERCENT=75.0
       - JAVA_PRE_JAR_EXTRA=-XX:+UseSerialGC -Xss512k
@@ -363,7 +363,7 @@ services:
       - LABKEY_CREATE_INITIAL_USER=${LABKEY_CREATE_INITIAL_USER-1}
       - LABKEY_CREATE_INITIAL_USER_APIKEY=${LABKEY_CREATE_INITIAL_USER_APIKEY-1}
 
-  pg-samplemanagement:
+  pg-lims_starter:
     image: postgres:13
     # deploy:
     #   resources:

@@ -103,10 +103,10 @@ up-enterprise:
 	docker-compose up --abort-on-container-exit enterprise \
 			|| docker-compose stop enterprise pg-enterprise
 
-up-samplemanagement:
+up-lims_starter:
 	$(call tc,bringing up compose)
-	docker-compose up --abort-on-container-exit samplemanagement \
-			|| docker-compose stop samplemanagement pg-samplemanagement
+	docker-compose up --abort-on-container-exit lims_starter \
+			|| docker-compose stop lims_starter pg-lims_starter
 
 down:
 	$(call tc,tearing down compose)

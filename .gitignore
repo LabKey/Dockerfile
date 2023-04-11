@@ -6,3 +6,5 @@ mounts/modules/*
 pgdata/
 *.sql
 .vscode
+LabKey*.tar.gz
+*.code-workspace

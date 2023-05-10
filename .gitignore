@@ -8,3 +8,5 @@ pgdata/
 .vscode
 LabKey*.tar.gz
 *.code-workspace
+startup/lims_starter-with-startup.properties
+startup/samplemanagement-with-startup.properties

@@ -11,6 +11,9 @@ keystore_filename="${TOMCAT_KEYSTORE_FILENAME:-labkey.p12}"
 keystore_alias="${TOMCAT_KEYSTORE_ALIAS:-}"
 keystore_format="${TOMCAT_KEYSTORE_FORMAT:-}"
 
+LABKEY_CUSTOM_PROPERTIES_S3_URI="${LABKEY_CUSTOM_PROPERTIES_S3_URI:=none}"
+SLEEP="${SLEEP:=0}"
+
 main() {
   random_string() {
     length="${1:-32}"
@@ -111,6 +114,15 @@ main() {
 
     export LABKEY_STARTUP_BASIC_EXTRA
   fi
+
+  # optional s3 uri to a file with custom startup properties, formatted like startup/basic.properties
+  if [ $LABKEY_CUSTOM_PROPERTIES_S3_URI != 'none' ]; then
+    echo "trying to s3 cp '$LABKEY_CUSTOM_PROPERTIES_S3_URI'"
+    aws s3 cp $LABKEY_CUSTOM_PROPERTIES_S3_URI server/startup/48_custom.properties
+  fi
+
+  echo "sleeping for $SLEEP seconds..."
+  sleep $SLEEP
 
   for prop_file in server/startup/*.properties; do
     envsubst < "$prop_file" > "${prop_file}.tmp" \

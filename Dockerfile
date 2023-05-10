@@ -121,6 +121,7 @@ RUN [ -n "${DEBUG}" ] && set -x; \
             tomcat-native \
             openssl \
             gettext \
+            zip \
             ; \
         [ -n "${DEBUG}" ] && apk add tree; \
         apk upgrade; \
@@ -131,6 +132,7 @@ RUN [ -n "${DEBUG}" ] && set -x; \
             libtcnative-1 \
             openssl \
             gettext-base \
+            zip \
             ; \
         [ -n "${DEBUG}" ] && apt-get -yq install tree; \
         apt-get -yq upgrade; \
@@ -163,6 +165,11 @@ COPY "startup/${LABKEY_DISTRIBUTION}.properties" \
 
 # add logging config files
 COPY log4j2.xml log4j2.xml
+
+# add aws cli
+ADD "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" "/root/awscliv2.zip"
+RUN unzip /root/awscliv2.zip -d /root/
+RUN /root/aws/install
 
 RUN [ -n "${DEBUG}" ] && set -x; \
     set -eu; \

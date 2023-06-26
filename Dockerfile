@@ -110,6 +110,7 @@ COPY entrypoint.sh /entrypoint.sh
 
 WORKDIR "${LABKEY_HOME}"
 
+# https://github.com/goodwithtech/dockle/blob/master/CHECKPOINT.md#dkl-di-0004
 RUN [ -n "${DEBUG}" ] && set -x; \
     set -eu; \
     \
@@ -117,13 +118,13 @@ RUN [ -n "${DEBUG}" ] && set -x; \
     \
     if echo "${FROM_TAG}" | grep -i 'alpine'; then \
         apk update \
-        && apk add \
+        && apk add --no-cache \
             tomcat-native \
             openssl \
             gettext \
             zip \
             ; \
-        [ -n "${DEBUG}" ] && apk add tree; \
+        [ -n "${DEBUG}" ] && apk add --no-cache tree; \
         apk upgrade; \
     else \
         export DEBIAN_FRONTEND=noninteractive; \
@@ -138,6 +139,7 @@ RUN [ -n "${DEBUG}" ] && set -x; \
         apt-get -yq upgrade; \
         apt-get -yq clean all; \
         rm -rfv /var/lib/apt/lists/*; \
+    rm -rf /var/lib/apt/lists; \
     fi; \
     \
     mkdir -pv \
@@ -166,10 +168,13 @@ COPY "startup/${LABKEY_DISTRIBUTION}.properties" \
 # add logging config files
 COPY log4j2.xml log4j2.xml
 
+# https://github.com/goodwithtech/dockle/blob/master/CHECKPOINT.md#cis-di-0009
 # add aws cli
-ADD "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" "/root/awscliv2.zip"
-RUN unzip /root/awscliv2.zip -d /root/
-RUN /root/aws/install
+RUN mkdir -p /usr/src/awsclizip \
+    && wget -q -O /usr/src/awsclizip/awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" \
+    && unzip -d /usr/src/awsclizip/ /usr/src/awsclizip/awscliv2.zip \
+    && rm /usr/src/awsclizip/awscliv2.zip \
+    && /usr/src/awsclizip/aws/install
 
 RUN [ -n "${DEBUG}" ] && set -x; \
     set -eu; \
@@ -223,6 +228,13 @@ VOLUME "${LABKEY_HOME}/logs"
 EXPOSE "${LABKEY_PORT}"
 
 STOPSIGNAL SIGTERM
+
+# https://github.com/goodwithtech/dockle/blob/master/CHECKPOINT.md#cis-di-0008
+RUN chmod u-s /usr/bin/su /usr/bin/mount /usr/bin/chfn /usr/bin/gpasswd /usr/bin/newgrp /usr/bin/umount /usr/bin/chsh /usr/bin/passwd 
+RUN chmod g-s /usr/bin/expiry /usr/bin/chage /usr/bin/wall /usr/sbin/pam_extrausers_chkpwd /usr/sbin/unix_chkpwd 
+
+# https://github.com/goodwithtech/dockle/blob/master/CHECKPOINT.md#cis-di-0001
+USER labkey
 
 # shell form e.g. executed w/ /bin/sh -c
 ENTRYPOINT /entrypoint.sh

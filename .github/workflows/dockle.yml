@@ -22,7 +22,7 @@ jobs:
       - name: Run dockle
         uses: goodwithtech/dockle-action@0.1.0
         env:
-          DOCKER_CONTENT_TRUST: 1
+          DOCKER_CONTENT_TRUST: 0
         with:
           image: 'labkey/community:helloworld'
           format: 'list'

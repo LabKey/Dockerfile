@@ -1,0 +1,30 @@
+name: dockle
+
+on:
+  push:
+    branches:
+      - fb_*
+
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Build an image from Dockerfile
+        run: |
+          DOCKER_CONTENT_TRUST=1 LABKEY_VERSION=FAUX make build
+      - name: Run dockle
+        uses: goodwithtech/dockle-action@main
+        with:
+          image: 'labkey/community:faux'
+          format: 'list'
+          exit-code: '1'
+          exit-level: 'warn'
+          ignore: 'CIS-DI-0009,CIS-DI-0010'
+          

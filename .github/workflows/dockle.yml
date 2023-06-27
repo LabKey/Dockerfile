@@ -18,13 +18,14 @@ jobs:
         uses: actions/checkout@v3
       - name: Build an image from Dockerfile
         run: |
-          DOCKER_CONTENT_TRUST=1 LABKEY_VERSION=FAUX make build
+          LABKEY_VERSION=HelloWorld make build
       - name: Run dockle
         uses: goodwithtech/dockle-action@main
+        env:
+          DOCKER_CONTENT_TRUST: 1
         with:
-          image: 'labkey/community:faux'
+          image: 'labkey/community:helloworld'
           format: 'list'
           exit-code: '1'
           exit-level: 'warn'
           ignore: 'CIS-DI-0009,CIS-DI-0010'
-          

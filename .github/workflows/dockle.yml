@@ -1,0 +1,31 @@
+name: dockle
+
+on:
+  push:
+    branches:
+      - fb_*
+
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Build an image from Dockerfile
+        run: |
+          LABKEY_VERSION=HelloWorld make build
+      - name: Run dockle
+        uses: goodwithtech/dockle-action@0.1.0
+        env:
+          DOCKER_CONTENT_TRUST: 0
+        with:
+          image: 'labkey/community:helloworld'
+          format: 'list'
+          exit-code: '1'
+          exit-level: 'warn'
+          ignore: 'CIS-DI-0009,CIS-DI-0010'

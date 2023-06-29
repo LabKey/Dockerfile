@@ -111,7 +111,7 @@ WORKDIR "${LABKEY_HOME}"
 RUN [ -n "${DEBUG}" ] && set -x; \
     set -eu; \
     \
-    sort < $JAVA_HOME/release || true; \
+    sort < "$JAVA_HOME/release" || true; \
     \
     if echo "${FROM_TAG}" | grep -i 'alpine'; then \
         apk update \
@@ -130,7 +130,7 @@ RUN [ -n "${DEBUG}" ] && set -x; \
         adduser --system \
             --ingroup labkey \
             --uid 2005 \
-            --home ${LABKEY_HOME} \
+            --home "${LABKEY_HOME}" \
             --shell /bin/bash \
             labkey; \
         \
@@ -153,7 +153,7 @@ RUN [ -n "${DEBUG}" ] && set -x; \
         useradd -r \
             -g labkey \
             --uid=2005 \
-            --home-dir=${LABKEY_HOME} \
+            --home-dir="${LABKEY_HOME}" \
             --shell=/bin/bash \
             labkey; \
         \
@@ -172,7 +172,7 @@ RUN [ -n "${DEBUG}" ] && set -x; \
     \
     && env | sort | tee /buid.env; \
     \
-    chown -Rc labkey:labkey ${LABKEY_HOME};
+    chown -Rc labkey:labkey "${LABKEY_HOME}";
 
 
 COPY "labkeyServer-${LABKEY_VERSION}.jar" \

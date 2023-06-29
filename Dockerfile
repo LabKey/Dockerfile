@@ -116,13 +116,13 @@ RUN [ -n "${DEBUG}" ] && set -x; \
     if echo "${FROM_TAG}" | grep -i 'alpine'; then \
         apk update \
         && apk add --no-cache \
-            tomcat-native \
-            openssl \
-            gettext \
-            zip \
-            curl \
+            tomcat-native=2.0.3-r0 \
+            openssl=3.1.1-r1 \
+            gettext=0.21.1-r7 \
+            zip=3.0-r12 \
+            curl=8.1.2-r0 \
             ; \
-        [ -n "${DEBUG}" ] && apk add --no-cache tree; \
+        [ -n "${DEBUG}" ] && apk add --no-cache tree=2.1.1-r0; \
         apk upgrade; \
         \
         addgroup -S labkey \
@@ -139,12 +139,12 @@ RUN [ -n "${DEBUG}" ] && set -x; \
         export DEBIAN_FRONTEND=noninteractive; \
         apt-get update; \
         apt-get -yq install \
-            libtcnative-1 \
-            openssl \
-            gettext-base \
-            zip \
+            libtcnative-1=1.2.31-1build1 \
+            openssl=3.0.2-0ubuntu1.10 \
+            gettext-base=0.21-4ubuntu4 \
+            zip=3.0-12build2 \
             ; \
-        [ -n "${DEBUG}" ] && apt-get -yq install tree; \
+        [ -n "${DEBUG}" ] && apt-get -yq install tree=2.0.2-1; \
         apt-get -yq upgrade; \
         apt-get -yq clean all; \
         \

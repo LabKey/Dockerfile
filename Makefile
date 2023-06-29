@@ -8,6 +8,8 @@ endif
 
 DEBUG ?=
 
+FROM_TAG ?=
+
 CACHE_FLAG ?= --no-cache
 
 TAG_LATEST ?=
@@ -54,6 +56,7 @@ build:
 		$(CACHE_FLAG) \
 		-t $(BUILD_REPO_NAME):latest \
 		-t $(BUILD_LOCAL_TAG) \
+		--build-arg 'FROM_TAG=$(FROM_TAG)' \
 		--build-arg 'DEBUG=$(DEBUG)' \
 		--build-arg 'LABKEY_VERSION=$(LABKEY_VERSION)' \
 		--build-arg 'LABKEY_DISTRIBUTION=$(BUILD_DISTRIBUTION)' \

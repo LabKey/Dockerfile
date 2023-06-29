@@ -5,15 +5,14 @@ ARG FROM_TAG=17-jre
 # uncomment for alpine-based eclipse-temurin jre
 # ARG FROM_TAG=17-jre-alpine
 
-FROM ${FROM_REPO_IMAGE}:${FROM_TAG}
+FROM ${FROM_REPO_IMAGE}:${FROM_TAG} as base
 
 LABEL maintainer="LabKey Systems Engineering <ops@labkey.com>"
 
-# have to re-assign these after FROM - must match above
-# ARG FROM_TAG=17-jre-alpine
-ARG FROM_TAG=17-jre
+FROM base
 
-ENV FROM_TAG="${FROM_TAG}"
+# this will assume whatever FROM_TAG was set in first stage above
+ARG FROM_TAG
 
 ARG DEBUG=
 ARG LABKEY_VERSION
@@ -110,7 +109,6 @@ COPY entrypoint.sh /entrypoint.sh
 
 WORKDIR "${LABKEY_HOME}"
 
-# https://github.com/goodwithtech/dockle/blob/master/CHECKPOINT.md#dkl-di-0004
 RUN [ -n "${DEBUG}" ] && set -x; \
     set -eu; \
     \
@@ -123,9 +121,21 @@ RUN [ -n "${DEBUG}" ] && set -x; \
             openssl \
             gettext \
             zip \
+            curl \
             ; \
         [ -n "${DEBUG}" ] && apk add --no-cache tree; \
         apk upgrade; \
+        \
+        addgroup -S labkey \
+            --gid=2005; \
+        adduser --system \
+            --ingroup labkey \
+            --uid 2005 \
+            --home ${LABKEY_HOME} \
+            --shell /bin/bash \
+            labkey; \
+        \
+        chmod u-s /usr/bin/passwd; \
     else \
         export DEBIAN_FRONTEND=noninteractive; \
         apt-get update; \
@@ -138,8 +148,19 @@ RUN [ -n "${DEBUG}" ] && set -x; \
         [ -n "${DEBUG}" ] && apt-get -yq install tree; \
         apt-get -yq upgrade; \
         apt-get -yq clean all; \
-        rm -rfv /var/lib/apt/lists/*; \
-    rm -rf /var/lib/apt/lists; \
+        \
+        groupadd -r labkey \
+            --gid=2005; \
+        useradd -r \
+            -g labkey \
+            --uid=2005 \
+            --home-dir=${LABKEY_HOME} \
+            --shell=/bin/bash \
+            labkey; \
+        \
+        chmod u-s /usr/bin/su /usr/bin/mount /usr/bin/chfn /usr/bin/gpasswd /usr/bin/newgrp /usr/bin/umount /usr/bin/chsh /usr/bin/passwd; \
+        chmod g-s /usr/bin/expiry /usr/bin/chage /usr/bin/wall /usr/sbin/pam_extrausers_chkpwd /usr/sbin/unix_chkpwd; \
+    rm -rfv /var/lib/apt/lists; \
     fi; \
     \
     mkdir -pv \
@@ -150,7 +171,10 @@ RUN [ -n "${DEBUG}" ] && set -x; \
         "server/startup" \
         "${TOMCAT_BASE_DIR}" \
     \
-    && env | sort | tee /buid.env;
+    && env | sort | tee /buid.env; \
+    \
+    chown -Rc labkey:labkey ${LABKEY_HOME};
+
 
 COPY "labkeyServer-${LABKEY_VERSION}.jar" \
     "app.jar"
@@ -168,26 +192,12 @@ COPY "startup/${LABKEY_DISTRIBUTION}.properties" \
 # add logging config files
 COPY log4j2.xml log4j2.xml
 
-# https://github.com/goodwithtech/dockle/blob/master/CHECKPOINT.md#cis-di-0009
 # add aws cli
 RUN mkdir -p /usr/src/awsclizip \
     && wget -q -O /usr/src/awsclizip/awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" \
-    && unzip -d /usr/src/awsclizip/ /usr/src/awsclizip/awscliv2.zip \
+    && unzip -q -d /usr/src/awsclizip/ /usr/src/awsclizip/awscliv2.zip \
     && rm /usr/src/awsclizip/awscliv2.zip \
     && /usr/src/awsclizip/aws/install
-
-RUN [ -n "${DEBUG}" ] && set -x; \
-    set -eu; \
-    \
-    groupadd -r labkey \
-        --gid=2005; \
-    useradd -r \
-        -g labkey \
-        --uid=2005 \
-        --home-dir=${LABKEY_HOME} \
-        --shell=/bin/bash \
-        labkey; \
-    chown -Rc labkey:labkey ${LABKEY_HOME}
 
 # refrain from using shell significant characters in HEALTHCHECK_HEADER_*
 ENV HEALTHCHECK_INTERVAL="6s" \
@@ -225,15 +235,10 @@ VOLUME "${LABKEY_FILES_ROOT}/@files"
 VOLUME "${LABKEY_HOME}/externalModules"
 VOLUME "${LABKEY_HOME}/logs"
 
-EXPOSE "${LABKEY_PORT}"
+EXPOSE ${LABKEY_PORT}
 
 STOPSIGNAL SIGTERM
 
-# https://github.com/goodwithtech/dockle/blob/master/CHECKPOINT.md#cis-di-0008
-RUN chmod u-s /usr/bin/su /usr/bin/mount /usr/bin/chfn /usr/bin/gpasswd /usr/bin/newgrp /usr/bin/umount /usr/bin/chsh /usr/bin/passwd 
-RUN chmod g-s /usr/bin/expiry /usr/bin/chage /usr/bin/wall /usr/sbin/pam_extrausers_chkpwd /usr/sbin/unix_chkpwd 
-
-# https://github.com/goodwithtech/dockle/blob/master/CHECKPOINT.md#cis-di-0001
 USER labkey
 
 # shell form e.g. executed w/ /bin/sh -c

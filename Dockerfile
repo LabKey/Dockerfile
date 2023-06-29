@@ -241,4 +241,4 @@ STOPSIGNAL SIGTERM
 USER labkey
 
 # shell form e.g. executed w/ /bin/sh -c
-ENTRYPOINT /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]

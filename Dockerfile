@@ -119,7 +119,7 @@ RUN [ -n "${DEBUG}" ] && set -x; \
             tomcat-native=2.0.3-r0 \
             openssl=3.1.1-r1 \
             gettext=0.21.1-r7 \
-            zip=3.0-r12 \
+            unzip=6.0-r14 \
             curl=8.1.2-r0 \
             ; \
         [ -n "${DEBUG}" ] && apk add --no-cache tree=2.1.1-r0; \
@@ -138,15 +138,15 @@ RUN [ -n "${DEBUG}" ] && set -x; \
     else \
         export DEBIAN_FRONTEND=noninteractive; \
         apt-get update; \
-        apt-get -yq install \
+        apt-get -yq --no-install-recommends install \
             libtcnative-1=1.2.31-1build1 \
             openssl=3.0.2-0ubuntu1.10 \
             gettext-base=0.21-4ubuntu4 \
-            zip=3.0-12build2 \
+            unzip=6.0-26ubuntu3.1 \
             ; \
-        [ -n "${DEBUG}" ] && apt-get -yq install tree=2.0.2-1; \
+        [ -n "${DEBUG}" ] && apt-get -yq --no-install-recommends install tree=2.0.2-1; \
         apt-get -yq upgrade; \
-        apt-get -yq clean all; \
+        apt-get -yq clean all && rm -rf /var/lib/apt/lists/*; \
         \
         groupadd -r labkey \
             --gid=2005; \

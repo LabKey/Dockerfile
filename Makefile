@@ -8,7 +8,7 @@ endif
 
 DEBUG ?=
 
-FROM_TAG ?=
+FROM_TAG ?= 17-jre
 
 CACHE_FLAG ?= --no-cache
 

@@ -108,6 +108,7 @@ COPY entrypoint.sh /entrypoint.sh
 
 WORKDIR "${LABKEY_HOME}"
 
+# hadolint ignore=DL4006
 RUN [ -n "${DEBUG}" ] && set -x; \
     set -eu; \
     \

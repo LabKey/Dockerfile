@@ -196,8 +196,8 @@ COPY log4j2.xml log4j2.xml
 RUN mkdir -p /usr/src/awsclizip \
     && wget -q -O /usr/src/awsclizip/awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" \
     && unzip -q -d /usr/src/awsclizip/ /usr/src/awsclizip/awscliv2.zip \
-    && rm /usr/src/awsclizip/awscliv2.zip \
-    && /usr/src/awsclizip/aws/install
+    && /usr/src/awsclizip/aws/install \
+    && rm -rf /usr/src/awsclizip
 
 # refrain from using shell significant characters in HEALTHCHECK_HEADER_*
 ENV HEALTHCHECK_INTERVAL="6s" \

@@ -12,6 +12,7 @@ keystore_alias="${TOMCAT_KEYSTORE_ALIAS:-}"
 keystore_format="${TOMCAT_KEYSTORE_FORMAT:-}"
 
 LABKEY_CUSTOM_PROPERTIES_S3_URI="${LABKEY_CUSTOM_PROPERTIES_S3_URI:=none}"
+LABKEY_DEFAULT_PROPERTIES_S3_URI="${LABKEY_DEFAULT_PROPERTIES_S3_URI:=none}"
 SLEEP="${SLEEP:=0}"
 
 main() {
@@ -115,10 +116,15 @@ main() {
     export LABKEY_STARTUP_BASIC_EXTRA
   fi
 
-  # optional s3 uri to a file with custom startup properties, formatted like startup/basic.properties
+  # optional s3 uris to files with default or custom startup properties, formatted like startup/basic.properties
+  if [ $LABKEY_DEFAULT_PROPERTIES_S3_URI != 'none' ]; then
+    echo "trying to s3 cp '$LABKEY_DEFAULT_PROPERTIES_S3_URI'"
+    aws s3 cp $LABKEY_DEFAULT_PROPERTIES_S3_URI server/startup/
+  fi
+
   if [ $LABKEY_CUSTOM_PROPERTIES_S3_URI != 'none' ]; then
     echo "trying to s3 cp '$LABKEY_CUSTOM_PROPERTIES_S3_URI'"
-    aws s3 cp $LABKEY_CUSTOM_PROPERTIES_S3_URI server/startup/48_custom.properties
+    aws s3 cp $LABKEY_CUSTOM_PROPERTIES_S3_URI server/startup/
   fi
 
   echo "sleeping for $SLEEP seconds..."

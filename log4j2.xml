@@ -1,13 +1,140 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <Configuration packages="org.labkey.api.util">
-
     <Appenders>
         <Console name="CONSOLE" target="SYSTEM_OUT">
             <PatternLayout
                 pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} I %-5.5p %5.5L --- [%15.15t] ${env:LOGGER_PATTERN} : %m%n%xEx"
             />
         </Console>
+
+        <RollingFile name="ERRORS"
+                     fileName="${sys:labkey.log.home}/labkey-errors.log"
+                     append="true"
+                     bufferedIO="false"
+                     filePattern="${sys:labkey.log.home}/labkey-errors.log.%i">
+            <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            <!-- p=priority c=category d=datetime t=thread m=message n=newline   -->
+            <PatternLayout>
+                <Pattern>%-5p %-24.24c{1} %d{ISO8601} %24.24t : %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <OnStartupTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy fileIndex="min">
+                <Delete basePath="${sys:labkey.log.home}">
+                    <ScriptCondition>
+                        <!-- Use custom Java code to retain the first log file from the current session if it's about
+                        to be rotated out. It may have root cause information about problems that would otherwise be lost -->
+                        <Script name="retainFirst" language="rhino"><![CDATA[
+                                var ErrorLogRotator = org.labkey.api.util.logging.ErrorLogRotator;
+                                var rotator = new ErrorLogRotator();
+                                rotator.filter(pathList);
+                            ]]>
+                        </Script>
+                    </ScriptCondition>
+                </Delete>
+            </DefaultRolloverStrategy>
+
+        </RollingFile>
+
+        <RollingFile name="ACTION_STATS"
+                     fileName="${sys:labkey.log.home}/labkey-action-stats.tsv"
+                     append="true"
+                     bufferedIO="false"
+                     filePattern="${sys:labkey.log.home}/labkey-action-stats.tsv.%i">
+            <!-- p=priority c=category d=datetime t=thread m=message n=newline -->
+            <PatternLayout>
+                <Pattern>%m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <OnStartupTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="3" fileIndex="min" />
+        </RollingFile>
+
+        <RollingFile name="QUERY_STATS"
+                     fileName="${sys:labkey.log.home}/labkey-query-stats.tsv"
+                     append="true"
+                     bufferedIO="false"
+                     filePattern="${sys:labkey.log.home}/labkey-query-stats.tsv.%i">
+            <!-- p=priority c=category d=datetime t=thread m=message n=newline -->
+            <PatternLayout>
+                <Pattern>%m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <OnStartupTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="3" fileIndex="min" />
+        </RollingFile>
+
+        <RollingFile name="LABKEY"
+                     fileName="${sys:labkey.log.home}/labkey.log"
+                     append="true"
+                     bufferedIO="false"
+                     filePattern="${sys:labkey.log.home}/labkey.log.%i">
+            <!-- p=priority c=category d=datetime t=thread m=message n=newline -->
+            <PatternLayout>
+                <Pattern>%-5p %-24.24c{1} %d{ISO8601} %24.24t : %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy fileIndex="min" />
+        </RollingFile>
+
+        <RollingFile name="LABKEY_AUDIT"
+                     fileName="${sys:labkey.log.home}/labkey-audit.log"
+                     append="true"
+                     bufferedIO="false"
+                     filePattern="${sys:labkey.log.home}/labkey-audit.log.%i">
+            <!-- p=priority c=category d=datetime t=thread m=message n=newline -->
+            <PatternLayout>
+                <Pattern>%-5p %-24.24c{1} %d{ISO8601} %24.24t : %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy fileIndex="min" />
+        </RollingFile>
+
+        <SessionAppender name="SessionAppender">
+            <PatternLayout>
+                <Pattern>%-5p %-24.24c{1} %d{ISO8601} %24.24t : %m%n</Pattern>
+            </PatternLayout>
+        </SessionAppender>
+
+        <RollingFile name="LABKEYMemory"
+                     fileName="${sys:labkey.log.home}/labkeyMemory.log"
+                     append="true"
+                     filePattern="${sys:labkey.log.home}/labkeyMemory.log.%i">
+            <!-- p=priority c=category d=datetime t=thread m=message n=newline -->
+            <PatternLayout>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss}%m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="1000 KB"/>
+            </Policies>
+            <DefaultRolloverStrategy fileIndex="min" />
+        </RollingFile>
+
+        <RollingFile name="THREAD_DUMP"
+                     fileName="${sys:labkey.log.home}/thread-dump.log"
+                     append="true"
+                     filePattern="${sys:labkey.log.home}/thread-dump.log.%i">
+            <!-- p=priority c=category d=datetime t=thread m=message n=newline -->
+            <PatternLayout>
+                <Pattern>%m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy fileIndex="min" />
+        </RollingFile>
+
     </Appenders>
 
     <Loggers>
@@ -16,7 +143,25 @@
 
         <Logger name="org.springframework.web" level="${env:LOG_LEVEL_SPRING_WEB:-OFF}"/>
 
-        <Logger name="org.labkey" level="${env:LOG_LEVEL_LABKEY_DEFAULT:-FATAL}"/>
+        <!-- category for server side script messages -->
+        <Logger name="org.labkey.api.script.ScriptService.Console" level="${env:LOG_LEVEL_API_SETTINGS:-INFO}">
+            <AppenderRef ref="SessionAppender"/>
+        </Logger>
+
+        <Logger name="org.labkey" level="${env:LOG_LEVEL_LABKEY_DEFAULT:-INFO}">
+            <AppenderRef ref="CONSOLE"/>
+            <AppenderRef ref="LABKEY"/>
+        </Logger>
+
+        <Logger name="org.labkey.api.util.MemTracker" additivity="false" level="${env:LOG_LEVEL_LABKEY_DEFAULT:-DEBUG}">
+            <AppenderRef ref="LABKEYMemory"/>
+        </Logger>
+
+        <Logger name="org.labkey.api.util.DebugInfoDumper" level="${env:LOG_LEVEL_LABKEY_DEFAULT:-DEBUG}">
+            <AppenderRef ref="THREAD_DUMP"/>
+        </Logger>
+
+
 
         <!--
             set to DEBUG for startup property messages set to TRACE for values
@@ -28,6 +173,26 @@
         <Logger name="org.labkey.api.settings"
                 level="${env:LOG_LEVEL_API_SETTINGS:-WARN}"
         />
+
+        <Logger name="org.labkey.core.admin.ActionsTsvWriter" additivity="false" level="${env:LOG_LEVEL_LABKEY_DEFAULT:-INFO}">
+            <AppenderRef ref="ACTION_STATS"/>
+        </Logger>
+
+        <Logger name="org.labkey.api.data.queryprofiler.QueryProfiler.QueryProfilerThread" additivity="false" level="${env:LOG_LEVEL_LABKEY_DEFAULT:-INFO}">
+            <AppenderRef ref="QUERY_STATS"/>
+        </Logger>
+
+        <Logger name="org.labkey.audit.event" level="OFF">
+            <AppenderRef ref="LABKEY_AUDIT"/>
+            <AppenderRef ref="CONSOLE"/>
+        </Logger>
+
+        <Logger name="org.labkey.audit.event.UserAuditEvent" additivity="false" level="OFF">
+            <AppenderRef ref="LABKEY_AUDIT"/>
+            <AppenderRef ref="CONSOLE"/>
+        </Logger>
+
+
 
         <!-- <Logger name="org.labkey.api.data.DbScope" level="WARN"/>
         <Logger name="org.labkey.api.data.SqlScriptExecutor" level="WARN"/>
@@ -52,6 +217,7 @@
 
         <Root level="${env:LOG_LEVEL_DEFAULT:-FATAL}">
             <AppenderRef ref="CONSOLE"/>
+            <AppenderRef ref="ERRORS"/>
         </Root>
     </Loggers>
 

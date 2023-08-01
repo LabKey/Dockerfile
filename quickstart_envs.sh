@@ -3,7 +3,7 @@
 # example minimal set of environment variables to get started - see readme for additional envs you may wish to set
 
 # embedded tomcat LabKey .jar version to build container with
-export LABKEY_VERSION="23.7"
+export LABKEY_VERSION="23.8"
 
 # minimal SMTP settings
 export SMTP_HOST="localhost"
@@ -16,5 +16,5 @@ export SMTP_FROM="root@localhost"
 export LABKEY_CREATE_INITIAL_USER=""
 export LABKEY_CREATE_INITIAL_USER_APIKEY=""
 
-export LABKEY_DEFAULT_PROPERTIES_S3_URI=""
-export LABKEY_CUSTOM_PROPERTIES_S3_URI=""
+export LABKEY_DEFAULT_PROPERTIES_S3_URI="none"
+export LABKEY_CUSTOM_PROPERTIES_S3_URI="none"

@@ -119,13 +119,20 @@ main() {
   # optional s3 uris to files with default or custom startup properties, formatted like startup/basic.properties
   if [ $LABKEY_DEFAULT_PROPERTIES_S3_URI != 'none' ]; then
     echo "trying to s3 cp '$LABKEY_DEFAULT_PROPERTIES_S3_URI'"
-    aws s3 cp $LABKEY_DEFAULT_PROPERTIES_S3_URI server/startup/
+    awsclibin/aws s3 cp $LABKEY_DEFAULT_PROPERTIES_S3_URI server/startup/
   fi
 
   if [ $LABKEY_CUSTOM_PROPERTIES_S3_URI != 'none' ]; then
     echo "trying to s3 cp '$LABKEY_CUSTOM_PROPERTIES_S3_URI'"
-    aws s3 cp $LABKEY_CUSTOM_PROPERTIES_S3_URI server/startup/
+    awsclibin/aws s3 cp $LABKEY_CUSTOM_PROPERTIES_S3_URI server/startup/
   fi
+
+  echo "sleeping for $SLEEP seconds..."
+  sleep $SLEEP
+
+  echo "deleting awscli and unsetting AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, & AWS_SESSION_TOKEN, if set..."
+  rm -rf awsclibin aws-cli
+  unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
 
   echo "sleeping for $SLEEP seconds..."
   sleep $SLEEP
@@ -182,6 +189,27 @@ main() {
       -in "$keystore_filename" \
       -passin "pass:${keystore_pass}"
   fi
+
+  echo "Adding secrets to config/application.properties from environment variables..."
+  sed -i "s/@@jdbcUrl@@/jdbc:postgresql:\/\/${POSTGRES_HOST:-localhost}:${POSTGRES_PORT:-5432}\/${POSTGRES_DB:-${POSTGRES_USER}}${POSTGRES_PARAMETERS:-}/" config/application.properties
+  sed -i "s/@@jdbcUser@@/${POSTGRES_USER:-postgres}/" config/application.properties
+  sed -i "s/@@jdbcPassword@@/${POSTGRES_PASSWORD:-}/" config/application.properties
+
+  sed -i "s/@@smtpHost@@/${SMTP_HOST}/" config/application.properties
+  sed -i "s/@@smtpUser@@/${SMTP_USER}/" config/application.properties
+  sed -i "s/@@smtpPort@@/${SMTP_PORT}/" config/application.properties
+  sed -i "s/@@smtpPassword@@/${SMTP_PASSWORD}/" config/application.properties
+  sed -i "s/@@smtpAuth@@/${SMTP_AUTH}/" config/application.properties
+  sed -i "s/@@smtpFrom@@/${SMTP_FROM}/" config/application.properties
+  sed -i "s/@@smtpStartTlsEnable@@/${SMTP_STARTTLS}/" config/application.properties
+
+  sed -i "s/@@encryptionKey@@/${LABKEY_EK}/" config/application.properties
+
+  echo "Purging secrets and other bits from environment variables..."
+  unset POSTGRES_USER POSTGRES_PASSWORD POSTGRES_HOST POSTGRES_PORT POSTGRES_DB POSTGRES_PARAMETERS
+  unset SMTP_HOST SMTP_USER SMTP_PORT SMTP_PASSWORD SMTP_AUTH SMTP_FROM SMTP_STARTTLS
+  unset LABKEY_CREATE_INITIAL_USER LABKEY_CREATE_INITIAL_USER_APIKEY LABKEY_INITIAL_USER_APIKEY LABKEY_INITIAL_USER_EMAIL LABKEY_INITIAL_USER_GROUP LABKEY_INITIAL_USER_ROLE
+  unset LABKEY_EK SLEEP
 
   # shellcheck disable=SC2086
   exec java \

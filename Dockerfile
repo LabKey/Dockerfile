@@ -198,12 +198,13 @@ COPY "startup/${LABKEY_DISTRIBUTION}.properties" \
 # add logging config files
 COPY log4j2.xml log4j2.xml
 
-# add aws cli
-RUN mkdir -p /usr/src/awsclizip \
+# add aws cli & make it owned by labkey user so it can all be deleted after s3 downloads in entrypoint.sh
+RUN mkdir -p /usr/src/awsclizip "${LABKEY_HOME}/awsclibin" "${LABKEY_HOME}/aws-cli" \
     && wget -q -O /usr/src/awsclizip/awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" \
     && unzip -q -d /usr/src/awsclizip/ /usr/src/awsclizip/awscliv2.zip \
-    && /usr/src/awsclizip/aws/install \
-    && rm -rf /usr/src/awsclizip
+    && /usr/src/awsclizip/aws/install --bin-dir "${LABKEY_HOME}/awsclibin" --install-dir "${LABKEY_HOME}/aws-cli" \
+    && rm -rf /usr/src/awsclizip \
+    && chown -R labkey:labkey "${LABKEY_HOME}/awsclibin" "${LABKEY_HOME}/aws-cli"
 
 # refrain from using shell significant characters in HEALTHCHECK_HEADER_*
 ENV HEALTHCHECK_INTERVAL="6s" \

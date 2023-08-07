@@ -246,6 +246,9 @@ EXPOSE ${LABKEY_PORT}
 
 STOPSIGNAL SIGTERM
 
+# defang
+RUN find / -xdev -perm /6000 -type f -exec chmod a-s {} \; || true
+
 USER labkey
 
 # shell form e.g. executed w/ /bin/sh -c

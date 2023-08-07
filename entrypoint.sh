@@ -130,8 +130,8 @@ main() {
   echo "sleeping for $SLEEP seconds..."
   sleep $SLEEP
 
-  echo "deleting awscli and unsetting AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, & AWS_SESSION_TOKEN, if set..."
-  rm -rf awsclibin aws-cli
+  # echo "deleting awscli and unsetting AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, & AWS_SESSION_TOKEN, if set..."
+  # rm -rf awsclibin aws-cli
   unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
 
   echo "sleeping for $SLEEP seconds..."

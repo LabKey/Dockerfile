@@ -11,7 +11,7 @@ on:
 
 jobs:
   dockle:
-    name: dockle
+    name: dockle/xeol
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -19,7 +19,7 @@ jobs:
       - name: Build an image from Dockerfile
         run: |
           LABKEY_VERSION=HelloWorld make build
-      - name: Run dockle
+      - name: Run dockle on helloworld image
         uses: goodwithtech/dockle-action@0.1.0
         env:
           DOCKER_CONTENT_TRUST: 0
@@ -29,19 +29,12 @@ jobs:
           exit-code: '1'
           exit-level: 'warn'
           ignore: 'CIS-DI-0009,CIS-DI-0010'
-  xeol:
-    name: xeol
-    needs: dockle
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: xeol-dir
+      - name: Run xeol on helloworld image
+        uses: noqcks/xeol-action@v1.0.6
+        with:
+          image: "labkey/community:helloworld"
+      - name: Run xeol on dir
         uses: noqcks/xeol-action@v1.0.6
         with:
           path: "."
-      - name: xeol-image
-        uses: noqcks/xeol-action@v1.0.6
-        with:
-          # created by 'dockle' job above
-          image: "labkey/community:helloworld"
+  

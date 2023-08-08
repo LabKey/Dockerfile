@@ -10,8 +10,8 @@ on:
       - develop
 
 jobs:
-  build:
-    name: Build
+  dockle:
+    name: dockle
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -29,3 +29,19 @@ jobs:
           exit-code: '1'
           exit-level: 'warn'
           ignore: 'CIS-DI-0009,CIS-DI-0010'
+  xeol:
+    name: xeol
+    needs: dockle
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: xeol-dir
+        uses: noqcks/xeol-action@v1.0.6
+        with:
+          path: "."
+      - name: xeol-image
+        uses: noqcks/xeol-action@v1.0.6
+        with:
+          # created by 'dockle' job above
+          image: "labkey/community:helloworld"

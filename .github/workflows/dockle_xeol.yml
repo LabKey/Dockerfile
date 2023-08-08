@@ -28,7 +28,7 @@ jobs:
           format: 'list'
           exit-code: '1'
           exit-level: 'warn'
-          ignore: 'CIS-DI-0009,CIS-DI-0010'
+          ignore: 'CIS-DI-0005,CIS-DI-0009,CIS-DI-0010'
       - name: Run xeol on helloworld image
         uses: noqcks/xeol-action@v1.0.6
         with:

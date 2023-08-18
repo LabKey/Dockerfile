@@ -169,8 +169,6 @@ main() {
       -passout "pass:${keystore_pass}" \
         >/dev/null 2>&1
 
-  touch server/startup/newinstall
-
   if [ -n "${DEBUG:-}" ]; then
     tail -n+1 \
       config/*.properties \

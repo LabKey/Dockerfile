@@ -169,9 +169,6 @@ main() {
       -passout "pass:${keystore_pass}" \
         >/dev/null 2>&1
 
-  # Removed as this setting results in every startup being interrupted as a boostrap
-  #touch server/startup/newinstall
-
   if [ -n "${DEBUG:-}" ]; then
     tail -n+1 \
       config/*.properties \

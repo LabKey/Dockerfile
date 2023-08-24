@@ -13,6 +13,9 @@ keystore_format="${TOMCAT_KEYSTORE_FORMAT:-}"
 
 LABKEY_CUSTOM_PROPERTIES_S3_URI="${LABKEY_CUSTOM_PROPERTIES_S3_URI:=none}"
 LABKEY_DEFAULT_PROPERTIES_S3_URI="${LABKEY_DEFAULT_PROPERTIES_S3_URI:=none}"
+
+LOG4J_CONFIG_FILE="${LOG4J_CONFIG_FILE:='log4j.xml'}"
+
 SLEEP="${SLEEP:=0}"
 
 main() {
@@ -237,7 +240,7 @@ main() {
     -Dlogback.debug="$debug_string" \
     \
     -Dlog4j.debug="$debug_string" \
-    -Dlog4j.configurationFile=log4j2.xml \
+    -Dlog4j.configurationFile="$LOG4J_CONFIG_FILE" \
     \
     -Dorg.apache.catalina.startup.EXIT_ON_INIT_FAILURE=true \
     \

@@ -13,6 +13,13 @@ keystore_format="${TOMCAT_KEYSTORE_FORMAT:-}"
 
 LABKEY_CUSTOM_PROPERTIES_S3_URI="${LABKEY_CUSTOM_PROPERTIES_S3_URI:=none}"
 LABKEY_DEFAULT_PROPERTIES_S3_URI="${LABKEY_DEFAULT_PROPERTIES_S3_URI:=none}"
+
+# set below to 'server/labkeywebapp/WEB-INF/classes/log4j2.xml' to use embedded tomcat version
+LOG4J_CONFIG_FILE="${LOG4J_CONFIG_FILE:='log4j2.xml'}"
+
+# below assumes using local log4j2.xml file, as the embedded version is not available for edits until after server is running
+JSON_OUTPUT="${JSON_OUTPUT:-false}"
+
 SLEEP="${SLEEP:=0}"
 
 main() {
@@ -134,8 +141,8 @@ main() {
   # rm -rf awsclibin aws-cli
   unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
 
-  echo "sleeping for $SLEEP seconds..."
-  sleep $SLEEP
+  # echo "sleeping for $SLEEP seconds..."
+  # sleep $SLEEP
 
   for prop_file in server/startup/*.properties; do
     envsubst < "$prop_file" > "${prop_file}.tmp" \
@@ -146,6 +153,7 @@ main() {
     keystore_pass="$(random_string 64)"
   fi
 
+  # below only works if server.tomcat.accesslog settings in application.properties are set to go to file instead of stdout
   if [ -n "$TOMCAT_ENABLE_ACCESS_LOG" ]; then
     ln -sfv /proc/1/fd/1 /tmp/access.log
   fi
@@ -209,6 +217,15 @@ main() {
   unset LABKEY_CREATE_INITIAL_USER LABKEY_CREATE_INITIAL_USER_APIKEY LABKEY_INITIAL_USER_APIKEY LABKEY_INITIAL_USER_EMAIL LABKEY_INITIAL_USER_GROUP LABKEY_INITIAL_USER_ROLE
   unset LABKEY_EK SLEEP
 
+  if [ "$JSON_OUTPUT" = "true" ] && [ "$LOG4J_CONFIG_FILE" = "log4j2.xml" ]; then
+    echo "JSON_OUTPUT==true && LOG4J_CONFIG_FILE==log4j2.xml, so updating application.properties and log4j2.xml to output JSON to console"
+    sed -i '/<!-- p=priority c=category d=datetime t=thread m=message n=newline -->/d' $LOG4J_CONFIG_FILE
+    sed -i 's/<PatternLayout.*\/>/<JSONLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true" \/>/' $LOG4J_CONFIG_FILE
+    sed -i 's/^logging.pattern.console/# logging.pattern.console/' config/application.properties
+  else
+    echo "saw JSON_OUTPUT=$JSON_OUTPUT and LOG4J_CONFIG_FILE=$LOG4J_CONFIG_FILE"
+  fi
+
   # shellcheck disable=SC2086
   exec java \
     \
@@ -237,7 +254,7 @@ main() {
     -Dlogback.debug="$debug_string" \
     \
     -Dlog4j.debug="$debug_string" \
-    -Dlog4j.configurationFile=log4j2.xml \
+    -Dlog4j.configurationFile="$LOG4J_CONFIG_FILE" \
     \
     -Dorg.apache.catalina.startup.EXIT_ON_INIT_FAILURE=true \
     \

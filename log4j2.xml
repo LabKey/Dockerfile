@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <Configuration packages="org.labkey.api.util">
+
     <Appenders>
         <Console name="CONSOLE" target="SYSTEM_OUT">
-            <PatternLayout
-                pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} I %-5.5p %5.5L --- [%15.15t] ${env:LOGGER_PATTERN} : %m%n%xEx"
-            />
+            <!-- p=priority c=category d=datetime t=thread m=message n=newline -->
+            <PatternLayout pattern="%-5p %-24.24c{1} %d{ISO8601} %24.24t : %m%n" />
+
+            <!-- <JSONLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true" /> -->
+
         </Console>
 
         <RollingFile name="ERRORS"
@@ -139,19 +142,107 @@
 
     <Loggers>
 
-        <Logger name="org.apache" level="${env:LOG_LEVEL_TOMCAT:-OFF}"/>
-
-        <Logger name="org.springframework.web" level="${env:LOG_LEVEL_SPRING_WEB:-OFF}"/>
-
         <!-- category for server side script messages -->
         <Logger name="org.labkey.api.script.ScriptService.Console" level="${env:LOG_LEVEL_API_SETTINGS:-INFO}">
             <AppenderRef ref="SessionAppender"/>
         </Logger>
 
+
+        <!-- category for Mule messages -->
+        <Logger name="org.mule.MuleManager" level="info"/>
+
+        <!--
+            <Logger name="org.labkey.pipeline.mule.transformers" level="debug"/>
+         -->
+
+        <!-- category for jasper messages -->
+        <Logger name="org.apache.jasper" level="warn"/>
+
+        <!-- application classes -->
+        <Logger name="org.fhcrc" level="info"/>
+
+
         <Logger name="org.labkey" level="${env:LOG_LEVEL_LABKEY_DEFAULT:-INFO}">
             <AppenderRef ref="CONSOLE"/>
             <AppenderRef ref="LABKEY"/>
         </Logger>
+
+        <!-- uncomment to enable 'DEBUG' level on external SAML libraries to troubleshoot.
+        Note: you will also have to set dependency on slf4j lib in saml/build.gradle - uncomment 'slf4j' external libraries and build
+        <Logger name="org.opensaml" level="DEBUG">
+            <AppenderRef ref="CONSOLE"/>
+            <AppenderRef ref="LABKEY"/>
+        </Logger>
+
+        <Logger name="org.apache.xml.security" level="DEBUG">
+            <AppenderRef ref="CONSOLE"/>
+            <AppenderRef ref="LABKEY"/>
+        </Logger> -->
+
+        <Logger name="mondrian." level="info" />
+
+        <!--
+            <Logger name="org.labkey.wiki" level="debug"/>
+        -->
+
+        <!--
+            <Logger name="org.labkey.api.action.SpringActionController" level="debug"/>
+        -->
+
+        <!-- only show errors from PipelineJob output -->
+        <Logger name="org.labkey.api.pipeline.PipelineJob" level="error">
+            <AppenderRef ref="CONSOLE"/>
+        </Logger>
+
+        <!-- don't need to log PDFBox errors (e.g., FlateFilter, PDCIDFontType2) -->
+        <Logger name="org.apache.pdfbox" level="fatal"/>
+
+        <!-- this is a very verbose logger for security/permissions checking -->
+        <!--
+            <Logger name="org.labkey.api.security.SecurityManager" level="debug"/>
+        -->
+
+        <!-- Add specific module packages or classes to get debug information about
+         features you are working on. -->
+
+        <!--
+            <Logger name="org.labkey.api.data.Table" level="debug"/>
+        -->
+
+        <Logger name="org.labkey.api.data"/>
+
+        <Logger name="org.labkey.api.dataiterator"/>
+
+        <Logger name="org.labkey.docker">
+            <level value="info"/>
+        </Logger>
+
+        <Logger name="org.labkey.rstudio" level="info"/>
+
+
+        <!--
+            <Logger name="org.labkey.api.cache" level="debug"/>
+        -->
+
+        <!--
+            <Logger name="org.labkey.api.data.TempTableTracker" level="debug"/>
+        -->
+
+        <!--
+            <Logger name="org.labkey.query" level="debug"/>
+        -->
+
+        <!--
+            <Logger name="org.labkey.pipeline.mule" level="debug"/>
+        -->
+
+        <!--
+            <Logger name="org.labkey.search" level="debug"/>
+        -->
+
+        <!--
+            <Logger name="org.labkey.search.model.LuceneSearchServiceImpl" level="debug"/>
+        -->
 
         <Logger name="org.labkey.api.util.MemTracker" additivity="false" level="${env:LOG_LEVEL_LABKEY_DEFAULT:-DEBUG}">
             <AppenderRef ref="LABKEYMemory"/>
@@ -161,18 +252,15 @@
             <AppenderRef ref="THREAD_DUMP"/>
         </Logger>
 
-
+        <!--
+            <Logger name="org.labkey.api.view.ViewServlet" additivity="false" level="debug"/>
+        -->
 
         <!--
-            set to DEBUG for startup property messages set to TRACE for values
-        -->
-        <Logger name="org.labkey.api.module.ModuleLoader"
-                level="${env:LOG_LEVEL_API_MODULELOADER:-WARN}"
-        />
-
-        <Logger name="org.labkey.api.settings"
-                level="${env:LOG_LEVEL_API_SETTINGS:-WARN}"
-        />
+            <Logger name="org.labkey" level="debug">
+                <AppenderRef ref="SESSION"/>
+            </Logger>
+         -->
 
         <Logger name="org.labkey.core.admin.ActionsTsvWriter" additivity="false" level="${env:LOG_LEVEL_LABKEY_DEFAULT:-INFO}">
             <AppenderRef ref="ACTION_STATS"/>
@@ -187,38 +275,44 @@
             <AppenderRef ref="CONSOLE"/>
         </Logger>
 
+        <!--
+          Other audit event types include, but are not limited to:
+            AppPropsEvent
+            AssayPublishAuditEvent
+            AttachmentAuditEvent
+            AuthenticationProviderConfiguration
+            ClientAPIActions
+            ContainerAuditEvent
+            DatasetAuditEvent
+            DomainAuditEvent
+            ExperimentAuditEvent
+            FileSystem
+            FileSystemBatch
+            GroupAuditEvent
+            ListAuditEvent
+            LoggedQuery
+            MessageAuditEvent
+            pipelineProtocolEvent
+            QueryExportAuditEvent
+            QueryUpdateAuditEvent
+            SampleTypeAuditEvent
+            SearchAuditEvent
+            SelectQuery
+         To enable logging of all events, set the level for the org.labkey.audit.event to
+         something other than "OFF".  To enable individual audit event logging, configure the
+         individual stanza like the one shown below, where you prefix the audit event type
+         with 'org.labkey.audit.event'. Then set the level to INFO and specify the appenders.
+        -->
         <Logger name="org.labkey.audit.event.UserAuditEvent" additivity="false" level="OFF">
             <AppenderRef ref="LABKEY_AUDIT"/>
             <AppenderRef ref="CONSOLE"/>
         </Logger>
 
-
-
-        <!-- <Logger name="org.labkey.api.data.DbScope" level="WARN"/>
-        <Logger name="org.labkey.api.data.SqlScriptExecutor" level="WARN"/>
-        <Logger name="org.labkey.api.data.SqlScriptManager" level="WARN"/>
-        <Logger name="org.labkey.api.data.SqlScriptRunner" level="WARN"/>
-        <Logger name="org.labkey.api.data.JdbcCommand" level="WARN"/>
-        <Logger name="org.labkey.api.data.ConnectionWrapper" level="WARN"/>
-        <Logger name="org.labkey.api.module.ModuleLoader" level="ERROR"/>
-        <Logger name="org.labkey.api.search.SearchService" level="ERROR"/>
-        <Logger name="org.labkey.api.view.ViewServlet" level="ERROR"/>
-        <Logger name="org.labkey.api.cache.ehcache" level="WARN"/>
-        <Logger name="org.labkey.api.data.queryprofiler" level="WARN"/>
-        <Logger name="org.labkey.core.admin.ActionsTsvWriter" level="WARN"/>
-        <Logger name="org.labkey.audit" level="ERROR"/>
-        <Logger name="org.labkey.search" level="ERROR"/>
-        <Logger name="org.labkey.api.util" level="TRACE"/>
-        <Logger name="org.labkey.api.exp.xar.LsidUtils" level="WARN"/> -->
-
-        <Logger name="org.labkey.api.pipeline" level="${env:LOG_LEVEL_API_PIPELINE:-WARN}">
-            <AppenderRef ref="CONSOLE"/>
-        </Logger>
+        <Logger name="NoOpLogger" level="OFF" additivity="false"/>
 
         <Root level="${env:LOG_LEVEL_DEFAULT:-FATAL}">
             <AppenderRef ref="CONSOLE"/>
             <AppenderRef ref="ERRORS"/>
         </Root>
     </Loggers>
-
 </Configuration>

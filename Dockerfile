@@ -205,6 +205,10 @@ RUN mkdir -p /usr/src/awsclizip "${LABKEY_HOME}/awsclibin" "${LABKEY_HOME}/aws-c
     && rm -rf /usr/src/awsclizip \
     && chown -R labkey:labkey "${LABKEY_HOME}/awsclibin" "${LABKEY_HOME}/aws-cli"
 
+# install datadog tracing agent
+RUN mkdir -p datadog
+RUN curl -Lo datadog/dd-java-agent.jar https://dtdg.co/latest-java-tracer
+
 # refrain from using shell significant characters in HEALTHCHECK_HEADER_*
 ENV HEALTHCHECK_INTERVAL="6s" \
     HEALTHCHECK_TIMEOUT="10s" \

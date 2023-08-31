@@ -15,10 +15,13 @@ LABKEY_CUSTOM_PROPERTIES_S3_URI="${LABKEY_CUSTOM_PROPERTIES_S3_URI:=none}"
 LABKEY_DEFAULT_PROPERTIES_S3_URI="${LABKEY_DEFAULT_PROPERTIES_S3_URI:=none}"
 
 # set below to 'server/labkeywebapp/WEB-INF/classes/log4j2.xml' to use embedded tomcat version
-LOG4J_CONFIG_FILE="${LOG4J_CONFIG_FILE:='log4j2.xml'}"
+LOG4J_CONFIG_FILE="${LOG4J_CONFIG_FILE:=log4j2.xml}"
 
 # below assumes using local log4j2.xml file, as the embedded version is not available for edits until after server is running
 JSON_OUTPUT="${JSON_OUTPUT:-false}"
+
+# for ecs/datadog, optionally enable APM metrics
+DD_COLLECT_APM="${DD_COLLECT_APM:-false}"
 
 SLEEP="${SLEEP:=0}"
 
@@ -226,6 +229,17 @@ main() {
     echo "saw JSON_OUTPUT=$JSON_OUTPUT and LOG4J_CONFIG_FILE=$LOG4J_CONFIG_FILE"
   fi
 
+  export DD_JAVA_AGENT=""
+  if [ "$DD_COLLECT_APM" = "true" ]; then
+    echo "DD_COLLECT_APM==true , so adding EC2 host's private IP to env vars as DD_AGENT_HOST"
+    export TOKEN=$(curl --max-time 3 -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"); 
+    export DD_AGENT_HOST=$(curl --max-time 3 -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/local-ipv4);
+
+    echo "Adding -javaagent to java command"
+    export DD_JAVA_AGENT="-javaagent:./datadog/dd-java-agent.jar -Ddd.profiling.enabled=true -Ddd.logs.injection=true -XX:FlightRecorderOptions=stackdepth=256"
+
+  fi
+
   # shellcheck disable=SC2086
   exec java \
     \
@@ -260,6 +274,8 @@ main() {
     \
     -DsynchronousStartup=true \
     -DterminateOnStartupFailure=true \
+    \
+    ${DD_JAVA_AGENT} \
     \
     ${JAVA_PRE_JAR_EXTRA} \
     \

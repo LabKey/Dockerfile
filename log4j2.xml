@@ -191,7 +191,7 @@
 
         <!-- only show errors from PipelineJob output -->
         <Logger name="org.labkey.api.pipeline.PipelineJob" level="error">
-            <AppenderRef ref="CONSOLE"/>
+            <!-- <AppenderRef ref="CONSOLE"/> -->
         </Logger>
 
         <!-- don't need to log PDFBox errors (e.g., FlateFilter, PDCIDFontType2) -->
@@ -272,7 +272,7 @@
 
         <Logger name="org.labkey.audit.event" level="OFF">
             <AppenderRef ref="LABKEY_AUDIT"/>
-            <AppenderRef ref="CONSOLE"/>
+            <!-- <AppenderRef ref="CONSOLE"/> -->
         </Logger>
 
         <!--
@@ -305,13 +305,13 @@
         -->
         <Logger name="org.labkey.audit.event.UserAuditEvent" additivity="false" level="OFF">
             <AppenderRef ref="LABKEY_AUDIT"/>
-            <AppenderRef ref="CONSOLE"/>
+            <!-- <AppenderRef ref="CONSOLE"/> -->
         </Logger>
 
         <Logger name="NoOpLogger" level="OFF" additivity="false"/>
 
         <Root level="${env:LOG_LEVEL_DEFAULT:-FATAL}">
-            <AppenderRef ref="CONSOLE"/>
+            <!-- <AppenderRef ref="CONSOLE"/> -->
             <AppenderRef ref="ERRORS"/>
         </Root>
     </Loggers>

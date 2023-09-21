@@ -49,8 +49,7 @@ all: login build tag push
 
 build:
 	$(call tc,building docker container)
-	docker buildx build \
-		--progress=plain \
+	docker build \
 		--rm \
 		--compress \
 		$(CACHE_FLAG) \

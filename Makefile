@@ -49,7 +49,7 @@ all: login build tag push
 
 build:
 	$(call tc,building docker container)
-	docker build \
+	docker buildx build \
 		--progress plain \
 		--rm \
 		--compress \

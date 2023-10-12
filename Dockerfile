@@ -175,9 +175,11 @@ RUN [ -n "${DEBUG}" ] && set -x; \
         "logs" \
         "server/startup" \
         "${TOMCAT_BASE_DIR}" \
+        "/work/Tomcat/localhost" \
     \
     && env | sort | tee /buid.env; \
     \
+    chown -Rc labkey:labkey "/work/Tomcat/localhost"; \
     chown -Rc labkey:labkey "${LABKEY_HOME}";
 
 

@@ -146,7 +146,7 @@ RUN [ -n "${DEBUG}" ] && set -x; \
         apt-get update; \
         apt-get -yq --no-install-recommends install \
             libtcnative-1=1.2.31-1build1 \
-            openssl=3.0.2-0ubuntu1.10 \
+            openssl=3.0.2-0ubuntu1.12 \
             gettext-base=0.21-4ubuntu4 \
             unzip=6.0-26ubuntu3.1 \
             ; \

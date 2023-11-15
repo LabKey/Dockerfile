@@ -41,7 +41,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-a"placeholder#'password}
       - POSTGRES_HOST=pg-community
 
-      - MAX_JVM_RAM_PERCENT=75.0
+      - MAX_JVM_RAM_PERCENT=${MAX_JVM_RAM_PERCENT:-75.0}
       - JAVA_PRE_JAR_EXTRA=-XX:+UseSerialGC -Xss512k
 
       # - SMTP_HOST=mailhog
@@ -152,7 +152,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-a"placeholder#'password}
       - POSTGRES_HOST=pg-allpg
 
-      - MAX_JVM_RAM_PERCENT=75.0
+      - MAX_JVM_RAM_PERCENT=${MAX_JVM_RAM_PERCENT:-75.0}
       - JAVA_PRE_JAR_EXTRA=-XX:+UseSerialGC -Xss512k
 
       # - SMTP_HOST=mailhog
@@ -261,7 +261,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-a"placeholder#'password}
       - POSTGRES_HOST=pg-enterprise
 
-      - MAX_JVM_RAM_PERCENT=75.0
+      - MAX_JVM_RAM_PERCENT=${MAX_JVM_RAM_PERCENT:-75.0}
       - JAVA_PRE_JAR_EXTRA=-XX:+UseSerialGC -Xss512k
 
       # - SMTP_HOST=mailhog
@@ -370,7 +370,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-a"placeholder#'password}
       - POSTGRES_HOST=pg-lims_starter
 
-      - MAX_JVM_RAM_PERCENT=75.0
+      - MAX_JVM_RAM_PERCENT=${MAX_JVM_RAM_PERCENT:-75.0}
       - JAVA_PRE_JAR_EXTRA=-XX:+UseSerialGC -Xss512k
 
       # - SMTP_HOST=mailhog

@@ -240,7 +240,7 @@ main() {
 
   fi
 
-  HEAP_DUMP_PATH="$LABKEY_HOME/files/tomcat-tmp/heap_dumps_$(date +%Y%m%d_%H%M%S)"
+  HEAP_DUMP_PATH="$LABKEY_HOME/files/heap_dumps_$(date +%Y%m%d_%H%M%S)"
   mkdir -pv $HEAP_DUMP_PATH
 
   # shellcheck disable=SC2086

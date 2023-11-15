@@ -170,7 +170,6 @@ RUN [ -n "${DEBUG}" ] && set -x; \
     \
     mkdir -pv \
         "${LABKEY_FILES_ROOT}/@files" \
-        "${LABKEY_FILES_ROOT}/tomcat-tmp" \
         "config" \
         "externalModules" \
         "logs" \
@@ -245,7 +244,6 @@ HEALTHCHECK \
             || exit 1
 
 VOLUME "${LABKEY_FILES_ROOT}/@files"
-VOLUME "${LABKEY_FILES_ROOT}/tomcat-tmp"
 VOLUME "${LABKEY_HOME}/externalModules"
 VOLUME "${LABKEY_HOME}/logs"
 

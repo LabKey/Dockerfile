@@ -150,9 +150,17 @@ RUN [ -n "${DEBUG}" ] && set -x; \
             gettext-base=0.21-4ubuntu4 \
             unzip=6.0-26ubuntu3.1 \
             ; \
-        [ -n "${DEBUG}" ] && apt-get -yq --no-install-recommends install tree=2.0.2-1; \
+        [ -n "${DEBUG}" ] && apt-get -yq --no-install-recommends install \
+            iputils-ping=3:20211215-1 \
+            less=590-1ubuntu0.22.04.1 \
+            netcat=1.218-4ubuntu1 \
+            postgresql-client=14+238 \
+            sudo=1.9.9-1ubuntu2.4 \
+            tree=2.0.2-1 \
+            vim=2:8.2.3995-1ubuntu2.13 \
+            ; \
         apt-get -yq upgrade; \
-        apt-get -yq clean all && rm -rf /var/lib/apt/lists/*; \
+        [ -z "${DEBUG}" ] && apt-get -yq clean all && rm -rf /var/lib/apt/lists/*; \
         \
         groupadd -r labkey \
             --gid=2005; \
@@ -163,9 +171,10 @@ RUN [ -n "${DEBUG}" ] && set -x; \
             --shell=/bin/bash \
             labkey; \
         \
-        chmod u-s /usr/bin/su /usr/bin/mount /usr/bin/chfn /usr/bin/gpasswd /usr/bin/newgrp /usr/bin/umount /usr/bin/chsh /usr/bin/passwd; \
-        chmod g-s /usr/bin/expiry /usr/bin/chage /usr/bin/wall /usr/sbin/pam_extrausers_chkpwd /usr/sbin/unix_chkpwd; \
-    rm -rfv /var/lib/apt/lists; \
+        [ -n "${DEBUG}" ] && adduser labkey sudo && echo "labkey  ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/labkey; \
+        [ -z "${DEBUG}" ] && chmod u-s /usr/bin/su /usr/bin/mount /usr/bin/chfn /usr/bin/gpasswd /usr/bin/newgrp /usr/bin/umount /usr/bin/chsh /usr/bin/passwd; \
+        [ -z "${DEBUG}" ] && chmod g-s /usr/bin/expiry /usr/bin/chage /usr/bin/wall /usr/sbin/pam_extrausers_chkpwd /usr/sbin/unix_chkpwd; \
+    [ -z "${DEBUG}" ] && rm -rfv /var/lib/apt/lists; \
     fi; \
     \
     mkdir -pv \
@@ -252,7 +261,7 @@ EXPOSE ${LABKEY_PORT}
 STOPSIGNAL SIGTERM
 
 # defang
-RUN find / -xdev -perm /6000 -type f -exec chmod a-s {} \; || true
+RUN [ -z "${DEBUG}" ] && find / -xdev -perm /6000 -type f -exec chmod a-s {} \; || true
 
 USER labkey
 

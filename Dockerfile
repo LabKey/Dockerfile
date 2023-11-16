@@ -261,7 +261,7 @@ EXPOSE ${LABKEY_PORT}
 STOPSIGNAL SIGTERM
 
 # defang
-RUN [ -z "${DEBUG}" ] && find / -xdev -perm /6000 -type f -exec chmod a-s {} \; || true
+RUN [ -z "${DEBUG}" ] && (find / -xdev -perm /6000 -type f -exec chmod a-s {} \; || true)
 
 USER labkey
 

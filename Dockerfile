@@ -150,15 +150,21 @@ RUN [ -n "${DEBUG}" ] && set -x; \
             gettext-base=0.21-4ubuntu4 \
             unzip=6.0-26ubuntu3.1 \
             ; \
-        [ -n "${DEBUG}" ] && apt-get -yq --no-install-recommends install \
-            iputils-ping=3:20211215-1 \
-            less=590-1ubuntu0.22.04.1 \
-            netcat=1.218-4ubuntu1 \
-            postgresql-client=14+238 \
-            sudo=1.9.9-1ubuntu2.4 \
-            tree=2.0.2-1 \
-            vim=2:8.2.3995-1ubuntu2.13 \
-            ; \
+        if [ -n "${DEBUG}" ]; then \
+            # next 2 lines are to get postgres15 to install on ubuntu 22.04
+            echo "deb http://apt.postgresql.org/pub/repos/apt $(grep VERSION_CODENAME /etc/os-release | cut -d "=" -f2)-pgdg main" > /etc/apt/sources.list.d/pgdg.list; \
+            wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | tee /etc/apt/trusted.gpg.d/pgdg.asc &>/dev/null; \
+            apt-get update; \
+            apt-get -yq --no-install-recommends install \
+                iputils-ping=3:20211215-1 \
+                less=590-1ubuntu0.22.04.1 \
+                netcat=1.218-4ubuntu1 \
+                postgresql-client-15=15.5-1.pgdg22.04+1 \
+                sudo=1.9.9-1ubuntu2.4 \
+                tree=2.0.2-1 \
+                vim=2:8.2.3995-1ubuntu2.13 \
+                ; \
+        fi; \
         apt-get -yq upgrade; \
         [ -z "${DEBUG}" ] && apt-get -yq clean all && rm -rf /var/lib/apt/lists/*; \
         \
@@ -260,8 +266,9 @@ EXPOSE ${LABKEY_PORT}
 
 STOPSIGNAL SIGTERM
 
-# defang
-RUN [ -z "${DEBUG}" ] && (find / -xdev -perm /6000 -type f -exec chmod a-s {} \; || true)
+RUN if [ -z "${DEBUG}" ]; then \
+        find / -xdev -perm /6000 -type f -exec chmod a-s {} \ || true; \
+    fi;
 
 USER labkey
 

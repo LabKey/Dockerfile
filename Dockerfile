@@ -153,7 +153,7 @@ RUN [ -n "${DEBUG}" ] && set -x; \
         if [ -n "${DEBUG}" ]; then \
             # next 2 lines are to get postgres15 to install on ubuntu 22.04
             echo "deb http://apt.postgresql.org/pub/repos/apt $(grep VERSION_CODENAME /etc/os-release | cut -d "=" -f2)-pgdg main" > /etc/apt/sources.list.d/pgdg.list; \
-            wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | tee /etc/apt/trusted.gpg.d/pgdg.asc &>/dev/null; \
+            wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | tee /etc/apt/trusted.gpg.d/pgdg.asc > /dev/null 2>&1; \
             apt-get update; \
             apt-get -yq --no-install-recommends install \
                 iputils-ping=3:20211215-1 \

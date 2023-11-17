@@ -38,7 +38,7 @@ BUILD_REMOTE_TAG := $(BUILD_REMOTE_REPO):$(BUILD_VERSION)
 
 ifeq (1,$(DEBUG))
   BUILD_LOCAL_TAG := $(addsuffix -debug,$(BUILD_LOCAL_TAG))
-	BUILD_REMOTE_TAG := $(addsuffix -debug,$(BUILD_REMOTE_TAG))
+  BUILD_REMOTE_TAG := $(addsuffix -debug,$(BUILD_REMOTE_TAG))
 endif
 
 define tc

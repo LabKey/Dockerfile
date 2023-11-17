@@ -26,7 +26,7 @@ LABKEY_DISTRIBUTION ?= community
 LABKEY_EK ?= 123abc456
 
 # repo/image:tags must be lowercase
-BUILD_VERSION := $(shell      echo '$(LABKEY_VERSION)'      | tr A-Z a-z)
+BUILD_VERSION ?= $(shell      echo '$(LABKEY_VERSION)'      | tr A-Z a-z)
 BUILD_DISTRIBUTION := $(shell echo '$(LABKEY_DISTRIBUTION)' | tr A-Z a-z)
 
 BUILD_REPO_URI ?= $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com

@@ -36,6 +36,11 @@ BUILD_REMOTE_REPO := $(BUILD_REPO_URI)/$(BUILD_REPO_NAME)
 BUILD_LOCAL_TAG ?= $(BUILD_REPO_NAME):$(BUILD_VERSION)
 BUILD_REMOTE_TAG := $(BUILD_REMOTE_REPO):$(BUILD_VERSION)
 
+ifeq (1,$(DEBUG))
+  BUILD_LOCAL_TAG := $(addsuffix -debug,$(BUILD_LOCAL_TAG))
+  BUILD_REMOTE_TAG := $(addsuffix -debug,$(BUILD_REMOTE_TAG))
+endif
+
 define tc
 $(shell printf "%steamcity[progressMessage '%s%n']" '##' '$1' ; )
 endef

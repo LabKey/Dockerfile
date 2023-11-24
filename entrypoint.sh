@@ -209,7 +209,7 @@ main() {
   sed -i "s/@@jdbcPassword@@/${POSTGRES_PASSWORD:-}/" config/application.properties
 
   # only set up CSP if both vars are defined, otherwise ignore
-  # note: newlines in CSP_POLICY must be double-escaped. 
+  # note: newlines in CSP_POLICY must be double-escaped (or can leave out entirely). 
   #       ex: "default-src 'self' https: ;\\\nconnect-src 'self' https: ;\\\n...
   if [ -n "$CSP_DISPOSITION" ] && [ -n "$CSP_POLICY" ]; then
     echo "csp.disposition=$CSP_DISPOSITION\n" >> config/application.properties

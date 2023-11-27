@@ -20,6 +20,10 @@ LOG4J_CONFIG_FILE="${LOG4J_CONFIG_FILE:=log4j2.xml}"
 # below assumes using local log4j2.xml file, as the embedded version is not available for edits until after server is running
 JSON_OUTPUT="${JSON_OUTPUT:-false}"
 
+# Content Security Policy settings
+CSP_DISPOSITION="${CSP_DISPOSITION:-}"
+CSP_POLICY="${CSP_POLICY:-}"
+
 # for ecs/datadog, optionally enable APM metrics
 DD_COLLECT_APM="${DD_COLLECT_APM:-false}"
 
@@ -204,6 +208,14 @@ main() {
   sed -i "s/@@jdbcUser@@/${POSTGRES_USER:-postgres}/" config/application.properties
   sed -i "s/@@jdbcPassword@@/${POSTGRES_PASSWORD:-}/" config/application.properties
 
+  # only set up CSP if both vars are defined, otherwise ignore
+  # note: newlines in CSP_POLICY must be double-escaped (or can leave out entirely). 
+  #       ex: "default-src 'self' https: ;\\\nconnect-src 'self' https: ;\\\n...
+  if [ -n "$CSP_DISPOSITION" ] && [ -n "$CSP_POLICY" ]; then
+    echo "csp.disposition=$CSP_DISPOSITION\n" >> config/application.properties
+    echo "csp.policy=$CSP_POLICY\n" >> config/application.properties
+  fi
+
   sed -i "s/@@smtpHost@@/${SMTP_HOST}/" config/application.properties
   sed -i "s/@@smtpUser@@/${SMTP_USER}/" config/application.properties
   sed -i "s/@@smtpPort@@/${SMTP_PORT}/" config/application.properties
@@ -215,7 +227,7 @@ main() {
   sed -i "s/@@encryptionKey@@/${LABKEY_EK}/" config/application.properties
 
   echo "Purging secrets and other bits from environment variables..."
-  unset POSTGRES_USER POSTGRES_PASSWORD POSTGRES_HOST POSTGRES_PORT POSTGRES_DB POSTGRES_PARAMETERS
+  unset POSTGRES_USER POSTGRES_PASSWORD POSTGRES_HOST POSTGRES_PORT POSTGRES_DB POSTGRES_PARAMETERS CSP_DISPOSITION CSP_POLICY
   unset SMTP_HOST SMTP_USER SMTP_PORT SMTP_PASSWORD SMTP_AUTH SMTP_FROM SMTP_STARTTLS
   unset LABKEY_CREATE_INITIAL_USER LABKEY_CREATE_INITIAL_USER_APIKEY LABKEY_INITIAL_USER_APIKEY LABKEY_INITIAL_USER_EMAIL LABKEY_INITIAL_USER_GROUP LABKEY_INITIAL_USER_ROLE
   unset LABKEY_EK SLEEP

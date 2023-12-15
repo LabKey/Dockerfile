@@ -373,8 +373,8 @@ services:
       - MAX_JVM_RAM_PERCENT=${MAX_JVM_RAM_PERCENT:-75.0}
       - JAVA_PRE_JAR_EXTRA=-XX:+UseSerialGC -Xss512k
 
-      - CSP_DISPOSITION=${CSP_DISPOSITION:-}
-      - CSP_POLICY=${CSP_POLICY:-}
+      - CSP_REPORT=${CSP_REPORT:-}
+      - CSP_ENFORCE=${CSP_ENFORCE:-}
 
       # - SMTP_HOST=mailhog
       # - SMTP_PORT=1025

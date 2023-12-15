@@ -86,8 +86,8 @@ ENV CERT_C="US" \
     CERT_OU="IT" \
     CERT_CN="localhost" \
     \
-    CSP_DISPOSITION= \
-    CSP_POLICY= \
+    CSP_REPORT= \
+    CSP_ENFORCE= \
     \
     SMTP_HOST="localhost" \
     SMTP_USER="root" \

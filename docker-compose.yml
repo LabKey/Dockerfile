@@ -87,7 +87,7 @@ services:
       - SLEEP=${SLEEP:-0}
 
   pg-community:
-    image: postgres:13
+    image: postgres:15
     # deploy:
     #   resources:
     #     limits:
@@ -198,7 +198,7 @@ services:
       - SLEEP=${SLEEP:-0}
 
   pg-allpg:
-    image: postgres:13
+    image: postgres:15
     # deploy:
     #   resources:
     #     limits:
@@ -307,7 +307,7 @@ services:
       - SLEEP=${SLEEP:-0}
 
   pg-enterprise:
-    image: postgres:13
+    image: postgres:15
     # deploy:
     #   resources:
     #     limits:
@@ -419,7 +419,7 @@ services:
       - SLEEP=${SLEEP:-0}
 
   pg-lims_starter:
-    image: postgres:13
+    image: postgres:15
     # deploy:
     #   resources:
     #     limits:

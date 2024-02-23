@@ -87,7 +87,7 @@ services:
       - SLEEP=${SLEEP:-0}
 
   pg-community:
-    image: postgres:13
+    image: postgres:15
     # deploy:
     #   resources:
     #     limits:
@@ -198,7 +198,7 @@ services:
       - SLEEP=${SLEEP:-0}
 
   pg-allpg:
-    image: postgres:13
+    image: postgres:15
     # deploy:
     #   resources:
     #     limits:
@@ -307,7 +307,7 @@ services:
       - SLEEP=${SLEEP:-0}
 
   pg-enterprise:
-    image: postgres:13
+    image: postgres:15
     # deploy:
     #   resources:
     #     limits:
@@ -373,8 +373,8 @@ services:
       - MAX_JVM_RAM_PERCENT=${MAX_JVM_RAM_PERCENT:-75.0}
       - JAVA_PRE_JAR_EXTRA=-XX:+UseSerialGC -Xss512k
 
-      - CSP_DISPOSITION=${CSP_DISPOSITION:-}
-      - CSP_POLICY=${CSP_POLICY:-}
+      - CSP_REPORT=${CSP_REPORT:-}
+      - CSP_ENFORCE=${CSP_ENFORCE:-}
 
       # - SMTP_HOST=mailhog
       # - SMTP_PORT=1025
@@ -419,7 +419,7 @@ services:
       - SLEEP=${SLEEP:-0}
 
   pg-lims_starter:
-    image: postgres:13
+    image: postgres:15
     # deploy:
     #   resources:
     #     limits:

@@ -86,8 +86,8 @@ ENV CERT_C="US" \
     CERT_OU="IT" \
     CERT_CN="localhost" \
     \
-    CSP_DISPOSITION= \
-    CSP_POLICY= \
+    CSP_REPORT= \
+    CSP_ENFORCE= \
     \
     SMTP_HOST="localhost" \
     SMTP_USER="root" \
@@ -149,7 +149,7 @@ RUN [ -n "${DEBUG}" ] && set -x; \
         apt-get update; \
         apt-get -yq --no-install-recommends install \
             libtcnative-1=1.2.31-1build1 \
-            openssl=3.0.2-0ubuntu1.12 \
+            openssl=3.0.2-0ubuntu1.14 \
             gettext-base=0.21-4ubuntu4 \
             unzip=6.0-26ubuntu3.1 \
             ; \

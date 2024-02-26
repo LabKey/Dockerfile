@@ -289,7 +289,7 @@ main() {
     \
     -Dorg.apache.catalina.startup.EXIT_ON_INIT_FAILURE=true \
     \
-    -DsynchronousStartup=true \
+    -DsynchronousStartup=false \
     -DterminateOnExistingConnections=false \
     -DterminateOnStartupFailure=true \
     \

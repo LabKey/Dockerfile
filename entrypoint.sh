@@ -290,6 +290,7 @@ main() {
     -Dorg.apache.catalina.startup.EXIT_ON_INIT_FAILURE=true \
     \
     -DsynchronousStartup=true \
+    -DterminateOnExistingConnections=false \
     -DterminateOnStartupFailure=true \
     \
     ${DD_JAVA_AGENT} \

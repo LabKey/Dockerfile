@@ -191,7 +191,7 @@ RUN [ -n "${DEBUG}" ] && set -x; \
         "config" \
         "externalModules" \
         "logs" \
-        "server/startup" \
+        "startup" \
         "${TOMCAT_BASE_DIR}" \
         "/work/Tomcat/localhost" \
     \
@@ -209,10 +209,10 @@ COPY application.properties config/
 
 # add basic + distribution startup properties
 COPY startup/basic.properties \
-    server/startup/50_basic.properties
+    startup/50_basic.properties
 
 COPY "startup/${LABKEY_DISTRIBUTION}.properties" \
-    server/startup/49_distribution.properties
+    startup/49_distribution.properties
 
 # add logging config files
 COPY log4j2.xml log4j2.xml

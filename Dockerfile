@@ -125,7 +125,6 @@ RUN [ -n "${DEBUG}" ] && set -x; \
     if echo "${FROM_TAG}" | grep -i 'alpine'; then \
         apk update \
         && apk add --no-cache \
-            tomcat-native=2.0.3-r0 \
             openssl=3.1.1-r1 \
             gettext=0.21.1-r7 \
             unzip=6.0-r14 \
@@ -148,7 +147,6 @@ RUN [ -n "${DEBUG}" ] && set -x; \
         export DEBIAN_FRONTEND=noninteractive; \
         apt-get update; \
         apt-get -yq --no-install-recommends install \
-            libtcnative-1=1.2.31-1build1 \
             openssl=3.0.2-0ubuntu1.14 \
             gettext-base=0.21-4ubuntu4 \
             unzip=6.0-26ubuntu3.1 \
@@ -191,7 +189,7 @@ RUN [ -n "${DEBUG}" ] && set -x; \
         "config" \
         "externalModules" \
         "logs" \
-        "server/startup" \
+        "startup" \
         "${TOMCAT_BASE_DIR}" \
         "/work/Tomcat/localhost" \
     \
@@ -209,10 +207,10 @@ COPY application.properties config/
 
 # add basic + distribution startup properties
 COPY startup/basic.properties \
-    server/startup/50_basic.properties
+    startup/50_basic.properties
 
 COPY "startup/${LABKEY_DISTRIBUTION}.properties" \
-    server/startup/49_distribution.properties
+    startup/49_distribution.properties
 
 # add logging config files
 COPY log4j2.xml log4j2.xml

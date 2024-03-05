@@ -14,7 +14,7 @@ keystore_format="${TOMCAT_KEYSTORE_FORMAT:-}"
 LABKEY_CUSTOM_PROPERTIES_S3_URI="${LABKEY_CUSTOM_PROPERTIES_S3_URI:=none}"
 LABKEY_DEFAULT_PROPERTIES_S3_URI="${LABKEY_DEFAULT_PROPERTIES_S3_URI:=none}"
 
-# set below to 'server/labkeywebapp/WEB-INF/classes/log4j2.xml' to use embedded tomcat version
+# set below to 'labkeywebapp/WEB-INF/classes/log4j2.xml' to use embedded tomcat version from the built .jar
 LOG4J_CONFIG_FILE="${LOG4J_CONFIG_FILE:=log4j2.xml}"
 
 # below assumes using local log4j2.xml file, as the embedded version is not available for edits until after server is running
@@ -133,12 +133,12 @@ main() {
   # optional s3 uris to files with default or custom startup properties, formatted like startup/basic.properties
   if [ $LABKEY_DEFAULT_PROPERTIES_S3_URI != 'none' ]; then
     echo "trying to s3 cp '$LABKEY_DEFAULT_PROPERTIES_S3_URI'"
-    awsclibin/aws s3 cp $LABKEY_DEFAULT_PROPERTIES_S3_URI server/startup/
+    awsclibin/aws s3 cp $LABKEY_DEFAULT_PROPERTIES_S3_URI startup/
   fi
 
   if [ $LABKEY_CUSTOM_PROPERTIES_S3_URI != 'none' ]; then
     echo "trying to s3 cp '$LABKEY_CUSTOM_PROPERTIES_S3_URI'"
-    awsclibin/aws s3 cp $LABKEY_CUSTOM_PROPERTIES_S3_URI server/startup/
+    awsclibin/aws s3 cp $LABKEY_CUSTOM_PROPERTIES_S3_URI startup/
   fi
 
   echo "sleeping for $SLEEP seconds..."
@@ -151,7 +151,7 @@ main() {
   # echo "sleeping for $SLEEP seconds..."
   # sleep $SLEEP
 
-  for prop_file in server/startup/*.properties; do
+  for prop_file in startup/*.properties; do
     envsubst < "$prop_file" > "${prop_file}.tmp" \
       && mv "${prop_file}.tmp" "$prop_file"
   done
@@ -187,7 +187,7 @@ main() {
   if [ -n "${DEBUG:-}" ]; then
     tail -n+1 \
       config/*.properties \
-      server/startup/*.properties \
+      startup/*.properties \
       "${JAVA_HOME:-}"/release
 
     if command -v tree >/dev/null 2>&1; then

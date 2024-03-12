@@ -4,7 +4,7 @@ version: "3"
 services:
   community:
     image: labkey/community
-    container_name: ${IDENT:-labkey}
+    container_name: labkey
     # build: {"context": ".", "args": ["LABKEY_VERSION=21.3-SNAPSHOT"]}
     # deploy:
     #   resources:
@@ -115,7 +115,7 @@ services:
 # below are for internal LabKey testing
   allpg:
     image: ${COMPOSE_IMAGE:-labkey/community}
-    container_name: ${IDENT:-allpg}
+    container_name: allpg
     # build: {"context": ".", "args": ["LABKEY_VERSION=21.3-SNAPSHOT"]}
     # deploy:
     #   resources:
@@ -224,7 +224,7 @@ services:
 
   enterprise:
     image: ${COMPOSE_IMAGE:-labkey/community}
-    container_name: ${IDENT:-enterprise}
+    container_name: enterprise
     # build: {"context": ".", "args": ["LABKEY_VERSION=21.3-SNAPSHOT"]}
     # deploy:
     #   resources:
@@ -333,7 +333,7 @@ services:
 
   lims_starter:
     image: ${COMPOSE_IMAGE:-labkey/community}
-    container_name: ${IDENT:-lims_starter}
+    container_name: lims_starter
     # build: {"context": ".", "args": ["LABKEY_VERSION=21.3-SNAPSHOT"]}
     # deploy:
     #   resources:
@@ -361,7 +361,7 @@ services:
       - LOG_LEVEL_SPRING_WEB=INFO
       - LOG_LEVEL_TOMCAT=DEBUG
       - LOG_LEVEL_DEFAULT=DEBUG
-      - LOG_LEVEL_LABKEY_DEFAULT=DEBUG
+      - LOG_LEVEL_LABKEY_DEFAULT=INFO
       - LOG_LEVEL_API_SETTINGS=DEBUG
       - LOG_LEVEL_API_MODULELOADER=DEBUG
 

@@ -199,7 +199,7 @@ RUN [ -n "${DEBUG}" ] && set -x; \
     chown -Rc labkey:labkey "${LABKEY_HOME}";
 
 
-COPY "labkeyServer-${LABKEY_VERSION}.jar" \
+COPY "labkeyServer.jar" \
     "app.jar"
 
 # add spring properties

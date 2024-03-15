@@ -4,10 +4,12 @@ on:
   push:
     branches:
       - fb_*
+      - '*_fb_*'
 
   pull_request:
     branches:
       - develop
+      - 'release*'
 
 jobs:
   dockle:

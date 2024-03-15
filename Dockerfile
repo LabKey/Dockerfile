@@ -200,7 +200,6 @@ RUN [ -n "${DEBUG}" ] && set -x; \
 
 
 COPY "labkeyServer.jar" \
-    "app.jar"
 
 # add spring properties
 COPY application.properties config/

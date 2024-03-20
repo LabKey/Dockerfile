@@ -73,9 +73,9 @@ ENV DEBUG="${DEBUG}" \
     TOMCAT_KEYSTORE_FORMAT="PKCS12" \
     TOMCAT_KEYSTORE_ALIAS="tomcat" \
     \
-    TOMCAT_SSL_CIPHERS="HIGH:!ADH:!EXP:!SSLv2:!SSLv3:!MEDIUM:!LOW:!NULL:!aNULL" \
+    TOMCAT_SSL_CIPHERS="HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!kRSA:!EDH:!DHE:!DH:!ECDH" \
     TOMCAT_SSL_PROTOCOL="TLS" \
-    TOMCAT_SSL_ENABLED_PROTOCOLS="-TLSv1.3,+TLSv1.2" \
+    TOMCAT_SSL_ENABLED_PROTOCOLS="TLSv1.3,TLSv1.2" \
     \
     TOMCAT_ENABLE_ACCESS_LOG= 
 
@@ -199,8 +199,7 @@ RUN [ -n "${DEBUG}" ] && set -x; \
     chown -Rc labkey:labkey "${LABKEY_HOME}";
 
 
-COPY "labkeyServer-${LABKEY_VERSION}.jar" \
-    "app.jar"
+COPY "labkeyServer.jar" "${LABKEY_HOME}"
 
 # add spring properties
 COPY application.properties config/

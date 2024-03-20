@@ -297,7 +297,7 @@ main() {
     \
     ${JAVA_PRE_JAR_EXTRA} \
     \
-    -jar app.jar \
+    -jar labkeyServer.jar \
     \
     ${JAVA_POST_JAR_EXTRA} \
     \

@@ -151,7 +151,7 @@ main() {
   # echo "sleeping for $SLEEP seconds..."
   # sleep $SLEEP
 
-  for prop_file in startup/*.properties; do
+  for prop_file in startup/*.properties config/application.properties; do
     envsubst < "$prop_file" > "${prop_file}.tmp" \
       && mv "${prop_file}.tmp" "$prop_file"
   done

@@ -6,11 +6,15 @@ This repo contains a Dockerfile, `docker-compose.yml`, and various other files f
 
 This repo is a work in progress. Containers created from these sources are untested. Until further work is done, integrations with LabKey products that traditionally have relied on OS configuration such as R reports or Python scripts will **NOT** work.
 
+## Upgrading from 23.11 to 24.3
+March 2024 saw [many changes]([link](https://github.com/LabKey/Dockerfile/commits/24.3.0)) in an effort to bring this repo in line with LabKey server versioning/releases, starting with v24.3. The only known breaking change is the .jar extracted from a build archive, to be copied into the Docker image, is no longer versioned, but simply `labkeyServer.jar`. 
+
+
 ## Prerequisites
 
 To fully use this repo, you will need installed:
 
-- Docker >= v20.10.9 recommended 
+- Docker >= v20.10.24 recommended 
 - GNU Make
 - GNU Awk
 
@@ -20,7 +24,8 @@ Optionally, to publish containers to AWS's ECR service using this repo's `Makefi
 
 **You will also need the `.jar` file of an embedded LabKey distribution.**
 
-A [`COPY` instruction](https://docs.docker.com/engine/reference/builder/#copy) in the Dockerfile expects this `.jar` file's filename to look like: "labkeyServer-${LABKEY_VERSION}.jar" (where `LABKEY_VERSION` is defined by the "LABKEY_VERSION" environment variable), and for it to be **in the root of this repo**. You will mostly likely _not_ need to rename the file, but you _will_ need to set `LABKEY_VERSION` according to the version within the file's name.
+A [`COPY` instruction](https://docs.docker.com/engine/reference/builder/#copy) in the Dockerfile expects this `.jar` file's filename to look like: "labkeyServer.jar", and for it to be **in the root of this repo**. 
+Set the `LABKEY_VERSION` environment variable to the version number from the installation archive filename (eg '24.3.4' from 'LabKey24.3.4-6-community-embedded.tar.gz').
 
 You can obtain this file by following these steps:
 
@@ -29,6 +34,7 @@ You can obtain this file by following these steps:
   3. Extract the `.jar` into the root of the repo: 
 
      `tar -xzf [path/to/.tar.gz] --include='LabKey*labkeyServer*.jar' --strip-components 1 -C [path/to/repo/]`
+  4. non-embedded versions of LabKey (< 24.3) will need to rename the .jar to labkeyServer.jar
 
 ## TL;DR  ... Quick Start 
   1. brew install docker jq awscli
@@ -38,7 +44,7 @@ You can obtain this file by following these steps:
   1. Copy in the labkey community embedded `.jar` file to the same directory as the repo (see above on how to obtain)
   1. Export the minimal required environment variables or edit and source the quickstart_envs.sh
   
-        `export LABKEY_VERSION="21.9.0"` ... 
+        `export LABKEY_VERSION="24.3.4"` ... 
      
         or
      
@@ -60,7 +66,7 @@ You can obtain this file by following these steps:
 
 ## Building a Container
 
-This repo includes a `Makefile` which aim is to ease the running of the necessary commands for creating containers. The **default action** of the `Makefile` is to log into the AWS ECR service, build, tag, and push a docker container (the `all:` target) to an ECR repo named after the chosen distribution.
+This repo includes a `Makefile` which aims to ease the running of the necessary commands for creating containers. The **default action** of the `Makefile` is to log into the AWS ECR service, build, tag, and push a docker container (the `all:` target) to an ECR repo named after the chosen distribution.
 
 Building a container is as simple as `make build`:
 
@@ -70,10 +76,10 @@ docker build \
   --rm \
   --compress \
   --no-cache \
-  -t labkey/community:21.3-snapshot \
+  -t labkey/community:24.3.4 \
   -t labkey/community:latest \
   --build-arg 'DEBUG=' \
-  --build-arg 'LABKEY_VERSION=21.3-SNAPSHOT' \
+  --build-arg 'LABKEY_VERSION=24.3.4' \
   --build-arg 'LABKEY_DISTRIBUTION=community'
   --build-arg 'LABKEY_EK=123abc456' \
   .
@@ -84,7 +90,7 @@ Step 27/27 : ENTRYPOINT /entrypoint.sh
 Removing intermediate container db19946ff9de
  ---> 6c15d5de57a6
 Successfully built 6c15d5de57a6
-Successfully tagged labkey/community:21.3-snapshot
+Successfully tagged labkey/community:24.3.4
 Successfully tagged labkey/community:latest
 ```
 
@@ -115,25 +121,38 @@ Setting `DEBUG` to any value will suffice: `docker build ... --build-arg DEBUG=1
 
 ## Docker
 
-The `Dockerfile` currently supports 2 base-container operating systems, Alpine Linux and Debian-based Linux. Both of which originate from `eclipse-temurin`. Toggling between the two or overriding them can be achieved by changing the `FROM_TAG` Docker build arg. The `Dockerfile` provides 2 examples:
+The `Dockerfile` currently supports 2 base-container operating systems, Alpine Linux and Debian-based Linux, both of which originate from `eclipse-temurin`. Debian-based Linux deployments are much more thoroughly tested. Toggling between the two or overriding them can be achieved by changing the `FROM_TAG` Docker build arg. The `Dockerfile` provides 2 examples:
 
-- alpine-based
-  - FROM_REPO_IMAGE=eclipse-temurin
-  - FROM_TAG=17-jre-alpine
 - debian-based
-  - FROM_REPO_IMAGE=eclipse-temurin
   - FROM_TAG=17-jre
+- alpine-based
+  - FROM_TAG=17-jre-alpine
 
-| name            | purpose                                                | default                  |
-| --------------- | ------------------------------------------------------ | ------------------------ |
-| FROM_REPO_IMAGE | Docker repository & image to use as basis of container | `adoptopenjdk` |
-| FROM_TAG        | repository tag to use as basis of container            | `16-jre`             |
+| name            | purpose                                                                          | default                  |
+| --------------- | ------------------------------------------------------                           | ------------------------ |                          
+| FROM_REPO_IMAGE | Docker repository & image to use as basis of container                           | `eclipse-temurin` |
+| FROM_TAG        | repository tag to use as basis of container                                      | `17-jre`             |
+| LABKEY_HOME     | The Docker WORKDIR and top level under which all LabKey-related files are nested | `/labkey` |
+| BUILD_REMOTE_TAG | allows for alternate remote tags during `make tag` and `make push`  | [BUILD_REPO_URI]/labkey/community:[LABKEY_VERSION] |
+
+## Docker Compose
+
+Several ENVs and 'up' commands were added to faciliate running different distribution containers on the same system (though not simultaneously)
+
+| name          | purpose                                                                    | default|
+| ----          | ----                                                                       | -----   |
+| COMPOSE_IMAGE | 'image:' for docker-compose service                                         | labkey/community |
+| IDENT         | isolate postgres data directory from other containers (.pgdata/[IDENT]-data) | postgres |
+
+These can be leveraged with commands such as:
+* COMPOSE_IMAGE=labkey/lims_starter IDENT=lims_starter LABKEY_DISTRIBUTION=lims_starter make up-lims_starter
+* COMPOSE_IMAGE=labkey/enterprise IDENT=enterprise LABKEY_DISTRIBUTION=enterprise make up-enterprise
 
 ## LabKey
 
-Original locations for these configuration details range from XML file contents from `server.xml` to `context.xml` (`ROOT.xml` or `labkey.xml`), to ENVs consumed by java (`JAVA_OPTS`), ENVs consumed directly by LabKey, and ENVs consumed by tomcat (`setenv.sh`, `CATALINA_OPTS`). The goal here is to expose them all as ENVs configurable via Docker at both build time and run time.
+Non-Docker LabKey server installations prior to 24.3 kept configuration details in a range of XML files (eg `server.xml`, `ROOT.xml`, `labkey.xml`), ENVs consumed by java (`JAVA_OPTS`), ENVs consumed directly by LabKey, and ENVs consumed by tomcat (`setenv.sh`, `CATALINA_OPTS`). The goal *here* is to expose them all as ENVs configurable via Docker at both build time and run time. If you are migrating to this Docker setup from a standard server installation, you may need to first gather your configuration details. See [this upgrade document]([link](https://www.labkey.org/Documentation/wiki-page.view?name=labkeyxml)) for more details, but note that it is intended for server-to-server migrations, not server-to-Docker.
 
-A better description of the LabKey settings can be found [in the LabKey docs](https://www.labkey.org/Documentation/wiki-page.view?name=customizeLook#properties).
+A better description of the LabKey settings can be found in the LabKey docs [here](https://www.labkey.org/Documentation/wiki-page.view?name=customizeLook#properties).
 
 `LABKEY_GUID` is only relevant if you are attempting to created/run a container destined to connect to a pre-existing database belonging to a pre-existing LabKey.
 
@@ -204,7 +223,7 @@ The `CERT_*` ENVs should look familiar to anyone that has used the `openssl` com
 | TOMCAT_KEYSTORE_ALIAS        | self-signed cert/keystore "alias"                            | `tomcat`                                                 |
 | TOMCAT_KEYSTORE_FILENAME     | self-signed cert/keystore filename                           | `labkey.p12`                                             |
 | TOMCAT_KEYSTORE_FORMAT       | self-signed cert/keystore format                             | `PKCS12`                                                 |
-| TOMCAT_SSL_CIPHERS           | allowable SSL ciphers for use by Spring Boot                 | `HIGH:!ADH:!EXP:!SSLv2:!SSLv3:!MEDIUM:!LOW:!NULL:!aNULL` |
+| TOMCAT_SSL_CIPHERS           | allowable SSL ciphers for use by tomcat | `HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!kRSA:!EDH:!DHE:!DH:!CAMELLIA:!ARIA:!AESCCM:!SHA:!CHACHA20` |
 | TOMCAT_SSL_ENABLED_PROTOCOLS | allowable SSL protocols and versions                         | `TLSv1.3,TLSv1.2`                                        |
 | TOMCAT_SSL_PROTOCOL          | basic SSL protocol to use                                    | `TLS`                                                    |
 | CERT_C                       | "Country" value for the generated self-signed cert           | `US`                                                     |
@@ -228,11 +247,9 @@ Since java can be picky about the position of CLI values, `JAVA_PRE_JAR_EXTRA` a
 
 ## Development Notes
 
-In contrast to `application.properties`, the "startup properties" files housed in `startup/`, are LabKey's own implementation of `.properties` file(s) and generally are less feature rich that Springs'. Environment Variable substitution for example does not function within LabKey `.properties` files, which is why `gettext` is required for `entrypoint.sh`'s use of `envsubst`.
+In contrast to `application.properties`, the "startup properties" files housed in `startup/`, are LabKey's own implementation of `.properties` file(s) and generally are less feature rich that Springs'.
 
 ## Tips
-
-Users of macOS will have more luck using GNU Make as installed by **Homebrew** and executed as `gmake`.
 
 Q: Why is my labkey container "unhealthy"?
 
@@ -244,9 +261,8 @@ A: LabKey containers produced from this repo contain a [`HEALTHCHECK` instructio
 - [Sample `pg.properties` file](https://github.com/LabKey/server/blob/develop/server/configs/pg.properties) -- contains some values referenced in application.properties above
 - [LabKey Bootstrap Properties](https://www.labkey.org/Documentation/wiki-page.view?name=bootstrapProperties)
 - [Dockerfile Reference](https://docs.docker.com/engine/reference/builder/)
-- [Compose file v3 Reference](https://docs.docker.com/compose/compose-file/compose-file-v3/)
+- [Compose file Reference](https://docs.docker.com/compose/compose-file/)
 - [`logback` "pattern" Reference](http://logback.qos.ch/manual/layouts.html#conversionWord)
 - [`log4j2` "pattern" Reference](https://logging.apache.org/log4j/log4j-2.0/manual/layouts.html)
 - [`log4j` Migration Reference](https://logging.apache.org/log4j/2.x/manual/migration.html)
 - [How the JVM Finally Plays Nice with Containers](https://www.atamanroman.dev/articles/usecontainersupport-to-the-rescue/)
-- ["how to reduce spring boot memory usage?"](https://stackoverflow.com/a/52993285)

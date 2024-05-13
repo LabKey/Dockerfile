@@ -37,7 +37,6 @@ You can obtain this file by following these steps:
   3. Extract the `.jar` into the root of the repo: 
 
      `tar -xzf [path/to/.tar.gz] --include='LabKey*labkeyServer*.jar' --strip-components 1 -C [path/to/repo/]`
-  4. non-embedded versions of LabKey (< 24.3) will need to rename the .jar to labkeyServer.jar
 
 ## TL;DR  ... Quick Start 
   1. brew install docker jq awscli

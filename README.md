@@ -7,7 +7,7 @@ This repo contains a Dockerfile, `docker-compose.yml`, and various other files f
 This repo is a work in progress. Containers created from these sources are untested. Until further work is done, integrations with LabKey products that traditionally have relied on OS configuration such as R reports or Python scripts will **NOT** work.
 
 ## Upgrading from 23.11 to 24.3
-March 2024 saw [many changes]([link](https://github.com/LabKey/Dockerfile/commits/24.3.0)) in an effort to bring this repo in line with LabKey server versioning/releases, starting with v24.3, in which the embedded tomcat version has been upgraded from 9 to 10. 
+March 2024 saw [many changes](https://github.com/LabKey/Dockerfile/commits/24.3.0) in an effort to bring this repo in line with LabKey server versioning/releases, starting with v24.3, in which the embedded tomcat version has been upgraded from 9 to 10. 
 
 v24.3 also removes the version number from the .jar extracted from the build archive, so it is now simply `labkeyServer.jar`.
 
@@ -153,7 +153,7 @@ These can be leveraged with commands such as:
 
 ## LabKey
 
-Non-Docker LabKey server installations prior to 24.3 kept configuration details in a range of XML files (eg `server.xml`, `ROOT.xml`, `labkey.xml`), ENVs consumed by java (`JAVA_OPTS`), ENVs consumed directly by LabKey, and ENVs consumed by tomcat (`setenv.sh`, `CATALINA_OPTS`). The goal *here* is to expose them all as ENVs configurable via Docker at both build time and run time. If you are migrating to this Docker setup from a standard server installation, you may need to first gather your configuration details. See [this upgrade document]([link](https://www.labkey.org/Documentation/wiki-page.view?name=labkeyxml)) for more details, but note that it is intended for server-to-server migrations, not server-to-Docker.
+Non-Docker LabKey server installations prior to 24.3 kept configuration details in a range of XML files (eg `server.xml`, `ROOT.xml`, `labkey.xml`), ENVs consumed by java (`JAVA_OPTS`), ENVs consumed directly by LabKey, and ENVs consumed by tomcat (`setenv.sh`, `CATALINA_OPTS`). The goal *here* is to expose them all as ENVs configurable via Docker at both build time and run time. If you are migrating to this Docker setup from a standard server installation, you may need to first gather your configuration details. See [this upgrade document](https://www.labkey.org/Documentation/wiki-page.view?name=labkeyxml) for more details, but note that it is intended for server-to-server migrations, not server-to-Docker.
 
 A better description of the LabKey settings can be found in the LabKey docs [here](https://www.labkey.org/Documentation/wiki-page.view?name=customizeLook#properties).
 

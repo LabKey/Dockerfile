@@ -249,7 +249,7 @@ Since java can be picky about the position of CLI values, `JAVA_PRE_JAR_EXTRA` a
 
 ## Development Notes
 
-In contrast to `application.properties`, the "startup properties" files housed in `startup/`, are LabKey's own implementation of `.properties` file(s) and generally are less feature rich that Springs'.
+In contrast to `application.properties`, the "startup properties" files housed in `startup/`, are LabKey's own implementation of `.properties` file(s) and generally are less feature rich that Spring Boot's, and are specific to LabKey application settings.
 
 ## Tips
 

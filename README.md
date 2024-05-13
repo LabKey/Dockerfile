@@ -7,8 +7,11 @@ This repo contains a Dockerfile, `docker-compose.yml`, and various other files f
 This repo is a work in progress. Containers created from these sources are untested. Until further work is done, integrations with LabKey products that traditionally have relied on OS configuration such as R reports or Python scripts will **NOT** work.
 
 ## Upgrading from 23.11 to 24.3
-March 2024 saw [many changes]([link](https://github.com/LabKey/Dockerfile/commits/24.3.0)) in an effort to bring this repo in line with LabKey server versioning/releases, starting with v24.3. The only known breaking change is the .jar extracted from a build archive, to be copied into the Docker image, is no longer versioned, but simply `labkeyServer.jar`. 
+March 2024 saw [many changes]([link](https://github.com/LabKey/Dockerfile/commits/24.3.0)) in an effort to bring this repo in line with LabKey server versioning/releases, starting with v24.3, in which the embedded tomcat version has been upgraded from 9 to 10. 
 
+v24.3 also removes the version number from the .jar extracted from the build archive, so it is now simply `labkeyServer.jar`.
+
+Using a pre-24.3 version of the .jar with a post-24.3 version of this repo will fail spectacularly.
 
 ## Prerequisites
 

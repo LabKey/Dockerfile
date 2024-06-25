@@ -1,6 +1,6 @@
 # main eclipse-temurin jre, which is debian-based
 ARG FROM_REPO_IMAGE=eclipse-temurin
-ARG FROM_TAG=17-jre
+ARG FROM_TAG=17-jre-jammy
 
 # uncomment for alpine-based eclipse-temurin jre
 # ARG FROM_TAG=17-jre-alpine

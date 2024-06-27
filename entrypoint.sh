@@ -24,7 +24,7 @@ JSON_OUTPUT="${JSON_OUTPUT:-false}"
 CSP_REPORT="${CSP_REPORT:-}"
 CSP_ENFORCE="${CSP_ENFORCE:-}"
 
-# for ecs/datadog, optionally enable APM metrics
+# for ecs/datadog, optionally enable APM and JMX metrics
 DD_COLLECT_APM="${DD_COLLECT_APM:-false}"
 
 SLEEP="${SLEEP:=0}"
@@ -227,12 +227,6 @@ main() {
 
   sed -i "s/@@encryptionKey@@/${LABKEY_EK}/" config/application.properties
 
-  echo "Purging secrets and other bits from environment variables..."
-  unset POSTGRES_USER POSTGRES_PASSWORD POSTGRES_HOST POSTGRES_PORT POSTGRES_DB POSTGRES_PARAMETERS CSP_REPORT CSP_ENFORCE
-  unset SMTP_HOST SMTP_USER SMTP_PORT SMTP_PASSWORD SMTP_AUTH SMTP_FROM SMTP_STARTTLS
-  unset LABKEY_CREATE_INITIAL_USER LABKEY_CREATE_INITIAL_USER_APIKEY LABKEY_INITIAL_USER_APIKEY LABKEY_INITIAL_USER_EMAIL LABKEY_INITIAL_USER_GROUP LABKEY_INITIAL_USER_ROLE
-  unset LABKEY_EK SLEEP
-
   if [ "$JSON_OUTPUT" = "true" ] && [ "$LOG4J_CONFIG_FILE" = "log4j2.xml" ]; then
     echo "JSON_OUTPUT==true && LOG4J_CONFIG_FILE==log4j2.xml, so updating application.properties and log4j2.xml to output JSON to console"
     sed -i '/<!-- p=priority c=category d=datetime t=thread m=message n=newline -->/d' $LOG4J_CONFIG_FILE
@@ -243,15 +237,31 @@ main() {
   fi
 
   export DD_JAVA_AGENT=""
+  export DD_JMX=""
   if [ "$DD_COLLECT_APM" = "true" ]; then
     echo "DD_COLLECT_APM==true , so adding EC2 host's private IP to env vars as DD_AGENT_HOST"
     export TOKEN=$(curl --max-time 3 -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"); 
     export DD_AGENT_HOST=$(curl --max-time 3 -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/local-ipv4);
 
-    echo "Adding -javaagent to java command"
+    echo "Adding -javaagent and jmx settings to java command"
     export DD_JAVA_AGENT="-javaagent:./datadog/dd-java-agent.jar -Ddd.profiling.enabled=true -Ddd.logs.injection=true -XX:FlightRecorderOptions=stackdepth=256"
 
+    # export $CONTAINER_PRIVATE_IP=$(hostname -i)
+    export DD_JMX="-Dspring.jmx.enabled=true \
+        -Dcom.sun.management.jmxremote \
+        -Dcom.sun.management.jmxremote.authenticate=false \
+        -Dcom.sun.management.jmxremote.ssl=false \
+        -Dcom.sun.management.jmxremote.local.only=false \
+        -Dcom.sun.management.jmxremote.port=7199 \
+        -Dcom.sun.management.jmxremote.rmi.port=7199 \
+        -Djava.rmi.server.hostname=typea-live-jmx.lkpoc.labkey.com" 
   fi
+
+  echo "Purging secrets and other bits from environment variables..."
+  unset POSTGRES_USER POSTGRES_PASSWORD POSTGRES_HOST POSTGRES_PORT POSTGRES_DB POSTGRES_PARAMETERS CSP_REPORT CSP_ENFORCE
+  unset SMTP_HOST SMTP_USER SMTP_PORT SMTP_PASSWORD SMTP_AUTH SMTP_FROM SMTP_STARTTLS
+  unset LABKEY_CREATE_INITIAL_USER LABKEY_CREATE_INITIAL_USER_APIKEY LABKEY_INITIAL_USER_APIKEY LABKEY_INITIAL_USER_EMAIL LABKEY_INITIAL_USER_GROUP LABKEY_INITIAL_USER_ROLE
+  unset LABKEY_EK SLEEP CONTAINER_PRIVATE_IP
 
   HEAP_DUMP_PATH="$LABKEY_HOME/files/heap_dumps_$(date +%Y%m%d_%H%M%S)"
   mkdir -pv $HEAP_DUMP_PATH
@@ -294,6 +304,8 @@ main() {
     -DterminateOnStartupFailure=true \
     \
     ${DD_JAVA_AGENT} \
+    \
+    ${DD_JMX} \
     \
     ${JAVA_PRE_JAR_EXTRA} \
     \

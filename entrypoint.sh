@@ -26,6 +26,7 @@ CSP_ENFORCE="${CSP_ENFORCE:-}"
 
 # for ecs/datadog, optionally enable APM and JMX metrics
 DD_COLLECT_APM="${DD_COLLECT_APM:-false}"
+JAVA_RMI_SERVER_HOSTNAME="${JAVA_RMI_SERVER_HOSTNAME:-}"
 
 SLEEP="${SLEEP:=0}"
 
@@ -246,7 +247,6 @@ main() {
     echo "Adding -javaagent and jmx settings to java command"
     export DD_JAVA_AGENT="-javaagent:./datadog/dd-java-agent.jar -Ddd.profiling.enabled=true -Ddd.logs.injection=true -XX:FlightRecorderOptions=stackdepth=256"
 
-    # export $CONTAINER_PRIVATE_IP=$(hostname -i)
     export DD_JMX="-Dspring.jmx.enabled=true \
         -Dcom.sun.management.jmxremote \
         -Dcom.sun.management.jmxremote.authenticate=false \
@@ -254,7 +254,7 @@ main() {
         -Dcom.sun.management.jmxremote.local.only=false \
         -Dcom.sun.management.jmxremote.port=7199 \
         -Dcom.sun.management.jmxremote.rmi.port=7199 \
-        -Djava.rmi.server.hostname=typea-live-jmx.lkpoc.labkey.com" 
+        -Djava.rmi.server.hostname=${JAVA_RMI_SERVER_HOSTNAME}" 
   fi
 
   echo "Purging secrets and other bits from environment variables..."

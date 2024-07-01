@@ -251,6 +251,13 @@ Since java can be picky about the position of CLI values, `JAVA_PRE_JAR_EXTRA` a
 
 In contrast to `application.properties`, the "startup properties" files housed in `startup/`, are LabKey's own implementation of `.properties` file(s) and generally are less feature rich that Spring Boot's, and are specific to LabKey application settings.
 
+## JMX & Datadog
+For the datadog agent to collect JMX metrics from inside a container running in ECS, set the `JAVA_RMI_SERVER_HOSTNAME` env var. This can be set to 'localhost' in most deployments.
+
+If deploying to ECS with EC2 instances, and using `awsvpc` mode (instead of bridge), you will likely also need to set up Discovery Service for the ECS service, and use the resulting URI as both the `JAVA_RMI_SERVER_HOSTNAME` env var and as a [dockerLabel](https://docs.datadoghq.com/containers/docker/integrations/?tab=docker), for the [datadog agent](https://docs.datadoghq.com/containers/amazon_ecs/?tab=awscli) to see and use with [AutoDiscovery](https://docs.datadoghq.com/getting_started/containers/autodiscovery).
+
+Note: this is fairly specific to LabKey's usage. Your mileage may vary. 
+
 ## Tips
 
 Q: Why is my labkey container "unhealthy"?

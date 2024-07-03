@@ -150,7 +150,7 @@ RUN [ -n "${DEBUG}" ] && set -x; \
         export DEBIAN_FRONTEND=noninteractive; \
         apt-get update; \
         apt-get -yq --no-install-recommends install \
-            openssl=3.0.2-0ubuntu1.15 \
+            openssl=3.0.2-0ubuntu1.16 \
             gettext-base=0.21-4ubuntu4 \
             unzip=6.0-26ubuntu3.1 \
             ; \

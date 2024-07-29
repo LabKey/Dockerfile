@@ -175,17 +175,17 @@
         </Logger>
 
         <!-- category for Mule messages -->
-        <Logger name="org.mule.MuleManager" additivity="false" level="info"/>
+        <Logger name="org.mule.MuleManager" level="info"/>
 
         <!--
             <Logger name="org.labkey.pipeline.mule.transformers" level="debug"/>
         -->
 
         <!-- category for jasper messages -->
-        <Logger name="org.apache.jasper" additivity="false" level="warn"/>
+        <Logger name="org.apache.jasper" level="warn"/>
 
         <!-- application classes -->
-        <Logger name="org.fhcrc" additivity="false" level="info"/>
+        <Logger name="org.fhcrc" level="info"/>
 
         <Logger name="org.labkey" level="${env:LOG_LEVEL_LABKEY_DEFAULT:-INFO}" />
 
@@ -201,7 +201,7 @@
             <AppenderRef ref="LABKEY"/>
         </Logger> -->
 
-        <Logger name="mondrian." additivity="false" level="info" />
+        <Logger name="mondrian." level="info" />
 
         <!--
             <Logger name="org.labkey.wiki" level="debug"/>
@@ -212,13 +212,13 @@
         -->
 
         <!-- only show errors from PipelineJob output -->
-        <Logger name="org.labkey.api.pipeline.PipelineJob" additivity="false" level="error"/>
+        <Logger name="org.labkey.api.pipeline.PipelineJob" level="error"/>
 
         <!-- don't need to log PDFBox errors (e.g., FlateFilter, PDCIDFontType2) -->
-        <Logger name="org.apache.pdfbox" additivity="false" level="fatal"/>
+        <Logger name="org.apache.pdfbox" level="fatal"/>
 
         <!-- Suppress EHCache "maxElementsInMemory of 0" warnings, Issue 49593 -->
-        <Logger name="net.sf.ehcache.config.CacheConfiguration" additivity="false" level="error"/>
+        <Logger name="net.sf.ehcache.config.CacheConfiguration" level="error"/>
 
         <!-- this is a very verbose logger for security/permissions checking -->
         <!--
@@ -232,15 +232,15 @@
             <Logger name="org.labkey.api.data.Table" level="debug"/>
         -->
 
-        <Logger name="org.labkey.api.data" additivity="false"/>
+        <Logger name="org.labkey.api.data" />
 
-        <Logger name="org.labkey.api.dataiterator" additivity="false"/>
+        <Logger name="org.labkey.api.dataiterator" />
 
-        <Logger name="org.labkey.docker" additivity="false">
+        <Logger name="org.labkey.docker" >
             <level value="info"/>
         </Logger>
 
-        <Logger name="org.labkey.rstudio" additivity="false" level="info"/>
+        <Logger name="org.labkey.rstudio" level="info"/>
 
         <!--
             <Logger name="org.labkey.api.cache" level="debug"/>
@@ -284,7 +284,7 @@
         </Logger>
 
         <!--
-            <Logger name="org.labkey.api.view.ViewServlet" additivity="false" level="debug"/>
+            <Logger name="org.labkey.api.view.ViewServlet" level="debug"/>
         -->
 
         <!--

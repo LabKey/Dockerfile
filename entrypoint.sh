@@ -309,6 +309,8 @@ main() {
     \
     ${JAVA_PRE_JAR_EXTRA} \
     \
+    -verbose:class \
+    \
     -jar labkeyServer.jar \
     \
     ${JAVA_POST_JAR_EXTRA} \

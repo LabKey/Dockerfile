@@ -119,7 +119,7 @@ COPY entrypoint.sh /entrypoint.sh
 
 WORKDIR "${LABKEY_HOME}"
 
-# hadolint ignore=DL4006
+# hadolint ignore=DL4006,DL3008,DL3018
 RUN [ -n "${DEBUG}" ] && set -x; \
     set -eu; \
     \
@@ -128,7 +128,7 @@ RUN [ -n "${DEBUG}" ] && set -x; \
     if echo "${FROM_TAG}" | grep -i 'alpine'; then \
         apk update \
         && apk add --no-cache \
-            openssl=3.1.1-r1 \
+            openssl \
             gettext=0.21.1-r7 \
             unzip=6.0-r14 \
             curl=8.1.2-r0 \
@@ -150,7 +150,7 @@ RUN [ -n "${DEBUG}" ] && set -x; \
         export DEBIAN_FRONTEND=noninteractive; \
         apt-get update; \
         apt-get -yq --no-install-recommends install \
-            openssl=3.0.2-0ubuntu1.18 \
+            openssl \
             gettext-base=0.21-4ubuntu4 \
             unzip=6.0-26ubuntu3.1 \
             ; \

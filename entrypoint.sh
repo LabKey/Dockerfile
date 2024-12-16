@@ -245,7 +245,7 @@ main() {
     export DD_AGENT_HOST=$(curl --max-time 3 -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/local-ipv4);
 
     echo "Adding -javaagent and jmx settings to java command"
-    export DD_JAVA_AGENT="-javaagent:./datadog/dd-java-agent.jar -Ddd.profiling.enabled=true -Ddd.logs.injection=true -XX:FlightRecorderOptions=stackdepth=256"
+    export DD_JAVA_AGENT="-javaagent:./datadog/dd-java-agent.jar -Ddd.profiling.enabled=true -Ddd.logs.injection=true -XX:FlightRecorderOptions=stackdepth=256 -Ddd.trace.remove.integration-service-names.enabled=true"
 
     export DD_JMX="-Dspring.jmx.enabled=true \
         -Dcom.sun.management.jmxremote \

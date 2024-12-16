@@ -5,7 +5,7 @@ ARG FROM_TAG=17-jre-jammy
 # uncomment for alpine-based eclipse-temurin jre
 # ARG FROM_TAG=17-jre-alpine
 
-FROM ${FROM_REPO_IMAGE}:${FROM_TAG} as base
+FROM ${FROM_REPO_IMAGE}:${FROM_TAG} AS base
 
 LABEL maintainer="LabKey Systems Engineering <ops@labkey.com>"
 

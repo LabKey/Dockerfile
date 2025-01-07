@@ -17,27 +17,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-      # - name: Build an image from Dockerfile
-      #   run: |
-      #     cp labkeyServer-HelloWorld.jar labkeyServer.jar
-      #     LABKEY_VERSION=HelloWorld make build
-      # - name: Run dockle on helloworld image
-      #   uses: goodwithtech/dockle-action@0.1.0
-      #   env:
-      #     DOCKER_CONTENT_TRUST: 0
-      #   with:
-      #     image: 'labkey/community:helloworld'
-      #     format: 'list'
-      #     exit-code: '1'
-      #     exit-level: 'warn'
-      #     ignore: 'CIS-DI-0005,CIS-DI-0009,CIS-DI-0010,DKL-DI-0001'
-      # - name: Run xeol on helloworld image
-      #   uses: noqcks/xeol-action@v1.0.6
-      #   with:
-      #     image: "labkey/community:helloworld"
+        uses: actions/checkout@v4
+      - name: Build an image from Dockerfile
+        run: |
+          cp labkeyServer-HelloWorld.jar labkeyServer.jar
+          LABKEY_VERSION=HelloWorld make build
+      - name: Run dockle on helloworld image
+        uses: goodwithtech/dockle-action@v0.4.15
+        env:
+          DOCKER_CONTENT_TRUST: 0
+        with:
+          image: 'labkey/community:helloworld'
+          format: 'list'
+          exit-code: '1'
+          exit-level: 'warn'
+          ignore: 'CIS-DI-0005,CIS-DI-0009,CIS-DI-0010,DKL-DI-0001'
+      - name: Run xeol on helloworld image
+        uses: noqcks/xeol-action@v1.1.1
+        with:
+          image: "labkey/community:helloworld"
       - name: Run xeol on dir
-        uses: noqcks/xeol-action@v1.0.6
+        uses: noqcks/xeol-action@v1.1.1
         with:
           path: "."
   

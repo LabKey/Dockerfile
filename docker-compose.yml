@@ -421,6 +421,7 @@ services:
       - JSON_OUTPUT=${JSON_OUTPUT-false}
       - DD_COLLECT_APM=${DD_COLLECT_APM-false}
       - SLEEP=${SLEEP:-0}
+      - PURGE_HEAP_AND_ERROR_LOGS_OLDER_THAN_DAYS=${PURGE_HEAP_AND_ERROR_LOGS_OLDER_THAN_DAYS:-90}
 
   pg-lims_starter:
     image: postgres:15

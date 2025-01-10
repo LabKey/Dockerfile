@@ -1,6 +1,6 @@
 # main eclipse-temurin jre, which is debian-based
 ARG FROM_REPO_IMAGE=eclipse-temurin
-ARG FROM_TAG=17-jre-jammy
+ARG FROM_TAG=17-jre-noble
 
 # uncomment for alpine-based eclipse-temurin jre
 # ARG FROM_TAG=17-jre-alpine
@@ -151,8 +151,8 @@ RUN [ -n "${DEBUG}" ] && set -x; \
         apt-get update; \
         apt-get -yq --no-install-recommends install \
             openssl \
-            gettext-base=0.21-4ubuntu4 \
-            unzip=6.0-26ubuntu3.1 \
+            gettext-base=0.21-14ubuntu2 \
+            unzip=6.0-28ubuntu4.1 \
             ; \
         if [ -n "${DEBUG}" ]; then \
             # next 2 lines are to get postgres15 to install on ubuntu 22.04
@@ -160,13 +160,13 @@ RUN [ -n "${DEBUG}" ] && set -x; \
             wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | tee /etc/apt/trusted.gpg.d/pgdg.asc > /dev/null 2>&1; \
             apt-get update; \
             apt-get -yq --no-install-recommends install \
-                iputils-ping=3:20211215-1 \
-                less=590-1ubuntu0.22.04.1 \
-                netcat=1.218-4ubuntu1 \
-                postgresql-client-15=15.5-1.pgdg22.04+1 \
-                sudo=1.9.9-1ubuntu2.4 \
-                tree=2.0.2-1 \
-                vim=2:8.2.3995-1ubuntu2.13 \
+                iputils-ping=3:20240117-1build1 \
+                less=590-2ubuntu2.1 \
+                netcat-traditional=1.10-48 \
+                postgresql-client-16=16.6-0ubuntu0.24.04.1 \
+                sudo=1.9.15p5-3ubuntu5 \
+                tree=2.1.1-2ubuntu3 \
+                vim=2:9.1.0016-1ubuntu7.5 \
                 ; \
         fi; \
         apt-get -yq upgrade; \

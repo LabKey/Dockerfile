@@ -28,6 +28,9 @@ CSP_ENFORCE="${CSP_ENFORCE:-}"
 DD_COLLECT_APM="${DD_COLLECT_APM:-false}"
 JAVA_RMI_SERVER_HOSTNAME="${JAVA_RMI_SERVER_HOSTNAME:-}"
 
+# set age past which old heap and error log directories are removed
+PURGE_HEAP_AND_ERROR_LOGS_OLDER_THAN_DAYS="${PURGE_HEAP_AND_ERROR_LOGS_OLDER_THAN_DAYS:-90}"
+
 SLEEP="${SLEEP:=0}"
 
 main() {
@@ -263,8 +266,13 @@ main() {
   unset LABKEY_CREATE_INITIAL_USER LABKEY_CREATE_INITIAL_USER_APIKEY LABKEY_INITIAL_USER_APIKEY LABKEY_INITIAL_USER_EMAIL LABKEY_INITIAL_USER_GROUP LABKEY_INITIAL_USER_ROLE
   unset LABKEY_EK SLEEP CONTAINER_PRIVATE_IP
 
-  HEAP_DUMP_PATH="$LABKEY_HOME/files/heap_dumps_$(date +%Y%m%d_%H%M%S)"
-  mkdir -pv $HEAP_DUMP_PATH
+  echo "Creating new heap/error log directory..."
+  HEAP_AND_ERROR_PATH="$LABKEY_HOME/files/heap_dumps_and_errors_$(date +%Y%m%d_%H%M%S)"
+  mkdir -pv $HEAP_AND_ERROR_PATH
+
+  # purge old heap/error directories
+  echo "Purging heap/error log directories older than $PURGE_HEAP_AND_ERROR_LOGS_OLDER_THAN_DAYS days..."
+  find "$LABKEY_HOME/files/" -mindepth 1 -maxdepth 1 -type d -ctime +${PURGE_HEAP_AND_ERROR_LOGS_OLDER_THAN_DAYS} -name "heap*" | xargs rm -rf 
 
   # shellcheck disable=SC2086
   exec java \
@@ -272,13 +280,13 @@ main() {
     -Duser.timezone="${JAVA_TIMEZONE}" \
     \
     -XX:+HeapDumpOnOutOfMemoryError \
-    -XX:HeapDumpPath="${HEAP_DUMP_PATH}" \
+    -XX:HeapDumpPath="${HEAP_AND_ERROR_PATH}" \
     \
     -XX:MaxRAMPercentage="${MAX_JVM_RAM_PERCENT}" \
     \
     -XX:+UseContainerSupport \
     \
-    -XX:ErrorFile="${LABKEY_HOME}/logs/error_%p.log" \
+    -XX:ErrorFile="${HEAP_AND_ERROR_PATH}/error_%p.log" \
     \
     -Djava.net.preferIPv4Stack=true \
     \

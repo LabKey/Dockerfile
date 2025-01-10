@@ -25,9 +25,12 @@ LABKEY_VERSION ?= 21.5-SNAPSHOT
 LABKEY_DISTRIBUTION ?= community
 LABKEY_EK ?= 123abc456
 
+BUILD_ARCHITECTURE ?= linux/amd64
+
 # repo/image:tags must be lowercase
 BUILD_VERSION ?= $(shell      echo '$(LABKEY_VERSION)'      | tr A-Z a-z)
 BUILD_DISTRIBUTION := $(shell echo '$(LABKEY_DISTRIBUTION)' | tr A-Z a-z)
+BUILD_ARCHITECTURE ?= $(BUILD_ARCHITECTURE)
 
 BUILD_REPO_URI ?= $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com
 BUILD_REPO_NAME := labkey/$(BUILD_DISTRIBUTION)
@@ -57,6 +60,7 @@ build:
 	docker build \
 		--rm \
 		--compress \
+		--platform $(BUILD_ARCHITECTURE) \
 		$(CACHE_FLAG) \
 		-t $(BUILD_REPO_NAME):latest \
 		-t $(BUILD_LOCAL_TAG) \

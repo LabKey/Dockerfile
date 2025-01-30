@@ -15,7 +15,7 @@ LABKEY_CUSTOM_PROPERTIES_S3_URI="${LABKEY_CUSTOM_PROPERTIES_S3_URI:=none}"
 LABKEY_DEFAULT_PROPERTIES_S3_URI="${LABKEY_DEFAULT_PROPERTIES_S3_URI:=none}"
 
 # set below to 'labkeywebapp/WEB-INF/classes/log4j2.xml' to use embedded tomcat version from the built .jar
-LOG4J_CONFIG_FILE="${LOG4J_CONFIG_FILE:=log4j2.xml}"
+LOG4J_CONFIG_FILE="${LOG4J_CONFIG_FILE}"
 
 # below assumes using local log4j2.xml file, as the embedded version is not available for edits until after server is running
 JSON_OUTPUT="${JSON_OUTPUT:-false}"
@@ -231,13 +231,18 @@ main() {
 
   sed -i "s/@@encryptionKey@@/${LABKEY_EK}/" config/application.properties
 
+  export LOG4J_JAVA_OPTION="-Dlog4j.configurationFile=$LOG4J_CONFIG_FILE"
   if [ "$JSON_OUTPUT" = "true" ] && [ "$LOG4J_CONFIG_FILE" = "log4j2.xml" ]; then
     echo "JSON_OUTPUT==true && LOG4J_CONFIG_FILE==log4j2.xml, so updating application.properties and log4j2.xml to output JSON to console"
     sed -i '/<!-- p=priority c=category d=datetime t=thread m=message n=newline -->/d' $LOG4J_CONFIG_FILE
     sed -i 's/<PatternLayout.*\/>/<JSONLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true" \/>/' $LOG4J_CONFIG_FILE
     sed -i 's/^logging.pattern.console/# logging.pattern.console/' config/application.properties
-  else
+  elif [ -n "$LOG4J_CONFIG_FILE" ]; then
     echo "saw JSON_OUTPUT=$JSON_OUTPUT and LOG4J_CONFIG_FILE=$LOG4J_CONFIG_FILE"
+  else
+    # if LOG4J_CONFIG_FILE isn't defined, clear the option so the version included in the jar is used
+    echo "saw JSON_OUTPUT=$JSON_OUTPUT and LOG4J_CONFIG_FILE is undefined, so using jar-based config"
+    export LOG4J_JAVA_OPTION=""
   fi
 
   export DD_JAVA_AGENT=""
@@ -303,7 +308,7 @@ main() {
     -Dlogback.debug="$debug_string" \
     \
     -Dlog4j.debug="$debug_string" \
-    -Dlog4j.configurationFile="$LOG4J_CONFIG_FILE" \
+    ${LOG4J_JAVA_OPTION} \
     \
     -Dorg.apache.catalina.startup.EXIT_ON_INIT_FAILURE=true \
     \

@@ -7,7 +7,9 @@ This repo contains a Dockerfile, `docker-compose.yml`, and various other files f
 This repo is a work in progress. Containers created from these sources are untested. Until further work is done, integrations with LabKey products that traditionally have relied on OS configuration such as R reports or Python scripts will **NOT** work.
 
 ## Content Security Policy
-February 2025 brings an enforced Content Security Policy enabled by default. It is the one LabKey uses in most if not all deployments, and is highly recommended to be left in place. In can, however, be disabled by enabling the ExperimentalFeature.disableEnforceCsp startup property.
+February 2025 brings an enforced Content Security Policy enabled by default, the same one that LabKey uses in most if not all deployments, and is highly recommended to be left in place. In can, however, be disabled by enabling the `ExperimentalFeature.disableEnforceCsp` startup property.
+
+The policy itself can be overriden with an `optional.application.properties` file.
 
 CSP_REPORT and CSP_ENFORCE environment variables have been removed.
 

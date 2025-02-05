@@ -12,6 +12,7 @@ keystore_alias="${TOMCAT_KEYSTORE_ALIAS:-}"
 keystore_format="${TOMCAT_KEYSTORE_FORMAT:-}"
 
 LABKEY_CUSTOM_PROPERTIES_S3_URI="${LABKEY_CUSTOM_PROPERTIES_S3_URI:=none}"
+LABKEY_OPTIONAL_APP_PROPERTIES_S3_URI="${LABKEY_OPTIONAL_APP_PROPERTIES_S3_URI:=none}"
 LABKEY_DEFAULT_PROPERTIES_S3_URI="${LABKEY_DEFAULT_PROPERTIES_S3_URI:=none}"
 
 # set below to 'labkeywebapp/WEB-INF/classes/log4j2.xml' to use embedded tomcat version from the built .jar
@@ -139,6 +140,11 @@ main() {
   if [ $LABKEY_CUSTOM_PROPERTIES_S3_URI != 'none' ]; then
     echo "trying to s3 cp '$LABKEY_CUSTOM_PROPERTIES_S3_URI'"
     awsclibin/aws s3 cp $LABKEY_CUSTOM_PROPERTIES_S3_URI startup/
+  fi
+
+  if [ $LABKEY_OPTIONAL_APP_PROPERTIES_S3_URI != 'none' ]; then
+    echo "trying to s3 cp '$LABKEY_OPTIONAL_APP_PROPERTIES_S3_URI'"
+    awsclibin/aws s3 cp $LABKEY_OPTIONAL_APP_PROPERTIES_S3_URI config/
   fi
 
   echo "sleeping for $SLEEP seconds..."

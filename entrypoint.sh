@@ -226,9 +226,7 @@ main() {
 
   if [ "$JSON_OUTPUT" = "true" ] && [ "$LOG4J_CONFIG_FILE" = "log4j2.xml" ]; then
     echo "JSON_OUTPUT==true && LOG4J_CONFIG_FILE==log4j2.xml, so updating application.properties and log4j2.xml to output JSON to console"
-    sed -i '/<!-- p=priority c=category d=datetime t=thread m=message n=newline -->/d' $LOG4J_CONFIG_FILE
-    sed -i 's/<PatternLayout.*\/>/<JSONLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true" \/>/' $LOG4J_CONFIG_FILE
-    sed -i 's/^logging.pattern.console/# logging.pattern.console/' config/application.properties
+    cp $LOG4J_CONFIG_FILE "$LABKEY_HOME/classes/configs/01.log4j2.xml"
   else
     echo "saw JSON_OUTPUT=$JSON_OUTPUT and LOG4J_CONFIG_FILE=$LOG4J_CONFIG_FILE"
   fi
@@ -296,7 +294,6 @@ main() {
     -Dlogback.debug="$debug_string" \
     \
     -Dlog4j.debug="$debug_string" \
-    -Dlog4j.configurationFile="$LOG4J_CONFIG_FILE" \
     \
     -Dorg.apache.catalina.startup.EXIT_ON_INIT_FAILURE=true \
     \

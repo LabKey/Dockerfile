@@ -13,6 +13,9 @@ The policy itself can be overriden with an `optional.application.properties` fil
 
 CSP_REPORT and CSP_ENFORCE environment variables have been removed.
 
+## log4j2.xml
+March 2025 brings a new implementation of log4j2.xml. We're now using the default configuration from the [server repo](https://github.com/LabKey/server/blob/develop/server/embedded/src/main/resources/log4j2.xml), and overwriting that as needed with the local log4j2.xml file in this repo. During startup, entrypoint.sh copies the local file into the configs directory after the jar has been opened up.
+
 ## Upgrading from 23.11 to 24.3
 March 2024 saw [many changes](https://github.com/LabKey/Dockerfile/commits/24.3.0) in an effort to bring this repo in line with LabKey server versioning/releases, starting with v24.3, in which the embedded tomcat version has been upgraded from 9 to 10. 
 

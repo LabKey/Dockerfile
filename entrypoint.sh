@@ -226,7 +226,7 @@ main() {
 
   if [ "$JSON_OUTPUT" = "true" ] && [ "$LOG4J_CONFIG_FILE" = "log4j2.xml" ]; then
     echo "JSON_OUTPUT==true && LOG4J_CONFIG_FILE==log4j2.xml, so updating application.properties and log4j2.xml to output JSON to console"
-    cp $LOG4J_CONFIG_FILE "$LABKEY_HOME/configs/01.log4j2.xml"
+    cp $LOG4J_CONFIG_FILE "$LABKEY_HOME/config/01.log4j2.xml"
   else
     echo "saw JSON_OUTPUT=$JSON_OUTPUT and LOG4J_CONFIG_FILE=$LOG4J_CONFIG_FILE"
   fi

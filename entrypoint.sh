@@ -12,6 +12,7 @@ keystore_alias="${TOMCAT_KEYSTORE_ALIAS:-}"
 keystore_format="${TOMCAT_KEYSTORE_FORMAT:-}"
 
 LABKEY_CUSTOM_PROPERTIES_S3_URI="${LABKEY_CUSTOM_PROPERTIES_S3_URI:=none}"
+LABKEY_OPTIONAL_APP_PROPERTIES_S3_URI="${LABKEY_OPTIONAL_APP_PROPERTIES_S3_URI:=none}"
 LABKEY_DEFAULT_PROPERTIES_S3_URI="${LABKEY_DEFAULT_PROPERTIES_S3_URI:=none}"
 
 # set below to 'labkeywebapp/WEB-INF/classes/log4j2.xml' to use embedded tomcat version from the built .jar
@@ -19,10 +20,6 @@ LOG4J_CONFIG_FILE="${LOG4J_CONFIG_FILE:=log4j2.xml}"
 
 # below assumes using local log4j2.xml file, as the embedded version is not available for edits until after server is running
 JSON_OUTPUT="${JSON_OUTPUT:-false}"
-
-# Content Security Policy settings
-CSP_REPORT="${CSP_REPORT:-}"
-CSP_ENFORCE="${CSP_ENFORCE:-}"
 
 # for ecs/datadog, optionally enable APM and JMX metrics
 DD_COLLECT_APM="${DD_COLLECT_APM:-false}"
@@ -145,6 +142,11 @@ main() {
     awsclibin/aws s3 cp $LABKEY_CUSTOM_PROPERTIES_S3_URI startup/
   fi
 
+  if [ $LABKEY_OPTIONAL_APP_PROPERTIES_S3_URI != 'none' ]; then
+    echo "trying to s3 cp '$LABKEY_OPTIONAL_APP_PROPERTIES_S3_URI'"
+    awsclibin/aws s3 cp $LABKEY_OPTIONAL_APP_PROPERTIES_S3_URI config/
+  fi
+
   echo "sleeping for $SLEEP seconds..."
   sleep $SLEEP
 
@@ -212,15 +214,6 @@ main() {
   sed -i "s/@@jdbcUser@@/${POSTGRES_USER:-postgres}/" config/application.properties
   sed -i "s/@@jdbcPassword@@/${POSTGRES_PASSWORD:-}/" config/application.properties
 
-  # note: leave newlines out of CSP_REPORT/ENFORCE env vars
-  #       ex: "default-src 'self' https: ; connect-src 'self' https: ; ...""
-  if [ -n "$CSP_REPORT" ]; then
-    echo "csp.report=$CSP_REPORT\n" >> config/application.properties
-  fi
-  if [ -n "$CSP_ENFORCE" ]; then
-    echo "csp.enforce=$CSP_ENFORCE\n" >> config/application.properties
-  fi
-
   sed -i "s/@@smtpHost@@/${SMTP_HOST}/" config/application.properties
   sed -i "s/@@smtpUser@@/${SMTP_USER}/" config/application.properties
   sed -i "s/@@smtpPort@@/${SMTP_PORT}/" config/application.properties
@@ -261,7 +254,7 @@ main() {
   fi
 
   echo "Purging secrets and other bits from environment variables..."
-  unset POSTGRES_USER POSTGRES_PASSWORD POSTGRES_HOST POSTGRES_PORT POSTGRES_DB POSTGRES_PARAMETERS CSP_REPORT CSP_ENFORCE
+  unset POSTGRES_USER POSTGRES_PASSWORD POSTGRES_HOST POSTGRES_PORT POSTGRES_DB POSTGRES_PARAMETERS
   unset SMTP_HOST SMTP_USER SMTP_PORT SMTP_PASSWORD SMTP_AUTH SMTP_FROM SMTP_STARTTLS
   unset LABKEY_CREATE_INITIAL_USER LABKEY_CREATE_INITIAL_USER_APIKEY LABKEY_INITIAL_USER_APIKEY LABKEY_INITIAL_USER_EMAIL LABKEY_INITIAL_USER_GROUP LABKEY_INITIAL_USER_ROLE
   unset LABKEY_EK SLEEP CONTAINER_PRIVATE_IP

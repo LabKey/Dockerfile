@@ -11,3 +11,4 @@ LabKey*.tar.gz
 startup/lims_starter-with-startup.properties
 startup/samplemanagement-with-startup.properties
 mounts/
+.DS_Store

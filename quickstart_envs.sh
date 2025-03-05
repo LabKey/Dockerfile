@@ -3,7 +3,7 @@
 # example minimal set of environment variables to get started - see readme for additional envs you may wish to set
 
 # embedded tomcat LabKey .jar version to build container with
-export LABKEY_VERSION="25.3"
+export LABKEY_VERSION="25.3-SNAPSHOT"
 
 # minimal SMTP settings
 export SMTP_HOST="localhost"
@@ -19,3 +19,5 @@ export LABKEY_CREATE_INITIAL_USER_APIKEY=""
 export LABKEY_DEFAULT_PROPERTIES_S3_URI="none"
 export LABKEY_CUSTOM_PROPERTIES_S3_URI="none"
 export LABKEY_OPTIONAL_APP_PROPERTIES_S3_URI="none"
+
+export LOG4J_CONFIG_OVERRIDE="override.log4j2.xml"

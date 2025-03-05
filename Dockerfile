@@ -72,6 +72,8 @@ ENV DEBUG="${DEBUG}" \
     LOG_LEVEL_SPRING_WEB="OFF" \
     LOG_LEVEL_SQL="OFF" \
     \
+    LOG4J_CONFIG_OVERRIDE=\
+    \
     TOMCAT_KEYSTORE_FILENAME="labkey.p12" \
     TOMCAT_KEYSTORE_FORMAT="PKCS12" \
     TOMCAT_KEYSTORE_ALIAS="tomcat" \
@@ -80,7 +82,7 @@ ENV DEBUG="${DEBUG}" \
     TOMCAT_SSL_ENABLED_PROTOCOLS="TLSv1.3,TLSv1.2" \
     TOMCAT_SSL_PROTOCOL="TLS" \
     \
-    TOMCAT_ENABLE_ACCESS_LOG= 
+    TOMCAT_ENABLE_ACCESS_LOG=
 
 ENV CERT_C="US" \
     CERT_ST="Washington" \
@@ -212,7 +214,8 @@ COPY "startup/${LABKEY_DISTRIBUTION}.properties" \
     startup/49_distribution.properties
 
 # add logging config files
-COPY log4j2.xml log4j2.xml
+#COPY log4j2.xml log4j2.xml
+COPY "${LOG4J_CONFIG_OVERRIDE}" "config/${LOG4J_CONFIG_OVERRIDE}"
 
 # add aws cli & make it owned by labkey user so it can all be deleted after s3 downloads in entrypoint.sh
 RUN mkdir -p /usr/src/awsclizip "${LABKEY_HOME}/awsclibin" "${LABKEY_HOME}/aws-cli" \

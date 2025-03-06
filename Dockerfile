@@ -14,10 +14,11 @@ FROM base
 # this will assume whatever FROM_TAG was set in first stage above
 ARG FROM_TAG
 
-ARG DEBUG=
+ARG DEBUG
 ARG LABKEY_VERSION
 ARG LABKEY_DISTRIBUTION
 ARG LABKEY_EK
+ARG LOG4J_CONFIG_OVERRIDE
 
 # dependent ENVs declared separately
 ENV POSTGRES_USER="postgres" \
@@ -72,8 +73,6 @@ ENV DEBUG="${DEBUG}" \
     LOG_LEVEL_SPRING_WEB="OFF" \
     LOG_LEVEL_SQL="OFF" \
     \
-    LOG4J_CONFIG_OVERRIDE=\
-    \
     TOMCAT_KEYSTORE_FILENAME="labkey.p12" \
     TOMCAT_KEYSTORE_FORMAT="PKCS12" \
     TOMCAT_KEYSTORE_ALIAS="tomcat" \
@@ -94,9 +93,9 @@ ENV CERT_C="US" \
     SMTP_HOST="localhost" \
     SMTP_USER="root" \
     SMTP_PORT="25" \
-    SMTP_PASSWORD= \
+    SMTP_PASSWORD="" \
     SMTP_FROM="${LABKEY_SYSTEM_EMAIL_ADDRESS}" \
-    SMTP_STARTTLS= \
+    SMTP_STARTTLS="" \
     SMTP_AUTH="false" \
     \
     MAX_JVM_RAM_PERCENT="90.0" \

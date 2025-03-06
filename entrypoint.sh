@@ -224,8 +224,10 @@ main() {
 
   sed -i "s/@@encryptionKey@@/${LABKEY_EK}/" config/application.properties
 
-  if [ "$JSON_OUTPUT" = "true" ] && [ "$LOG4J_CONFIG_FILE" = "log4j2.xml" ] && [ -n "$LOG4J_CONFIG_OVERRIDE" ]; then
-    echo "JSON_OUTPUT==true && LOG4J_CONFIG_FILE==log4j2.xml, so updating application.properties and log4j2.xml to output JSON to console"
+  # TODO: do we need the JSON check anymore? should we just take the override if it is set?
+  # Check if we want JSON output, we are using the base log4j2.xml config, and have an override config to use
+  if [ "${JSON_OUTPUT}" = "true" ] && [ "${LOG4J_CONFIG_FILE}" = "log4j2.xml" ] && [ -s "config/${LOG4J_CONFIG_OVERRIDE}" ]; then
+    echo "JSON_OUTPUT==true && LOG4J_CONFIG_FILE==log4j2.xml && LOG4J_CONFIG_OVERRIDE is set, so updating application.properties and log4j2.xml to output JSON to console"
     LOG4J_CONFIG_FILE="${LOG4J_CONFIG_FILE:=log4j2.xml},config/${LOG4J_CONFIG_OVERRIDE}"
     echo "Log4j configuration files: $LOG4J_CONFIG_FILE"
   else
@@ -296,6 +298,7 @@ main() {
     \
     -Dlog4j.debug="$debug_string" \
     -Dlog4j.configurationFile="$LOG4J_CONFIG_FILE" \
+    -Ddevmode=true \
     \
     -Dorg.apache.catalina.startup.EXIT_ON_INIT_FAILURE=true \
     \

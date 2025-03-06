@@ -25,6 +25,8 @@ LABKEY_VERSION ?= 21.5-SNAPSHOT
 LABKEY_DISTRIBUTION ?= community
 LABKEY_EK ?= 123abc456
 
+LOG4J_CONFIG_OVERRIDE ?= default.log4j2.xml
+
 BUILD_ARCHITECTURE ?= linux/amd64
 
 # repo/image:tags must be lowercase
@@ -69,6 +71,7 @@ build:
 		--build-arg 'LABKEY_VERSION=$(LABKEY_VERSION)' \
 		--build-arg 'LABKEY_DISTRIBUTION=$(BUILD_DISTRIBUTION)' \
 		--build-arg 'LABKEY_EK=$(LABKEY_EK)' \
+		--build-arg 'LOG4J_CONFIG_OVERRIDE=${LOG4J_CONFIG_OVERRIDE}' \
 		.
 
 login:

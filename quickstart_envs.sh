@@ -20,4 +20,4 @@ export LABKEY_DEFAULT_PROPERTIES_S3_URI="none"
 export LABKEY_CUSTOM_PROPERTIES_S3_URI="none"
 export LABKEY_OPTIONAL_APP_PROPERTIES_S3_URI="none"
 
-export LOG4J_CONFIG_OVERRIDE="override.log4j2.xml"
+export LOG4J_CONFIG_OVERRIDE="default.log4j2.xml"

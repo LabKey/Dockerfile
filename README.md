@@ -13,6 +13,9 @@ The policy itself can be overriden with an `optional.application.properties` fil
 
 CSP_REPORT and CSP_ENFORCE environment variables have been removed.
 
+## log4j2.xml
+March 2025 brings a new implementation of log4j2.xml. We're now using the default configuration from the [server repo](https://github.com/LabKey/server/blob/develop/server/embedded/src/main/resources/log4j2.xml), and overriding that as needed with the local file identified in the `LOG4J_CONFIG_OVERRIDE` environment variable. By default this is an empty file that makes no changes, which is due to some complications of the Docker `COPY` command. During startup, entrypoint.sh copies the local files into the configs directory after the jar has been opened up.
+
 ## Upgrading from 23.11 to 24.3
 March 2024 saw [many changes](https://github.com/LabKey/Dockerfile/commits/24.3.0) in an effort to bring this repo in line with LabKey server versioning/releases, starting with v24.3, in which the embedded tomcat version has been upgraded from 9 to 10. 
 
@@ -165,19 +168,21 @@ A better description of the LabKey settings can be found in the LabKey docs [her
 
 `LABKEY_GUID` is only relevant if you are attempting to created/run a container destined to connect to a pre-existing database belonging to a pre-existing LabKey.
 
-| name                        | purpose                                                                                                  | default                  |
-| --------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------ |
-| LABKEY_BASE_SERVER_URL      | full URI LabKey will use to refer to itself                                                              | `https://localhost:8443` |
-| LABKEY_COMPANY_NAME         | name of your organization; appears in emails                                                             | `Sirius Cybernetics`     |
-| LABKEY_DEFAULT_DOMAIN       | (DNS) domain where the LabKey server resides                                                             | `localhost`              |
-| LABKEY_DISTRIBUTION         | "flavor" of labkey;                                                                                      | `community`              |
-| LABKEY_FILES_ROOT           | path within which will serve as the root of the "files" directory                                        | `/labkey/files`          |
-| LABKEY_GUID                 | LabKey [server GUID](https://www.labkey.org/Documentation/wiki-page.view?name=stagingServerTips#guid)    | `<empty>`                |
-| LABKEY_EK                  | LabKey [encryption key](https://www.labkey.org/Documentation/wiki-page.view?name=cpasxml#encrypt) | `123abc456`                |
-| LABKEY_PORT                 | port to which labkey will bind within the container                                                      | `8443`                   |
-| LABKEY_SYSTEM_DESCRIPTION   | brief description of server; appears in emails                                                           | `Sirius Cybernetics`     |
-| LABKEY_SYSTEM_EMAIL_ADDRESS | email address system email will be sent "from"                                                           | `do_not_reply@localhost` |
-| LABKEY_SYSTEM_SHORT_NAME    | name of server displayed in header                                                                       | `Sirius Cybernetics`     |
+| name                        | purpose                                                                                               | default                  |
+|-----------------------------|-------------------------------------------------------------------------------------------------------|--------------------------|
+| LABKEY_BASE_SERVER_URL      | full URI LabKey will use to refer to itself                                                           | `https://localhost:8443` |
+| LABKEY_COMPANY_NAME         | name of your organization; appears in emails                                                          | `Sirius Cybernetics`     |
+| LABKEY_DEFAULT_DOMAIN       | (DNS) domain where the LabKey server resides                                                          | `localhost`              |
+| LABKEY_DISTRIBUTION         | "flavor" of labkey;                                                                                   | `community`              |
+| LABKEY_FILES_ROOT           | path within which will serve as the root of the "files" directory                                     | `/labkey/files`          |
+| LABKEY_GUID                 | LabKey [server GUID](https://www.labkey.org/Documentation/wiki-page.view?name=stagingServerTips#guid) | `<empty>`                |
+| LABKEY_EK                   | LabKey [encryption key](https://www.labkey.org/Documentation/wiki-page.view?name=cpasxml#encrypt)     | `123abc456`              |
+| LABKEY_PORT                 | port to which labkey will bind within the container                                                   | `8443`                   |
+| LABKEY_SYSTEM_DESCRIPTION   | brief description of server; appears in emails                                                        | `Sirius Cybernetics`     |
+| LABKEY_SYSTEM_EMAIL_ADDRESS | email address system email will be sent "from"                                                        | `do_not_reply@localhost` |
+| LABKEY_SYSTEM_SHORT_NAME    | name of server displayed in header                                                                    | `Sirius Cybernetics`     |
+| LOG4J_CONFIG_OVERRIDE       | Filename for a file that provides logging configuration overrides                                     | `default.log4j.xml`      |
+
 
 You can optionally bypass the initial user creation "wizard" by creating an initial user using the following environment variables. **At time of writing, there is no way to set the initial user's password.** Assuming valid SMTP configuration, the "forgot password" link can be used to accomplish this. Additionally, an API can be created for that user. If both `LABKEY_CREATE_INITIAL_USER` & `LABKEY_CREATE_INITIAL_USER_APIKEY` are set to a values other than empty strings, but `LABKEY_INITIAL_USER_APIKEY` is not set, a randomly generated string will be used. Setting `LABKEY_CREATE_INITIAL_USER_APIKEY` without having set `LABKEY_CREATE_INITIAL_USER` will result in NO initial user being added.
 

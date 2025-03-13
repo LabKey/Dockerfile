@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Configuration packages="org.labkey.api.util,org.labkey.embedded">
+
+    <Appenders>
+        <Console name="CONSOLE" target="SYSTEM_OUT">
+            <JSONLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true" />
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="org.labkey.api.script.ScriptService.Console" additivity="false" level="info">
+            <AppenderRef ref="SessionAppender"/>
+        </Logger>
+
+        <Logger name="org.fhcrc" level="info" />
+        <Logger name="org.labkey" level="${env:LOG_LEVEL_LABKEY_DEFAULT:-INFO}" />
+
+        <!--        Override the additivity -->
+        <Logger name="org.labkey.api.util.DebugInfoDumper" additivity="false" level="debug">
+            <AppenderRef ref="THREAD_DUMP"/>
+        </Logger>
+
+        <!-- Override the additivity, and output to Console -->
+        <Logger name="org.labkey.core.admin.AdminController.ContentSecurityPolicyReportAction" additivity="false" level="warn">
+            <AppenderRef ref="CSP_REPORT" />
+            <AppenderRef ref="CONSOLE" />
+        </Logger>
+
+        <!--        Override the additivity -->
+        <Logger name="org.labkey.core.admin.ActionsTsvWriter" additivity="false" level="${env:LOG_LEVEL_LABKEY_DEFAULT:-INFO}">
+            <AppenderRef ref="ACTION_STATS"/>
+        </Logger>
+
+        <!--        Override the output level -->
+        <Logger name="org.labkey.api.data.queryprofiler.QueryProfiler.QueryProfilerThread" additivity="false" level="${env:LOG_LEVEL_LABKEY_DEFAULT:-INFO}">
+            <AppenderRef ref="QUERY_STATS"/>
+        </Logger>
+
+        <!-- Override the audit log behavior -->
+<!--        <Logger name="org.labkey.audit.event" additivity="false" level="OFF">-->
+<!--            <AppenderRef ref="LABKEY_AUDIT"/>-->
+<!--            <AppenderRef ref="CONSOLE" />-->
+<!--        </Logger>-->
+    </Loggers>
+</Configuration>

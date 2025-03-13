@@ -25,6 +25,8 @@ LABKEY_VERSION ?= 21.5-SNAPSHOT
 LABKEY_DISTRIBUTION ?= community
 LABKEY_EK ?= 123abc456
 
+LOG4J_CONFIG_OVERRIDE ?= default.log4j2.xml
+
 BUILD_ARCHITECTURE ?= linux/amd64
 
 # repo/image:tags must be lowercase
@@ -69,6 +71,7 @@ build:
 		--build-arg 'LABKEY_VERSION=$(LABKEY_VERSION)' \
 		--build-arg 'LABKEY_DISTRIBUTION=$(BUILD_DISTRIBUTION)' \
 		--build-arg 'LABKEY_EK=$(LABKEY_EK)' \
+		--build-arg 'LOG4J_CONFIG_OVERRIDE=${LOG4J_CONFIG_OVERRIDE}' \
 		.
 
 login:
@@ -101,27 +104,27 @@ push:
 
 up:
 	$(call tc,bringing up compose)
-	docker-compose up --abort-on-container-exit ${BUILD_DISTRIBUTION} \
-			|| docker-compose stop ${BUILD_DISTRIBUTION} pg-${BUILD_DISTRIBUTION}
+	docker compose up --abort-on-container-exit ${BUILD_DISTRIBUTION} \
+			|| docker compose stop ${BUILD_DISTRIBUTION} pg-${BUILD_DISTRIBUTION}
 
 up-allpg:
 	$(call tc,bringing up compose)
-	docker-compose up --abort-on-container-exit allpg \
-			|| docker-compose stop allpg pg-allpg
+	docker compose up --abort-on-container-exit allpg \
+			|| docker compose stop allpg pg-allpg
 
 up-enterprise:
 	$(call tc,bringing up compose)
-	docker-compose up --abort-on-container-exit enterprise \
-			|| docker-compose stop enterprise pg-enterprise
+	docker compose up --abort-on-container-exit enterprise \
+			|| docker compose stop enterprise pg-enterprise
 
 up-lims_starter:
 	$(call tc,bringing up compose)
-	docker-compose up --abort-on-container-exit lims_starter \
-			|| docker-compose stop lims_starter pg-lims_starter
+	docker compose up --abort-on-container-exit lims_starter \
+			|| docker compose stop lims_starter pg-lims_starter
 
 down:
 	$(call tc,tearing down compose)
-	docker-compose down -v --remove-orphans
+	docker compose down -v --remove-orphans
 
 clean:
 	docker images | grep -E '$(BUILD_REPO_NAME)|<none>' \
@@ -131,13 +134,13 @@ clean:
 
 test: down
 	$(call tc,running smoke tests)
-	IDENT=${BUILD_DISTRIBUTION} docker-compose up --detach ${BUILD_DISTRIBUTION};
+	IDENT=${BUILD_DISTRIBUTION} docker compose up --detach ${BUILD_DISTRIBUTION};
 	@./smoke.bash \
 		&& printf "##teamcity[progressMessage '%s']\n" 'smoke test succeeded' \
 		|| printf "##teamcity[buildProblem description='%s' identity='%s']\n" \
 			'smoke test failed' \
 			'failure'
-	IDENT=${BUILD_DISTRIBUTION} docker-compose down -v
+	IDENT=${BUILD_DISTRIBUTION} docker compose down -v
 
 pull: login
 	docker pull $(BUILD_REMOTE_REPO):$(PULL_TAG)

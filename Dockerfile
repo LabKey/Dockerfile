@@ -14,10 +14,11 @@ FROM base
 # this will assume whatever FROM_TAG was set in first stage above
 ARG FROM_TAG
 
-ARG DEBUG=
+ARG DEBUG
 ARG LABKEY_VERSION
 ARG LABKEY_DISTRIBUTION
 ARG LABKEY_EK
+ARG LOG4J_CONFIG_OVERRIDE
 
 # dependent ENVs declared separately
 ENV POSTGRES_USER="postgres" \
@@ -35,11 +36,11 @@ ENV DEBUG="${DEBUG}" \
     \
     CATALINA_HOME="${TOMCAT_BASE_DIR}" \
     \
-    POSTGRES_PASSWORD= \
+    POSTGRES_PASSWORD="" \
     POSTGRES_HOST="localhost" \
     POSTGRES_PORT="5432" \
     POSTGRES_DB="${POSTGRES_USER}" \
-    POSTGRES_PARAMETERS= \
+    POSTGRES_PARAMETERS="" \
     \
     POSTGRES_MAX_TOTAL_CONNECTIONS=50 \
     POSTGRES_MAX_IDLE_CONNECTIONS=10 \
@@ -57,16 +58,16 @@ ENV DEBUG="${DEBUG}" \
     LABKEY_SYSTEM_DESCRIPTION="${LABKEY_SYSTEM_SHORT_NAME}" \
     LABKEY_BASE_SERVER_URL="https://${LABKEY_DEFAULT_DOMAIN}:${LABKEY_PORT}" \
     \
-    LABKEY_STARTUP_BASIC_EXTRA= \
-    LABKEY_STARTUP_DISTRIBUTION_EXTRA= \
+    LABKEY_STARTUP_BASIC_EXTRA="" \
+    LABKEY_STARTUP_DISTRIBUTION_EXTRA="" \
     \
-    LABKEY_CREATE_INITIAL_USER= \
+    LABKEY_CREATE_INITIAL_USER="" \
     LABKEY_INITIAL_USER_EMAIL="toor@localhost" \
     LABKEY_INITIAL_USER_ROLE="SiteAdminRole" \
     LABKEY_INITIAL_USER_GROUP="Administrators" \
     \
-    LABKEY_CREATE_INITIAL_USER_APIKEY= \
-    LABKEY_INITIAL_USER_APIKEY= \
+    LABKEY_CREATE_INITIAL_USER_APIKEY="" \
+    LABKEY_INITIAL_USER_APIKEY="" \
     \
     LOG_LEVEL_TOMCAT="OFF" \
     LOG_LEVEL_SPRING_WEB="OFF" \
@@ -80,7 +81,7 @@ ENV DEBUG="${DEBUG}" \
     TOMCAT_SSL_ENABLED_PROTOCOLS="TLSv1.3,TLSv1.2" \
     TOMCAT_SSL_PROTOCOL="TLS" \
     \
-    TOMCAT_ENABLE_ACCESS_LOG= 
+    TOMCAT_ENABLE_ACCESS_LOG=""
 
 ENV CERT_C="US" \
     CERT_ST="Washington" \
@@ -92,25 +93,25 @@ ENV CERT_C="US" \
     SMTP_HOST="localhost" \
     SMTP_USER="root" \
     SMTP_PORT="25" \
-    SMTP_PASSWORD= \
+    SMTP_PASSWORD="" \
     SMTP_FROM="${LABKEY_SYSTEM_EMAIL_ADDRESS}" \
-    SMTP_STARTTLS= \
+    SMTP_STARTTLS="" \
     SMTP_AUTH="false" \
     \
     MAX_JVM_RAM_PERCENT="90.0" \
     \
-    JAVA_PRE_JAR_EXTRA= \
-    JAVA_POST_JAR_EXTRA= \
+    JAVA_PRE_JAR_EXTRA="" \
+    JAVA_POST_JAR_EXTRA="" \
     JAVA_TMPDIR="/var/tmp" \
     JAVA_TIMEZONE="America/Los_Angeles" \
     \
     LOGGER_PATTERN="%-40.40logger{39}" \
-    LOG_LEVEL_DEFAULT= \
+    LOG_LEVEL_DEFAULT="" \
     \
-    LOG_LEVEL_LABKEY_DEFAULT= \
-    LOG_LEVEL_API_MODULELOADER= \
-    LOG_LEVEL_API_SETTINGS= \
-    LOG_LEVEL_API_PIPELINE=
+    LOG_LEVEL_LABKEY_DEFAULT="" \
+    LOG_LEVEL_API_MODULELOADER="" \
+    LOG_LEVEL_API_SETTINGS="" \
+    LOG_LEVEL_API_PIPELINE=""
 
 COPY entrypoint.sh /entrypoint.sh
 
@@ -212,7 +213,7 @@ COPY "startup/${LABKEY_DISTRIBUTION}.properties" \
     startup/49_distribution.properties
 
 # add logging config files
-COPY log4j2.xml log4j2.xml
+COPY "${LOG4J_CONFIG_OVERRIDE}" "config/${LOG4J_CONFIG_OVERRIDE}"
 
 # add aws cli & make it owned by labkey user so it can all be deleted after s3 downloads in entrypoint.sh
 RUN mkdir -p /usr/src/awsclizip "${LABKEY_HOME}/awsclibin" "${LABKEY_HOME}/aws-cli" \

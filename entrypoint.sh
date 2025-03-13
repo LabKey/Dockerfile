@@ -224,13 +224,14 @@ main() {
 
   sed -i "s/@@encryptionKey@@/${LABKEY_EK}/" config/application.properties
 
-  if [ "$JSON_OUTPUT" = "true" ] && [ "$LOG4J_CONFIG_FILE" = "log4j2.xml" ]; then
-    echo "JSON_OUTPUT==true && LOG4J_CONFIG_FILE==log4j2.xml, so updating application.properties and log4j2.xml to output JSON to console"
-    sed -i '/<!-- p=priority c=category d=datetime t=thread m=message n=newline -->/d' $LOG4J_CONFIG_FILE
-    sed -i 's/<PatternLayout.*\/>/<JSONLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true" \/>/' $LOG4J_CONFIG_FILE
-    sed -i 's/^logging.pattern.console/# logging.pattern.console/' config/application.properties
+  # TODO: do we need the JSON check anymore? should we just take the override if it is set?
+  # Check if we want JSON output, we are using the base log4j2.xml config, and have an override config to use
+  if [ "${JSON_OUTPUT}" = "true" ] && [ "${LOG4J_CONFIG_FILE}" = "log4j2.xml" ] && [ -s "config/${LOG4J_CONFIG_OVERRIDE}" ]; then
+    echo "JSON_OUTPUT==true && LOG4J_CONFIG_FILE==log4j2.xml && LOG4J_CONFIG_OVERRIDE is set, so updating application.properties and log4j2.xml to output JSON to console"
+    LOG4J_CONFIG_FILE="${LOG4J_CONFIG_FILE:=log4j2.xml},config/${LOG4J_CONFIG_OVERRIDE}"
+    echo "Log4j configuration files: $LOG4J_CONFIG_FILE"
   else
-    echo "saw JSON_OUTPUT=$JSON_OUTPUT and LOG4J_CONFIG_FILE=$LOG4J_CONFIG_FILE"
+    echo "saw JSON_OUTPUT=$JSON_OUTPUT and LOG4J_CONFIG_FILE=$LOG4J_CONFIG_FILE and LOG4J_CONFIG_OVERRIDE=$LOG4J_CONFIG_OVERRIDE"
   fi
 
   export DD_JAVA_AGENT=""

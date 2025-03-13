@@ -213,7 +213,6 @@ COPY "startup/${LABKEY_DISTRIBUTION}.properties" \
     startup/49_distribution.properties
 
 # add logging config files
-#COPY log4j2.xml log4j2.xml
 COPY "${LOG4J_CONFIG_OVERRIDE}" "config/${LOG4J_CONFIG_OVERRIDE}"
 
 # add aws cli & make it owned by labkey user so it can all be deleted after s3 downloads in entrypoint.sh

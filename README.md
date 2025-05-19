@@ -7,11 +7,11 @@ This repo contains a Dockerfile, `docker-compose.yml`, and various other files f
 This repo is a work in progress. Containers created from these sources are untested. Until further work is done, integrations with LabKey products that traditionally have relied on OS configuration such as R reports or Python scripts will **NOT** work.
 
 ## Content Security Policy
-February 2025 brings an enforced Content Security Policy enabled by default, the same one that LabKey uses in most if not all deployments, and is highly recommended to be left in place. It can, however, be disabled by enabling the `ExperimentalFeature.disableEnforceCsp` startup property.
+May 2025 brings a stricter Content Security Policy set directly in the LabKey server code (https://github.com/LabKey/server/blob/develop/server/embedded/src/org/labkey/embedded/LabKeyServer.java).
 
-The policy itself can be overriden with an `optional.application.properties` file.
+The policies can still be overridden by setting them in `application.properties`. See the commented out section there for examples.
 
-CSP_REPORT and CSP_ENFORCE environment variables have been removed.
+The default enforce policy can be disabled by enabling the `ExperimentalFeature.disableEnforceCsp` startup property.
 
 ## log4j2.xml
 March 2025 brings a new implementation of log4j2.xml. We're now using the default configuration from the [server repo](https://github.com/LabKey/server/blob/develop/server/embedded/src/main/resources/log4j2.xml), and overriding that as needed with the local file identified in the `LOG4J_CONFIG_OVERRIDE` environment variable. By default this is an empty file that makes no changes, which is due to some complications of the Docker `COPY` command. During startup, entrypoint.sh copies the local files into the configs directory after the jar has been opened up.

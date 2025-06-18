@@ -224,14 +224,18 @@ main() {
 
   sed -i "s/@@encryptionKey@@/${LABKEY_EK}/" config/application.properties
 
-  # TODO: do we need the JSON check anymore? should we just take the override if it is set?
-  # Check if we want JSON output, we are using the base log4j2.xml config, and have an override config to use
-  if [ "${JSON_OUTPUT}" = "true" ] && [ "${LOG4J_CONFIG_FILE}" = "log4j2.xml" ] && [ -s "config/${LOG4J_CONFIG_OVERRIDE}" ]; then
-    echo "JSON_OUTPUT==true && LOG4J_CONFIG_FILE==log4j2.xml && LOG4J_CONFIG_OVERRIDE is set, so updating application.properties and log4j2.xml to output JSON to console"
+  # Check if we want JSON output, we are using the base log4j2.xml config
+  if [ "${JSON_OUTPUT}" = "true" ] && [ "${LOG4J_CONFIG_FILE}" = "log4j2.xml" ]; then
+    echo "JSON_OUTPUT==true && LOG4J_CONFIG_FILE==log4j2.xml, so using the base log4j2.xml with labkey.log4j2.xml overrides, to send JSON output to console"
+    LOG4J_CONFIG_FILE="log4j2.xml, config/labkey.log4j2.xml"
+    echo "Log4j configuration files: $LOG4J_CONFIG_FILE"
+  # if the override file exists and isn't empty, use that to override whatever was set in LOG4J_CONFIG_FILE (which might still be server default of log4j2.xml)
+  elif [ -f "config/${LOG4J_CONFIG_OVERRIDE}" ] && [ -s "config/${LOG4J_CONFIG_OVERRIDE}" ]; then
+    echo "LOG4J_CONFIG_OVERRIDE==${LOG4J_CONFIG_OVERRIDE}, so using that to override default settings in LOG4J_CONFIG_FILE (${LOG4J_CONFIG_FILE})"
     LOG4J_CONFIG_FILE="${LOG4J_CONFIG_FILE:=log4j2.xml},config/${LOG4J_CONFIG_OVERRIDE}"
     echo "Log4j configuration files: $LOG4J_CONFIG_FILE"
   else
-    echo "saw JSON_OUTPUT=$JSON_OUTPUT and LOG4J_CONFIG_FILE=$LOG4J_CONFIG_FILE and LOG4J_CONFIG_OVERRIDE=$LOG4J_CONFIG_OVERRIDE"
+    echo "saw JSON_OUTPUT=$JSON_OUTPUT and LOG4J_CONFIG_FILE=$LOG4J_CONFIG_FILE and LOG4J_CONFIG_OVERRIDE=$LOG4J_CONFIG_OVERRIDE (which, if defined, was empty)"
   fi
 
   export DD_JAVA_AGENT=""

@@ -14,7 +14,18 @@ The policies can still be overridden by setting them in `application.properties`
 The default enforce policy can be disabled by enabling the `ExperimentalFeature.disableEnforceCsp` startup property.
 
 ## log4j2.xml
-March 2025 brings a new implementation of log4j2.xml. We're now using the default configuration from the [server repo](https://github.com/LabKey/server/blob/develop/server/embedded/src/main/resources/log4j2.xml), and overriding that as needed with the local file identified in the `LOG4J_CONFIG_OVERRIDE` environment variable. By default this is an empty file that makes no changes, which is due to some complications of the Docker `COPY` command. During startup, entrypoint.sh copies the local files into the configs directory after the jar has been opened up.
+March 2025 brings a new implementation of log4j2.xml. We're now using the default configuration from the [server repo](https://github.com/LabKey/server/blob/develop/server/embedded/src/main/resources/log4j2.xml), and overriding that as needed with the local file identified in the `LOG4J_CONFIG_OVERRIDE` environment variable. By default this is an empty file that makes no changes, which is due to some complications of the Docker `COPY` command. Any *.log4j2.xml files in the root dir will be copied to the config/ folder in the image when built, which end up in /labkey/config in a running container.
+
+LabKey deployments use the included `labkey.log4j2.xml` to override the server default config, mostly just to set JSON format for console output.
+
+Here are some example env var combinations and their effects:
+
+| env var                                                                           | result                                                                                                               |
+| --------------------------------------------------------------------------------- | ------------------------------------------------------                                                               |
+| JSON_OUTPUT=true                                                                  | uses `labkey.log4j2.xml` to set JSON format console output                                                           |
+| LOG4J_CONFIG_OVERRIDE="labkey.log4j2.xml"                                         | same as above                                                                                                        |
+| LOG4J_CONFIG_FILE="example.log4j2.xml"                                            | assumes you built your own image with `example.log4j2.xml` in the root dir, and uses that instead of server defaults |
+| LOG4J_CONFIG_FILE="example.log4j2.xml" LOG4J_CONFIG_OVERRIDE="labkey.log4j2.xml"  | same as above, but also overrides `example.log4j2.xml` with contents of `labkey.log4j2.xml`                          |
 
 ## Upgrading from 23.11 to 24.3
 March 2024 saw [many changes](https://github.com/LabKey/Dockerfile/commits/24.3.0) in an effort to bring this repo in line with LabKey server versioning/releases, starting with v24.3, in which the embedded tomcat version has been upgraded from 9 to 10. 

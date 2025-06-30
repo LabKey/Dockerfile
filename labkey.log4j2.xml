@@ -38,9 +38,9 @@
         </Logger>
 
         <!-- Override the audit log behavior -->
-<!--        <Logger name="org.labkey.audit.event" additivity="false" level="OFF">-->
-<!--            <AppenderRef ref="LABKEY_AUDIT"/>-->
-<!--            <AppenderRef ref="CONSOLE" />-->
-<!--        </Logger>-->
+       <Logger name="org.labkey.audit.event" additivity="false" level="OFF">
+            <AppenderRef ref="LABKEY_AUDIT"/>
+            <AppenderRef ref="CONSOLE" />
+        </Logger>
     </Loggers>
 </Configuration>

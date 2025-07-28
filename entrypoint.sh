@@ -25,8 +25,9 @@ JSON_OUTPUT="${JSON_OUTPUT:-false}"
 DD_COLLECT_APM="${DD_COLLECT_APM:-false}"
 JAVA_RMI_SERVER_HOSTNAME="${JAVA_RMI_SERVER_HOSTNAME:-}"
 
-# set age past which old heap and error log directories are removed
+# set age past which old heap and error log directories and system maintenance files are removed
 PURGE_HEAP_AND_ERROR_LOGS_OLDER_THAN_DAYS="${PURGE_HEAP_AND_ERROR_LOGS_OLDER_THAN_DAYS:-90}"
+PURGE_MTNC_LOGS_OLDER_THAN_DAYS="${PURGE_MTNC_LOGS_OLDER_THAN_DAYS:-90}"
 
 SLEEP="${SLEEP:=0}"
 
@@ -271,6 +272,10 @@ main() {
   # purge old heap/error directories
   echo "Purging heap/error log directories older than $PURGE_HEAP_AND_ERROR_LOGS_OLDER_THAN_DAYS days..."
   find "$LABKEY_HOME/files/" -mindepth 1 -maxdepth 1 -type d -ctime +${PURGE_HEAP_AND_ERROR_LOGS_OLDER_THAN_DAYS} -name "heap*" | xargs rm -rf 
+
+  # purge old system maintenance files
+  echo "Purging system maintenance files older than $PURGE_MTNC_LOGS_OLDER_THAN_DAYS days..."
+  find "$LABKEY_HOME/files/@files" -mindepth 1 -maxdepth 1 -type d -ctime +${PURGE_MTNC_LOGS_OLDER_THAN_DAYS} -name "system_maintenance*" | xargs rm -rf 
 
   # shellcheck disable=SC2086
   exec java \

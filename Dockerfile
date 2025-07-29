@@ -188,7 +188,6 @@ RUN [ -n "${DEBUG}" ] && set -x; \
     mkdir -pv \
         "${LABKEY_FILES_ROOT}/@files" \
         "config" \
-        "externalModules" \
         "logs" \
         "startup" \
         "${TOMCAT_BASE_DIR}" \
@@ -259,7 +258,6 @@ HEALTHCHECK \
             "https://localhost:${LABKEY_PORT}${HEALTHCHECK_ENDPOINT}" \
             || exit 1
 
-VOLUME "${LABKEY_HOME}/externalModules"
 VOLUME "${LABKEY_HOME}/logs"
 
 EXPOSE ${LABKEY_PORT}

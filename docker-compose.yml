@@ -18,7 +18,6 @@ services:
     volumes:
       - ./mounts/files:/labkey/files
       # - files:/labkey/files
-      - ./mounts/modules:/labkey/externalModules
       - ./mounts/logs:/labkey/logs
     environment:
       # - DEBUG=1
@@ -132,7 +131,6 @@ services:
     volumes:
       - ./mounts/files:/labkey/files
       # - files:/labkey/files
-      - ./mounts/modules:/labkey/externalModules
       - ./mounts/logs:/labkey/logs
     environment:
       # - DEBUG=1
@@ -244,7 +242,6 @@ services:
     volumes:
       - ./mounts/files:/labkey/files
       # - files:/labkey/files
-      - ./mounts/modules:/labkey/externalModules
       - ./mounts/logs:/labkey/logs
     environment:
       # - DEBUG=1
@@ -357,7 +354,6 @@ services:
     volumes:
       - ./mounts/files:/labkey/files
       # - files:/labkey/files
-      - ./mounts/modules:/labkey/externalModules
       - ./mounts/logs:/labkey/logs
     environment:
       # - DEBUG=1
@@ -428,6 +424,7 @@ services:
       - SLEEP=${SLEEP:-0}
       - PURGE_HEAP_AND_ERROR_LOGS_OLDER_THAN_DAYS=${PURGE_HEAP_AND_ERROR_LOGS_OLDER_THAN_DAYS:-90}
       - PURGE_MTNC_LOGS_OLDER_THAN_DAYS=${PURGE_MTNC_LOGS_OLDER_THAN_DAYS:-90}
+      - LABKEY_EXTERNAL_MODULES=${LABKEY_EXTERNAL_MODULES:-/labkey/files/externalModules}
 
   pg-lims_starter:
     image: postgres:15

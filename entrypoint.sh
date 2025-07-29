@@ -28,6 +28,9 @@ JAVA_RMI_SERVER_HOSTNAME="${JAVA_RMI_SERVER_HOSTNAME:-}"
 # set age past which old heap and error log directories and system maintenance files are removed
 PURGE_HEAP_AND_ERROR_LOGS_OLDER_THAN_DAYS="${PURGE_HEAP_AND_ERROR_LOGS_OLDER_THAN_DAYS:-90}"
 PURGE_MTNC_LOGS_OLDER_THAN_DAYS="${PURGE_MTNC_LOGS_OLDER_THAN_DAYS:-90}"
+ 
+# set path to external modules)
+LABKEY_EXTERNAL_MODULES="${LABKEY_EXTERNAL_MODULES:-/labkey/files/externalModules}"
 
 SLEEP="${SLEEP:=0}"
 
@@ -148,9 +151,6 @@ main() {
     awsclibin/aws s3 cp $LABKEY_OPTIONAL_APP_PROPERTIES_S3_URI config/
   fi
 
-  echo "sleeping for $SLEEP seconds..."
-  sleep $SLEEP
-
   # echo "deleting awscli and unsetting AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, & AWS_SESSION_TOKEN, if set..."
   # rm -rf awsclibin aws-cli
   unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
@@ -259,15 +259,12 @@ main() {
         -Djava.rmi.server.hostname=${JAVA_RMI_SERVER_HOSTNAME}" 
   fi
 
-  echo "Purging secrets and other bits from environment variables..."
-  unset POSTGRES_USER POSTGRES_PASSWORD POSTGRES_HOST POSTGRES_PORT POSTGRES_DB POSTGRES_PARAMETERS
-  unset SMTP_HOST SMTP_USER SMTP_PORT SMTP_PASSWORD SMTP_AUTH SMTP_FROM SMTP_STARTTLS
-  unset LABKEY_CREATE_INITIAL_USER LABKEY_CREATE_INITIAL_USER_APIKEY LABKEY_INITIAL_USER_APIKEY LABKEY_INITIAL_USER_EMAIL LABKEY_INITIAL_USER_GROUP LABKEY_INITIAL_USER_ROLE
-  unset LABKEY_EK SLEEP CONTAINER_PRIVATE_IP
-
   echo "Creating new heap/error log directory..."
   HEAP_AND_ERROR_PATH="$LABKEY_HOME/files/heap_dumps_and_errors_$(date +%Y%m%d_%H%M%S)"
   mkdir -pv $HEAP_AND_ERROR_PATH
+
+  echo "Creating externalModules directory if it does not already exist..."
+  mkdir -pv $LABKEY_EXTERNAL_MODULES
 
   # purge old heap/error directories
   echo "Purging heap/error log directories older than $PURGE_HEAP_AND_ERROR_LOGS_OLDER_THAN_DAYS days..."
@@ -276,6 +273,15 @@ main() {
   # purge old system maintenance files
   echo "Purging system maintenance files older than $PURGE_MTNC_LOGS_OLDER_THAN_DAYS days..."
   find "$LABKEY_HOME/files/@files" -mindepth 1 -maxdepth 1 -type d -ctime +${PURGE_MTNC_LOGS_OLDER_THAN_DAYS} -name "system_maintenance*" | xargs rm -rf 
+
+  echo "sleeping for $SLEEP seconds..."
+  sleep $SLEEP
+
+  echo "Purging secrets and other bits from environment variables..."
+  unset POSTGRES_USER POSTGRES_PASSWORD POSTGRES_HOST POSTGRES_PORT POSTGRES_DB POSTGRES_PARAMETERS
+  unset SMTP_HOST SMTP_USER SMTP_PORT SMTP_PASSWORD SMTP_AUTH SMTP_FROM SMTP_STARTTLS
+  unset LABKEY_CREATE_INITIAL_USER LABKEY_CREATE_INITIAL_USER_APIKEY LABKEY_INITIAL_USER_APIKEY LABKEY_INITIAL_USER_EMAIL LABKEY_INITIAL_USER_GROUP LABKEY_INITIAL_USER_ROLE
+  unset LABKEY_EK SLEEP CONTAINER_PRIVATE_IP
 
   # shellcheck disable=SC2086
   exec java \
@@ -295,7 +301,6 @@ main() {
     \
     -Dlabkey.home="$LABKEY_HOME" \
     -Dlabkey.log.home="${LABKEY_HOME}/logs" \
-    -Dlabkey.externalModulesDir="${LABKEY_HOME}/externalModules" \
     \
     -Djava.library.path=/usr/lib:/usr/lib/x86_64-linux-gnu \
     \

@@ -14,6 +14,9 @@ function main() {
     RETRIES=$(( RETRIES + 1 ))
 
     if [ "$RETRIES" -ge 5 ]; then
+      printf "##teamcity[buildProblem description='%s' identity='%s']\n" \
+			'Cannot connect to localhost. Dumping docker logs:' \
+			'failure'
       docker logs ${BUILD_DISTRIBUTION:-labkey}
       exit 1
     fi

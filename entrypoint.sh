@@ -259,6 +259,9 @@ main() {
         -Djava.rmi.server.hostname=${JAVA_RMI_SERVER_HOSTNAME}" 
   fi
 
+  echo "Fixing permissions of $LABKEY_HOME/files and $LABKEY_HOME/logs"
+  chown -Rc labkey:labkey "${LABKEY_HOME}/files" "${LABKEY_HOME}/logs";
+
   echo "Creating new heap/error log directory..."
   HEAP_AND_ERROR_PATH="$LABKEY_HOME/files/heap_dumps_and_errors_$(date +%Y%m%d_%H%M%S)"
   mkdir -pv $HEAP_AND_ERROR_PATH

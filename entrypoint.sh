@@ -267,6 +267,9 @@ main() {
   echo "Creating externalModules directory if it does not already exist..."
   mkdir -pv $LABKEY_EXTERNAL_MODULES
 
+  # set up required add-opens options
+  JAVA_ADD_OPENS="--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED"
+
   # purge old heap/error directories
   echo "Purging heap/error log directories older than $PURGE_HEAP_AND_ERROR_LOGS_OLDER_THAN_DAYS days..."
   find "$LABKEY_HOME/files/" -mindepth 1 -maxdepth 1 -type d -ctime +${PURGE_HEAP_AND_ERROR_LOGS_OLDER_THAN_DAYS} -name "heap*" | xargs rm -rf 
@@ -323,6 +326,8 @@ main() {
     ${DD_JAVA_AGENT} \
     \
     ${DD_JMX} \
+    \
+    ${JAVA_ADD_OPENS} \
     \
     ${JAVA_PRE_JAR_EXTRA} \
     \

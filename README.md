@@ -147,14 +147,14 @@ Setting `DEBUG` to any value will suffice: `docker build ... --build-arg DEBUG=1
 The `Dockerfile` currently supports 2 base-container operating systems, Alpine Linux and Debian-based Linux, both of which originate from `eclipse-temurin`. Debian-based Linux deployments are much more thoroughly tested. Toggling between the two or overriding them can be achieved by changing the `FROM_TAG` Docker build arg. The `Dockerfile` provides 2 examples:
 
 - debian-based
-  - FROM_TAG=17-jre
+  - FROM_TAG=25-jre
 - alpine-based
-  - FROM_TAG=17-jre-alpine
+  - FROM_TAG=25-jre-alpine
 
 | name            | purpose                                                                          | default                  |
 | --------------- | ------------------------------------------------------                           | ------------------------ |                          
 | FROM_REPO_IMAGE | Docker repository & image to use as basis of container                           | `eclipse-temurin` |
-| FROM_TAG        | repository tag to use as basis of container                                      | `17-jre`             |
+| FROM_TAG        | repository tag to use as basis of container                                      | `25-jre`             |
 | LABKEY_HOME     | The Docker WORKDIR and top level under which all LabKey-related files are nested | `/labkey` |
 | BUILD_REMOTE_TAG | allows for alternate remote tags during `make tag` and `make push`  | [BUILD_REPO_URI]/labkey/community:[LABKEY_VERSION] |
 

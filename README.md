@@ -248,9 +248,6 @@ The `CERT_*` ENVs should look familiar to anyone that has used the `openssl` com
 | TOMCAT_KEYSTORE_ALIAS        | self-signed cert/keystore "alias"                            | `tomcat`                                                 |
 | TOMCAT_KEYSTORE_FILENAME     | self-signed cert/keystore filename                           | `labkey.p12`                                             |
 | TOMCAT_KEYSTORE_FORMAT       | self-signed cert/keystore format                             | `PKCS12`                                                 |
-| TOMCAT_SSL_CIPHERS           | allowable SSL ciphers for use by tomcat | `HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!kRSA:!EDH:!DHE:!DH:!CAMELLIA:!ARIA:!AESCCM:!SHA:!CHACHA20` |
-| TOMCAT_SSL_ENABLED_PROTOCOLS | allowable SSL protocols and versions                         | `TLSv1.3,TLSv1.2`                                        |
-| TOMCAT_SSL_PROTOCOL          | basic SSL protocol to use                                    | `TLS`                                                    |
 | CERT_C                       | "Country" value for the generated self-signed cert           | `US`                                                     |
 | CERT_CN                      | "Common Name" value for the generated self-signed cert       | `localhost`                                              |
 | CERT_L                       | "Location" value for the generated self-signed cert          | `Seattle`                                                |

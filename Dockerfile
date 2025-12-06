@@ -1,9 +1,9 @@
 # main eclipse-temurin jre, which is debian-based
 ARG FROM_REPO_IMAGE=eclipse-temurin
-ARG FROM_TAG=17-jre-noble
+ARG FROM_TAG=25-jre-noble
 
 # uncomment for alpine-based eclipse-temurin jre
-# ARG FROM_TAG=17-jre-alpine
+# ARG FROM_TAG=25-jre-alpine
 
 FROM ${FROM_REPO_IMAGE}:${FROM_TAG} AS base
 
@@ -77,10 +77,6 @@ ENV DEBUG="${DEBUG}" \
     TOMCAT_KEYSTORE_FORMAT="PKCS12" \
     TOMCAT_KEYSTORE_ALIAS="tomcat" \
     \
-    TOMCAT_SSL_CIPHERS="HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!kRSA:!EDH:!DHE:!DH:!CAMELLIA:!ARIA:!AESCCM:!SHA:!CHACHA20" \
-    TOMCAT_SSL_ENABLED_PROTOCOLS="TLSv1.3,TLSv1.2" \
-    TOMCAT_SSL_PROTOCOL="TLS" \
-    \
     TOMCAT_ENABLE_ACCESS_LOG=""
 
 ENV CERT_C="US" \
@@ -151,20 +147,18 @@ RUN [ -n "${DEBUG}" ] && set -x; \
             openssl \
             gettext-base=0.21-14ubuntu2 \
             unzip=6.0-28ubuntu4.1 \
+            wget=1.21.4-1ubuntu4.1 \
             ; \
         if [ -n "${DEBUG}" ]; then \
-            # next 2 lines are to get postgres15 to install on ubuntu 22.04
-            echo "deb http://apt.postgresql.org/pub/repos/apt $(grep VERSION_CODENAME /etc/os-release | cut -d "=" -f2)-pgdg main" > /etc/apt/sources.list.d/pgdg.list; \
-            wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | tee /etc/apt/trusted.gpg.d/pgdg.asc > /dev/null 2>&1; \
             apt-get update; \
             apt-get -yq --no-install-recommends install \
-                iputils-ping=3:20240117-1build1 \
+                iputils-ping=3:20240117-1ubuntu0.1 \
                 less=590-2ubuntu2.1 \
                 netcat-traditional=1.10-48 \
-                postgresql-client-16=16.6-0ubuntu0.24.04.1 \
-                sudo=1.9.15p5-3ubuntu5 \
-                tree=2.1.1-2ubuntu3 \
-                vim=2:9.1.0016-1ubuntu7.5 \
+                postgresql-client-16=16.10-0ubuntu0.24.04.1 \
+                sudo=1.9.15p5-3ubuntu5.24.04.1 \
+                tree=2.1.1-2ubuntu3.24.04.2 \
+                vim=2:9.1.0016-1ubuntu7.9 \
                 ; \
         fi; \
         apt-get -yq upgrade; \

@@ -19,8 +19,8 @@ IDENT ?= labkey
 PULL_TAG ?= latest
 
 ifeq ($(AWS_ACCESS_KEY_ID),)
-	AWS_ACCOUNT_ID=123456789
-	AWS_REGION=us-west-2
+	AWS_ACCOUNT_ID ?= 123456789
+	AWS_REGION ?= us-west-2
 else
 	AWS_ACCOUNT_ID ?= $(shell aws sts get-caller-identity | jq -r '.Account' | grep -E '[0-9]{12}' || exit 1)
 	AWS_REGION ?= $(shell aws configure get region || exit 1)

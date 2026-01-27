@@ -15,7 +15,6 @@ LABKEY_CUSTOM_PROPERTIES_S3_URI="${LABKEY_CUSTOM_PROPERTIES_S3_URI:=none}"
 LABKEY_OPTIONAL_APP_PROPERTIES_S3_URI="${LABKEY_OPTIONAL_APP_PROPERTIES_S3_URI:=none}"
 LABKEY_DEFAULT_PROPERTIES_S3_URI="${LABKEY_DEFAULT_PROPERTIES_S3_URI:=none}"
 
-# set below to 'labkeywebapp/WEB-INF/classes/log4j2.xml' to use embedded tomcat version from the built .jar
 LOG4J_CONFIG_FILE="${LOG4J_CONFIG_FILE:=log4j2.xml}"
 
 # below assumes using local log4j2.xml file, as the embedded version is not available for edits until after server is running
@@ -226,19 +225,21 @@ main() {
 
   sed -i "s/@@encryptionKey@@/${LABKEY_EK}/" config/application.properties
 
-  # Check if we want JSON output, we are using the base log4j2.xml config
+  # Check if we want JSON output, and/or if we are using the base log4j2.xml config
+  export LOG4J_CONFIG_OPTION=""
   if [ "${JSON_OUTPUT}" = "true" ] && [ "${LOG4J_CONFIG_FILE}" = "log4j2.xml" ]; then
     echo "JSON_OUTPUT==true && LOG4J_CONFIG_FILE==log4j2.xml, so using the base log4j2.xml with labkey.log4j2.xml overrides, to send JSON output to console"
-    LOG4J_CONFIG_FILE="log4j2.xml, config/labkey.log4j2.xml"
-    echo "Log4j configuration files: $LOG4J_CONFIG_FILE"
+    export LOG4J_CONFIG_OPTION="-Dlog4j.configurationFile=log4j2.xml,config/labkey.log4j2.xml"
   # if the override file exists and isn't empty, use that to override whatever was set in LOG4J_CONFIG_FILE (which might still be server default of log4j2.xml)
   elif [ -f "config/${LOG4J_CONFIG_OVERRIDE}" ] && [ -s "config/${LOG4J_CONFIG_OVERRIDE}" ]; then
     echo "LOG4J_CONFIG_OVERRIDE==${LOG4J_CONFIG_OVERRIDE}, so using that to override default settings in LOG4J_CONFIG_FILE (${LOG4J_CONFIG_FILE})"
-    LOG4J_CONFIG_FILE="${LOG4J_CONFIG_FILE:=log4j2.xml},config/${LOG4J_CONFIG_OVERRIDE}"
-    echo "Log4j configuration files: $LOG4J_CONFIG_FILE"
-  else
+    export LOG4J_CONFIG_OPTION="-Dlog4j.configurationFile=${LOG4J_CONFIG_FILE:=log4j2.xml},config/${LOG4J_CONFIG_OVERRIDE}"
+  elif [ "${LOG4J_CONFIG_FILE}" = "log4j2.xml" ]; then
     echo "saw JSON_OUTPUT=$JSON_OUTPUT and LOG4J_CONFIG_FILE=$LOG4J_CONFIG_FILE and LOG4J_CONFIG_OVERRIDE=$LOG4J_CONFIG_OVERRIDE (which, if defined, was empty)"
+    echo "... so configuring nothing for LOG4J_CONFIG_OPTION"
   fi
+
+  echo "Log4j configuration option(s): $LOG4J_CONFIG_OPTION"
 
   export DD_JAVA_AGENT=""
   export DD_JMX=""
@@ -315,7 +316,7 @@ main() {
     -Dlogback.debug="$debug_string" \
     \
     -Dlog4j.debug="$debug_string" \
-    -Dlog4j.configurationFile="$LOG4J_CONFIG_FILE" \
+    ${LOG4J_CONFIG_OPTION} \
     \
     -Dorg.apache.catalina.startup.EXIT_ON_INIT_FAILURE=true \
     \

@@ -144,7 +144,7 @@ RUN [ -n "${DEBUG}" ] && set -x; \
         export DEBIAN_FRONTEND=noninteractive; \
         apt-get update; \
         apt-get -yq --no-install-recommends install \
-            curl=8.5.0-2ubuntu10.7 \
+            curl=8.5.0-2ubuntu10.8 \
             openssl \
             gettext-base=0.21-14ubuntu2 \
             unzip=6.0-28ubuntu4.1 \

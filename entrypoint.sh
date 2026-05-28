@@ -88,6 +88,7 @@ main() {
         | grep -vE 'MEK' \
         | grep -vE 'STARTUP' \
         | grep -vE 'INITIAL_USER' \
+        | grep -vE 'SSM' \
         ;
   ); do
     if [ -z "${key_value#*=}" ]; then
@@ -153,10 +154,26 @@ main() {
 
   # echo "deleting awscli and unsetting AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, & AWS_SESSION_TOKEN, if set..."
   # rm -rf awsclibin aws-cli
-  unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
+  # Note: AWS credential env vars are intentionally NOT unset here — they are needed by the
+  # Java process for SSM resolution at startup. In ECS they are not present as env vars
+  # (the JVM uses the container role via IMDS), so not unsetting them there is harmless.
 
   # echo "sleeping for $SLEEP seconds..."
   # sleep $SLEEP
+
+  if [ -n "${LABKEY_SSM_PREFIX:-}" ]; then
+    # AWS SSM mode: normalize trailing slashes so both /prefix and /prefix/ forms work
+    LABKEY_SSM_PREFIX="${LABKEY_SSM_PREFIX%/}/"
+    export LABKEY_SSM_PREFIX
+    if [ -n "${LABKEY_VPC_SSM_PREFIX:-}" ]; then
+      LABKEY_VPC_SSM_PREFIX="${LABKEY_VPC_SSM_PREFIX%/}/"
+      export LABKEY_VPC_SSM_PREFIX
+    fi
+  else
+    # Non-AWS mode: remove the SSM prefix property before envsubst so LabKey doesn't
+    # error on an empty context.awsParameterStore.prefix value
+    sed -i '/context.awsParameterStore.prefix=/d' config/application.properties
+  fi
 
   for prop_file in startup/*.properties config/application.properties; do
     envsubst < "$prop_file" > "${prop_file}.tmp" \
@@ -210,20 +227,23 @@ main() {
       -passin "pass:${keystore_pass}"
   fi
 
-  echo "Adding secrets to config/application.properties from environment variables..."
-  sed -i "s/@@jdbcUrl@@/jdbc:postgresql:\/\/${POSTGRES_HOST:-localhost}:${POSTGRES_PORT:-5432}\/${POSTGRES_DB:-${POSTGRES_USER}}${POSTGRES_PARAMETERS:-}/" config/application.properties
-  sed -i "s/@@jdbcUser@@/${POSTGRES_USER:-postgres}/" config/application.properties
-  sed -i "s/@@jdbcPassword@@/${POSTGRES_PASSWORD:-}/" config/application.properties
+  echo "Substituting placeholders in config/application.properties..."
+  if [ -z "${LABKEY_SSM_PREFIX:-}" ]; then
+    # Non-AWS mode: replace ssm: references with direct values from environment variables
+    sed -i "s|ssm:database_user|${POSTGRES_USER:-postgres}|" config/application.properties
+    sed -i "s|ssm:database_password|${POSTGRES_PASSWORD:-}|" config/application.properties
+    sed -i "s|ssm:ek|${LABKEY_EK:-}|" config/application.properties
+    sed -i "s|ssm:smtp_user|${SMTP_USER:-}|" config/application.properties
+    sed -i "s|ssm:smtp_password|${SMTP_PASSWORD:-}|" config/application.properties
+  fi
+
+  sed -i "s/@@jdbcUrl@@/jdbc:postgresql:\/\/${POSTGRES_HOST:-localhost}:${POSTGRES_PORT:-5432}\/${POSTGRES_DB}${POSTGRES_PARAMETERS:-}/" config/application.properties
 
   sed -i "s/@@smtpHost@@/${SMTP_HOST}/" config/application.properties
-  sed -i "s/@@smtpUser@@/${SMTP_USER}/" config/application.properties
   sed -i "s/@@smtpPort@@/${SMTP_PORT}/" config/application.properties
-  sed -i "s/@@smtpPassword@@/${SMTP_PASSWORD}/" config/application.properties
   sed -i "s/@@smtpAuth@@/${SMTP_AUTH}/" config/application.properties
   sed -i "s/@@smtpFrom@@/${SMTP_FROM}/" config/application.properties
   sed -i "s/@@smtpStartTlsEnable@@/${SMTP_STARTTLS}/" config/application.properties
-
-  sed -i "s/@@encryptionKey@@/${LABKEY_EK}/" config/application.properties
 
   # Check if we want JSON output, and/or if we are using the base log4j2.xml config
   export LOG4J_CONFIG_OPTION=""
@@ -283,10 +303,10 @@ main() {
   sleep $SLEEP
 
   echo "Purging secrets and other bits from environment variables..."
-  unset POSTGRES_USER POSTGRES_PASSWORD POSTGRES_HOST POSTGRES_PORT POSTGRES_DB POSTGRES_PARAMETERS
-  unset SMTP_HOST SMTP_USER SMTP_PORT SMTP_PASSWORD SMTP_AUTH SMTP_FROM SMTP_STARTTLS
+  unset POSTGRES_HOST POSTGRES_PORT POSTGRES_DB POSTGRES_PARAMETERS
+  unset SMTP_HOST SMTP_PORT SMTP_AUTH SMTP_FROM SMTP_STARTTLS
   unset LABKEY_CREATE_INITIAL_USER LABKEY_CREATE_INITIAL_USER_APIKEY LABKEY_INITIAL_USER_APIKEY LABKEY_INITIAL_USER_EMAIL LABKEY_INITIAL_USER_GROUP LABKEY_INITIAL_USER_ROLE
-  unset LABKEY_EK SLEEP CONTAINER_PRIVATE_IP
+  unset SLEEP CONTAINER_PRIVATE_IP
 
   # shellcheck disable=SC2086
   exec java \

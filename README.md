@@ -187,7 +187,7 @@ A better description of the LabKey settings can be found in the LabKey docs [her
 | LABKEY_DISTRIBUTION         | "flavor" of labkey;                                                                                   | `community`              |
 | LABKEY_FILES_ROOT           | path within which will serve as the root of the "files" directory                                     | `/labkey/files`          |
 | LABKEY_GUID                 | LabKey [server GUID](https://www.labkey.org/Documentation/wiki-page.view?name=stagingServerTips#guid) | `<empty>`                |
-| LABKEY_EK                   | LabKey [encryption key](https://www.labkey.org/Documentation/wiki-page.view?name=cpasxml#encrypt)     | `123abc456`              |
+| LABKEY_EK                   | LabKey [encryption key](https://www.labkey.org/Documentation/wiki-page.view?name=cpasxml#encrypt); not needed when using AWS SSM integration (see below) | `123abc456`              |
 | LABKEY_PORT                 | port to which labkey will bind within the container                                                   | `8443`                   |
 | LABKEY_SYSTEM_DESCRIPTION   | brief description of server; appears in emails                                                        | `Sirius Cybernetics`     |
 | LABKEY_SYSTEM_EMAIL_ADDRESS | email address system email will be sent "from"                                                        | `do_not_reply@localhost` |
@@ -216,6 +216,8 @@ Initial user API key creation was implemented in LabKey Server 20.11.
 
 The `POSTGRES_*` default values are meant to match those of the [library/postgres](https://hub.docker.com/_/postgres) containers.
 
+`POSTGRES_USER` and `POSTGRES_PASSWORD` are not needed when using AWS SSM integration (see below).
+
 | name                | purpose                                                                   | default     |
 | ------------------- | ------------------------------------------------------------------------- | ----------- |
 | POSTGRES_DB         | "name" of database; compounds to URI connection string                    | `postgres`  |
@@ -229,6 +231,8 @@ The `POSTGRES_*` default values are meant to match those of the [library/postgre
 
 These replace values previously housed in `context.xml` (`ROOT.xml` or `labkey.xml`) governing `mail/Session` resources.
 
+`SMTP_USER` and `SMTP_PASSWORD` are not needed when using AWS SSM integration (see below).
+
 | name          | purpose                     | default     |
 | ------------- | --------------------------- | ----------- |
 | SMTP_HOST     | SMTP host configuration     | `localhost` |
@@ -238,6 +242,33 @@ These replace values previously housed in `context.xml` (`ROOT.xml` or `labkey.x
 | SMTP_FROM     | SMTP from email address     | `<empty>`   |
 | SMTP_AUTH     | SMTP Auth flag              |  `false`    |
 | SMTP_STARTTLS | SMTP STARTTLS flag          | `<empty>`   |
+
+## AWS SSM Integration (LabKey 26.6+)
+
+For AWS deployments on LabKey 26.6+, DB credentials, the encryption key, and SMTP credentials can be resolved directly from AWS SSM Parameter Store by the JVM at startup, rather than being injected as container env vars. This uses LabKey's `AwsParameterStoreEnvironmentPostProcessor`.
+
+Set two path-prefix env vars and create the corresponding SSM parameters:
+
+| name                   | purpose                                               | example                    |
+| ---------------------- | ----------------------------------------------------- | -------------------------- |
+| `LABKEY_SSM_PREFIX`    | App-specific SSM prefix (DB creds, encryption key)    | `/myapp/myenv/`            |
+| `LABKEY_VPC_SSM_PREFIX`| VPC-level shared SSM prefix (SMTP credentials)        | `/shared/vpc/myvpc/`       |
+
+Trailing slashes on both prefixes are normalized automatically by `entrypoint.sh`.
+
+**Expected SSM parameters:**
+
+| SSM path                                  | replaces env var    |
+| ----------------------------------------- | ------------------- |
+| `${LABKEY_SSM_PREFIX}database_user`       | `POSTGRES_USER`     |
+| `${LABKEY_SSM_PREFIX}database_password`   | `POSTGRES_PASSWORD` |
+| `${LABKEY_SSM_PREFIX}ek`                  | `LABKEY_EK`         |
+| `${LABKEY_VPC_SSM_PREFIX}smtp_user`       | `SMTP_USER`         |
+| `${LABKEY_VPC_SSM_PREFIX}smtp_password`   | `SMTP_PASSWORD`     |
+
+When `LABKEY_SSM_PREFIX` is set, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `LABKEY_EK`, `SMTP_USER`, and `SMTP_PASSWORD` env vars are not used. When `LABKEY_SSM_PREFIX` is unset (local / non-AWS), the container falls back to those env vars as before.
+
+In ECS, the container task role provides credentials via IMDS — no AWS credential env vars needed. For local testing with SSM, export `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and `AWS_SESSION_TOKEN` (or use aws-vault) so the JVM can reach SSM.
 
 ## SSL/Keystore/Self-signed Cert
 

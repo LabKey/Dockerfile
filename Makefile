@@ -30,6 +30,21 @@ LABKEY_VERSION ?= 21.5-SNAPSHOT
 LABKEY_DISTRIBUTION ?= community
 LABKEY_EK ?= 123abc456
 
+# When running with SSM credentials, seed postgres with the same DB user/password
+# that LabKey will fetch from SSM — otherwise the pg container initializes with
+# its defaults (postgres/localdevpassword) and auth fails.
+ifdef LABKEY_SSM_PREFIX
+  _SSM_NORMED := $(shell echo '$(LABKEY_SSM_PREFIX)' | sed 's:/*$$:/:')
+  _SSM_DB_USER := $(shell aws ssm get-parameter --name '$(_SSM_NORMED)database_user' --with-decryption --query 'Parameter.Value' --output text 2>/dev/null)
+  _SSM_DB_PASS := $(shell aws ssm get-parameter --name '$(_SSM_NORMED)database_password' --with-decryption --query 'Parameter.Value' --output text 2>/dev/null)
+  ifneq ($(_SSM_DB_USER),)
+    POSTGRES_USER ?= $(_SSM_DB_USER)
+  endif
+  ifneq ($(_SSM_DB_PASS),)
+    POSTGRES_PASSWORD ?= $(_SSM_DB_PASS)
+  endif
+endif
+
 LOG4J_CONFIG_OVERRIDE ?= default.log4j2.xml
 
 BUILD_ARCHITECTURE ?= linux/amd64

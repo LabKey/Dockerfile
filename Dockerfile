@@ -234,7 +234,7 @@ ENV HEALTHCHECK_INTERVAL="6s" \
     HEALTHCHECK_SECURITY_FLAG="-k" \
     HEALTHCHECK_EXTRA_FLAGS="-s" \
     \
-    HEALTHCHECK_ENDPOINT="/_/health"
+    HEALTHCHECK_ENDPOINT="/admin-healthcheck.api"
 
 HEALTHCHECK \
     --interval=5s \

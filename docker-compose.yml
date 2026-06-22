@@ -36,7 +36,6 @@ services:
 
       - LOGGER_PATTERN=%-80.80logger{79}
 
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-a"placeholder#'password}
       - POSTGRES_HOST=pg-community
 
       - MAX_JVM_RAM_PERCENT=${MAX_JVM_RAM_PERCENT:-75.0}
@@ -48,12 +47,23 @@ services:
       - SMTP_HOST=${SMTP_HOST}
       - SMTP_AUTH=true
       - SMTP_PORT=587
-      - SMTP_USER=${SMTP_USER}
-      - SMTP_PASSWORD=${SMTP_PASSWORD}
       - SMTP_STARTTLS=true
 
       - LABKEY_SYSTEM_EMAIL_ADDRESS=${SMTP_FROM}
       # - SMTP_FROM=
+
+      - LABKEY_SSM_PREFIX=${LABKEY_SSM_PREFIX}
+      - LABKEY_VPC_SSM_PREFIX=${LABKEY_VPC_SSM_PREFIX}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
+      # non-AWS: set these to supply credentials directly instead of via SSM
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-localdevpassword}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - LABKEY_EK=${LABKEY_EK:-}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
 
       # uncomment to enable CAS against labkey.org
       # - |
@@ -83,7 +93,7 @@ services:
       - LOG4J_CONFIG_FILE=${LOG4J_CONFIG_FILE-log4j2.xml}
       - LOG4J_CONFIG_OVERRIDE=${LOG4J_CONFIG_OVERRIDE}
       - JSON_OUTPUT=${JSON_OUTPUT-false}
-      - DD_COLLECT_APM=${DD_COLLECT_APM-false}      
+      - DD_COLLECT_APM=${DD_COLLECT_APM-false}
       - SLEEP=${SLEEP:-0}
 
   pg-community:
@@ -99,7 +109,8 @@ services:
       - "-c"
       - "docker-entrypoint.sh postgres >/dev/null 2>&1"
     environment:
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-a"placeholder#'password}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-localdevpassword}
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 30s
@@ -148,7 +159,6 @@ services:
 
       - LOGGER_PATTERN=%-80.80logger{79}
 
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-a"placeholder#'password}
       - POSTGRES_HOST=pg-allpg
 
       - MAX_JVM_RAM_PERCENT=${MAX_JVM_RAM_PERCENT:-75.0}
@@ -160,12 +170,23 @@ services:
       - SMTP_HOST=${SMTP_HOST}
       - SMTP_AUTH=true
       - SMTP_PORT=587
-      - SMTP_USER=${SMTP_USER}
-      - SMTP_PASSWORD=${SMTP_PASSWORD}
       - SMTP_STARTTLS=true
 
       - LABKEY_SYSTEM_EMAIL_ADDRESS=${SMTP_FROM}
       # - SMTP_FROM=
+
+      - LABKEY_SSM_PREFIX=${LABKEY_SSM_PREFIX}
+      - LABKEY_VPC_SSM_PREFIX=${LABKEY_VPC_SSM_PREFIX}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
+      # non-AWS: set these to supply credentials directly instead of via SSM
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-localdevpassword}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - LABKEY_EK=${LABKEY_EK:-}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
 
       # uncomment to enable CAS against labkey.org
       # - |
@@ -211,7 +232,8 @@ services:
       - "-c"
       - "docker-entrypoint.sh postgres >/dev/null 2>&1"
     environment:
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-a"placeholder#'password}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-localdevpassword}
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 30s
@@ -258,7 +280,6 @@ services:
 
       - LOGGER_PATTERN=%-80.80logger{79}
 
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-a"placeholder#'password}
       - POSTGRES_HOST=pg-enterprise
 
       - MAX_JVM_RAM_PERCENT=${MAX_JVM_RAM_PERCENT:-75.0}
@@ -270,12 +291,23 @@ services:
       - SMTP_HOST=${SMTP_HOST}
       - SMTP_AUTH=true
       - SMTP_PORT=587
-      - SMTP_USER=${SMTP_USER}
-      - SMTP_PASSWORD=${SMTP_PASSWORD}
       - SMTP_STARTTLS=true
 
       - LABKEY_SYSTEM_EMAIL_ADDRESS=${SMTP_FROM}
       # - SMTP_FROM=
+
+      - LABKEY_SSM_PREFIX=${LABKEY_SSM_PREFIX}
+      - LABKEY_VPC_SSM_PREFIX=${LABKEY_VPC_SSM_PREFIX}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
+      # non-AWS: set these to supply credentials directly instead of via SSM
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-localdevpassword}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - LABKEY_EK=${LABKEY_EK:-}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
 
       # uncomment to enable CAS against labkey.org
       # - |
@@ -321,7 +353,8 @@ services:
       - "-c"
       - "docker-entrypoint.sh postgres >/dev/null 2>&1"
     environment:
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-a"placeholder#'password}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-localdevpassword}
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 30s
@@ -369,7 +402,6 @@ services:
 
       - LOGGER_PATTERN=%-80.80logger{79}
 
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-a"placeholder#'password}
       - POSTGRES_HOST=pg-lims_starter
 
       - MAX_JVM_RAM_PERCENT=${MAX_JVM_RAM_PERCENT:-75.0}
@@ -381,12 +413,23 @@ services:
       - SMTP_HOST=${SMTP_HOST}
       - SMTP_AUTH=true
       - SMTP_PORT=587
-      - SMTP_USER=${SMTP_USER}
-      - SMTP_PASSWORD=${SMTP_PASSWORD}
       - SMTP_STARTTLS=true
 
       - LABKEY_SYSTEM_EMAIL_ADDRESS=${SMTP_FROM}
       # - SMTP_FROM=
+
+      - LABKEY_SSM_PREFIX=${LABKEY_SSM_PREFIX}
+      - LABKEY_VPC_SSM_PREFIX=${LABKEY_VPC_SSM_PREFIX}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
+      # non-AWS: set these to supply credentials directly instead of via SSM
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-localdevpassword}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - LABKEY_EK=${LABKEY_EK:-}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
 
       # uncomment to enable CAS against labkey.org
       # - |
@@ -435,7 +478,8 @@ services:
       - "-c"
       - "docker-entrypoint.sh postgres >/dev/null 2>&1"
     environment:
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-a"placeholder#'password}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-localdevpassword}
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 30s

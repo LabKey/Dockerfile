@@ -113,6 +113,10 @@ COPY entrypoint.sh /entrypoint.sh
 
 WORKDIR "${LABKEY_HOME}"
 
+# OS packages below are intentionally NOT version-pinned. The `apt-get upgrade` / `apk upgrade`
+# steps in the RUN pull latest-patched versions anyway, and exact pins get rotated out of the
+# distro archive on each security update, breaking builds. Signed repo metadata — not the
+# version string — is the supply-chain control. This is why DL3008/DL3018 are ignored below.
 # hadolint ignore=DL4006,DL3008,DL3018
 RUN [ -n "${DEBUG}" ] && set -x; \
     set -eu; \
@@ -123,11 +127,11 @@ RUN [ -n "${DEBUG}" ] && set -x; \
         apk update \
         && apk add --no-cache \
             openssl \
-            gettext=0.21.1-r7 \
-            unzip=6.0-r14 \
-            curl=8.1.2-r0 \
+            gettext \
+            unzip \
+            curl \
             ; \
-        [ -n "${DEBUG}" ] && apk add --no-cache tree=2.1.1-r0; \
+        [ -n "${DEBUG}" ] && apk add --no-cache tree; \
         apk upgrade; \
         \
         addgroup -S labkey \
@@ -144,22 +148,22 @@ RUN [ -n "${DEBUG}" ] && set -x; \
         export DEBIAN_FRONTEND=noninteractive; \
         apt-get update; \
         apt-get -yq --no-install-recommends install \
-            curl=8.5.0-2ubuntu10.9 \
+            curl \
             openssl \
-            gettext-base=0.21-14ubuntu2 \
-            unzip=6.0-28ubuntu4.1 \
-            wget=1.21.4-1ubuntu4.1 \
+            gettext-base \
+            unzip \
+            wget \
             ; \
         if [ -n "${DEBUG}" ]; then \
             apt-get update; \
             apt-get -yq --no-install-recommends install \
-                iputils-ping=3:20240117-1ubuntu0.1 \
-                less=590-2ubuntu2.1 \
-                netcat-traditional=1.10-48 \
-                postgresql-client-16=16.10-0ubuntu0.24.04.1 \
-                sudo=1.9.15p5-3ubuntu5.24.04.1 \
-                tree=2.1.1-2ubuntu3.24.04.2 \
-                vim=2:9.1.0016-1ubuntu7.9 \
+                iputils-ping \
+                less \
+                netcat-traditional \
+                postgresql-client-16 \
+                sudo \
+                tree \
+                vim \
                 ; \
         fi; \
         apt-get -yq upgrade; \

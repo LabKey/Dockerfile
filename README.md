@@ -165,7 +165,8 @@ Several ENVs and 'up' commands were added to faciliate running different distrib
 | name          | purpose                                                                    | default|
 | ----          | ----                                                                       | -----   |
 | COMPOSE_IMAGE | 'image:' for docker-compose service                                         | labkey/community |
-| IDENT         | isolate postgres data directory from other containers (.pgdata/[IDENT]-data) | postgres |
+| IDENT         | isolate postgres data directory from other containers (./pgdata/[IDENT]-[PG_VERSION]-data) | postgres |
+| PG_VERSION    | Postgres major version (image tag) and data-dir suffix; see _Postgres version & upgrading_ below | 18 |
 
 These can be leveraged with commands such as:
 * COMPOSE_IMAGE=labkey/lims_starter IDENT=lims_starter LABKEY_DISTRIBUTION=lims_starter make up-lims_starter
@@ -226,6 +227,36 @@ The `POSTGRES_*` default values are meant to match those of the [library/postgre
 | POSTGRES_PASSWORD   | password of database user which container will utilize as main dataSource | `<empty>`   |
 | POSTGRES_PORT       | port of database; compounds to URI connection string                      | `5432`      |
 | POSTGRES_USER       | user of database which container will utilize as main dataSource          | `postgres`  |
+
+### Postgres version & upgrading
+
+The docker-compose dev database defaults to **Postgres 18** (`image: postgres:${PG_VERSION:-18}`).
+The major version is also baked into the data-directory name (`./pgdata/postgres-<PG_VERSION>-data`,
+or `./pgdata/<IDENT>-<PG_VERSION>-data` for the enterprise/lims_starter/allpg services), so each
+major version gets its own on-disk directory and switching versions never corrupts an existing one.
+
+Postgres does **not** read a data directory created by an older major version, so an existing pg15
+dev database cannot be started by the pg18 image in place. You have two options:
+
+* **Start fresh on pg18 (simplest for dev):** just `make up`. A new, empty `postgres-18-data`
+  directory is created and your old pg15 data is left untouched at `./pgdata/postgres-data`
+  (you can delete that directory once you no longer need it).
+* **Keep running your existing pg15 data:** pin the old version — `PG_VERSION=15 make up`. Note this
+  reads `./pgdata/postgres-15-data`; if your data predates this change it lives in the legacy
+  `./pgdata/postgres-data` directory — rename it to `postgres-15-data` first, or dump/restore it.
+
+To migrate real data from pg15 to pg18, dump from a running pg15 container and restore into pg18:
+
+```bash
+PG_VERSION=15 docker compose up -d pg-community
+docker compose exec pg-community pg_dumpall -U postgres > dump.sql
+PG_VERSION=15 docker compose down
+docker compose up -d pg-community          # pg18, fresh data dir
+cat dump.sql | docker compose exec -T pg-community psql -U postgres
+```
+
+> The pg service no longer silences its output, so version/startup errors appear in
+> `docker compose logs pg-community` instead of the container silently crash-looping.
 
 ## SMTP
 

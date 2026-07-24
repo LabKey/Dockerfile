@@ -207,6 +207,9 @@ COPY application.properties config/
 COPY startup/basic.properties \
     startup/50_basic.properties
 
+COPY manifest.properties \
+    startup/48_manifest.properties
+
 COPY "startup/${LABKEY_DISTRIBUTION}.properties" \
     startup/49_distribution.properties
 

@@ -46,7 +46,7 @@ make all            # login → build → tag → push (default)
 
 ### Multi-Distribution
 
-The `startup/` directory contains per-distribution `.properties` files (`community.properties`, `enterprise.properties`, etc.). The `LABKEY_DISTRIBUTION` env var selects which file is copied in at build time and passed to the JVM.
+The `startup/` directory contains `basic.properties` and `manifest.properties` — per-distribution `.properties` files were removed since prod deployments always overwrite them anyway. `startup/manifest.properties` (copied to `startup/48_manifest.properties`) carries the distribution's `ModuleLoader.include`/`ModuleLoader.exclude` set instead, generated per-build from the SNAPSHOT Installers artifact. `LABKEY_DISTRIBUTION` still selects the docker-compose service and image tag, and is passed to the JVM as an env var.
 
 ### Configuration Surface
 

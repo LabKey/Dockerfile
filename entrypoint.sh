@@ -289,7 +289,7 @@ main() {
   mkdir -pv $LABKEY_EXTERNAL_MODULES
 
   # set up required add-opens options
-  JAVA_ADD_OPENS="--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED"
+  JAVA_ADD_OPENS="--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --enable-native-access=ALL-UNNAMED"
 
   # purge old heap/error directories
   echo "Purging heap/error log directories older than $PURGE_HEAP_AND_ERROR_LOGS_OLDER_THAN_DAYS days..."

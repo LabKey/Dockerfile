@@ -30,6 +30,9 @@ LABKEY_VERSION ?= 21.5-SNAPSHOT
 LABKEY_DISTRIBUTION ?= community
 LABKEY_EK ?= 123abc456
 
+LIMS_MANIFEST_BUCKET ?= labkey-lims-manifests
+FETCH_LIMS_MANIFEST ?=
+
 # When running with SSM credentials, seed postgres with the same DB user/password
 # that LabKey will fetch from SSM — otherwise the pg container initializes with
 # its defaults (postgres/localdevpassword) and auth fails.
@@ -70,14 +73,38 @@ define tc
 $(shell printf "%steamcity[progressMessage '%s%n']" '##' '$1' ; )
 endef
 
-.PHONY: all build tag login push up up-build down clean
+.PHONY: all build fetch-manifest tag login push up up-build down clean
 
 .EXPORT_ALL_VARIABLES:
 
 # default actions are: login, build, tag, then push
 all: login build tag push
 
-build:
+# only runs inside LabKey's own TeamCity builds (this is a public repo - a community/external
+# build has no access to, and no use for, our internal LIMS manifest bucket) - set
+# FETCH_LIMS_MANIFEST=1 to opt in from a local build too (e.g. testing against a real manifest).
+# Also a no-op for any LABKEY_DISTRIBUTION with no manifest published (community, enterprise,
+# allpg, etc.) - no allowlist needed, absence of a matching S3 object is just "not applicable".
+fetch-manifest:
+	$(call tc,checking for a LIMS product manifest)
+	@if [ -z "$(TEAMCITY_VERSION)$(FETCH_LIMS_MANIFEST)" ]; then \
+		echo "not running under TeamCity and FETCH_LIMS_MANIFEST not set - skipping LIMS manifest fetch"; \
+	else \
+		manifest_list=$$(aws s3api list-objects-v2 --bucket $(LIMS_MANIFEST_BUCKET) --prefix "$(BUILD_DISTRIBUTION)/" --output json) || exit 1; \
+		manifest_keys=$$(echo "$$manifest_list" | jq -r '.Contents[]?.Key // empty'); \
+		manifest_count=$$(echo "$$manifest_keys" | grep -c . || true); \
+		if [ "$$manifest_count" -eq 0 ]; then \
+			echo "no LIMS manifest found for distribution '$(BUILD_DISTRIBUTION)' - leaving startup/manifest.properties as-is"; \
+		elif [ "$$manifest_count" -gt 1 ]; then \
+			echo "expected exactly one manifest under s3://$(LIMS_MANIFEST_BUCKET)/$(BUILD_DISTRIBUTION)/, found $$manifest_count: $$manifest_keys" >&2; \
+			exit 1; \
+		else \
+			echo "fetching $$manifest_keys"; \
+			aws s3 cp "s3://$(LIMS_MANIFEST_BUCKET)/$$manifest_keys" startup/manifest.properties; \
+		fi; \
+	fi
+
+build: fetch-manifest
 	$(call tc,building docker container)
 	docker build \
 		--rm \

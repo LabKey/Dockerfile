@@ -90,13 +90,14 @@ fetch-manifest:
 	@if [ -z "$(TEAMCITY_VERSION)$(FETCH_LIMS_MANIFEST)" ]; then \
 		echo "not running under TeamCity and FETCH_LIMS_MANIFEST not set - skipping LIMS manifest fetch"; \
 	else \
+		version_pattern=$$(echo '$(LABKEY_VERSION)' | grep -oE '^[0-9]+\.[0-9]+' | sed 's/\./\\./g'); \
 		manifest_list=$$(aws s3api list-objects-v2 --bucket $(LIMS_MANIFEST_BUCKET) --prefix "$(BUILD_DISTRIBUTION)/" --output json) || exit 1; \
-		manifest_keys=$$(echo "$$manifest_list" | jq -r '.Contents[]?.Key // empty'); \
+		manifest_keys=$$(echo "$$manifest_list" | jq -r '.Contents[]?.Key // empty' | grep -E "/LabKey$${version_pattern}([^0-9]|$$)" || true); \
 		manifest_count=$$(echo "$$manifest_keys" | grep -c . || true); \
 		if [ "$$manifest_count" -eq 0 ]; then \
-			echo "no LIMS manifest found for distribution '$(BUILD_DISTRIBUTION)' - leaving startup/manifest.properties as-is"; \
+			echo "no LIMS manifest found for distribution '$(BUILD_DISTRIBUTION)' version '$(LABKEY_VERSION)' - leaving startup/manifest.properties as-is"; \
 		elif [ "$$manifest_count" -gt 1 ]; then \
-			echo "expected exactly one manifest under s3://$(LIMS_MANIFEST_BUCKET)/$(BUILD_DISTRIBUTION)/, found $$manifest_count: $$manifest_keys" >&2; \
+			echo "expected exactly one manifest under s3://$(LIMS_MANIFEST_BUCKET)/$(BUILD_DISTRIBUTION)/ for version '$(LABKEY_VERSION)', found $$manifest_count: $$manifest_keys" >&2; \
 			exit 1; \
 		else \
 			echo "fetching $$manifest_keys"; \

@@ -31,6 +31,7 @@ LABKEY_DISTRIBUTION ?= community
 LABKEY_EK ?= 123abc456
 
 LIMS_MANIFEST_BUCKET ?= labkey-lims-manifests
+LIMS_MANIFEST_DIR ?= dist
 FETCH_LIMS_MANIFEST ?=
 
 # When running with SSM credentials, seed postgres with the same DB user/password
@@ -80,14 +81,23 @@ endef
 # default actions are: login, build, tag, then push
 all: login build tag push
 
-# only runs inside LabKey's own TeamCity builds (this is a public repo - a community/external
+# A manifest in LIMS_MANIFEST_DIR (TeamCity artifact dependency) wins over S3, which only holds SNAPSHOT manifests.
+# S3 fallback only runs inside LabKey's own TeamCity builds (this is a public repo - a community/external
 # build has no access to, and no use for, our internal LIMS manifest bucket) - set
 # FETCH_LIMS_MANIFEST=1 to opt in from a local build too (e.g. testing against a real manifest).
 # Also a no-op for any LABKEY_DISTRIBUTION with no manifest published (community, enterprise,
 # allpg, etc.) - no allowlist needed, absence of a matching S3 object is just "not applicable".
 fetch-manifest:
 	$(call tc,checking for a LIMS product manifest)
-	@if [ -z "$(TEAMCITY_VERSION)$(FETCH_LIMS_MANIFEST)" ]; then \
+	@local_manifests=$$(ls $(LIMS_MANIFEST_DIR)/LabKey*-$(BUILD_DISTRIBUTION).properties 2>/dev/null || true); \
+	local_count=$$(echo "$$local_manifests" | grep -c . || true); \
+	if [ "$$local_count" -gt 1 ]; then \
+		echo "expected at most one manifest in $(LIMS_MANIFEST_DIR)/ for distribution '$(BUILD_DISTRIBUTION)', found $$local_count: $$local_manifests" >&2; \
+		exit 1; \
+	elif [ "$$local_count" -eq 1 ]; then \
+		echo "using $$local_manifests"; \
+		cp "$$local_manifests" startup/manifest.properties; \
+	elif [ -z "$(TEAMCITY_VERSION)$(FETCH_LIMS_MANIFEST)" ]; then \
 		echo "not running under TeamCity and FETCH_LIMS_MANIFEST not set - skipping LIMS manifest fetch"; \
 	else \
 		version_pattern=$$(echo '$(LABKEY_VERSION)' | grep -oE '^[0-9]+\.[0-9]+' | sed 's/\./\\./g'); \

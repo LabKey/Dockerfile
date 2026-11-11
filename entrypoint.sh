@@ -89,6 +89,7 @@ main() {
         | grep -vE 'STARTUP' \
         | grep -vE 'INITIAL_USER' \
         | grep -vE 'SSM' \
+        | grep -vE 'DEPLOYMENT_CHANNEL' \
         ;
   ); do
     if [ -z "${key_value#*=}" ]; then

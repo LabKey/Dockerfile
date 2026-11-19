@@ -81,7 +81,8 @@ endef
 # default actions are: login, build, tag, then push
 all: login build tag push
 
-# A manifest in LIMS_MANIFEST_DIR (TeamCity artifact dependency) wins over S3, which only holds SNAPSHOT manifests.
+# A manifest in LIMS_MANIFEST_DIR (TeamCity artifact dependency) wins over S3. In S3, a version without a patch
+# number (Beta/SNAPSHOT) takes <major.minor>-SNAPSHOT; with one, that release's manifest, else the minor's newest patch.
 # S3 fallback only runs inside LabKey's own TeamCity builds (this is a public repo - a community/external
 # build has no access to, and no use for, our internal LIMS manifest bucket) - set
 # FETCH_LIMS_MANIFEST=1 to opt in from a local build too (e.g. testing against a real manifest).
@@ -100,18 +101,25 @@ fetch-manifest:
 	elif [ -z "$(TEAMCITY_VERSION)$(FETCH_LIMS_MANIFEST)" ]; then \
 		echo "not running under TeamCity and FETCH_LIMS_MANIFEST not set - skipping LIMS manifest fetch"; \
 	else \
-		version_pattern=$$(echo '$(LABKEY_VERSION)' | grep -oE '^[0-9]+\.[0-9]+' | sed 's/\./\\./g'); \
+		version_mm=$$(echo '$(LABKEY_VERSION)' | grep -oE '^[0-9]+\.[0-9]+' || true); \
+		version_release=$$(echo '$(LABKEY_VERSION)' | grep -oE '^[0-9]+\.[0-9]+\.[0-9]+' || true); \
+		key_prefix="$(BUILD_DISTRIBUTION)/LabKey"; \
+		key_suffix="-$(BUILD_DISTRIBUTION).properties"; \
 		manifest_list=$$(aws s3api list-objects-v2 --bucket $(LIMS_MANIFEST_BUCKET) --prefix "$(BUILD_DISTRIBUTION)/" --output json) || exit 1; \
-		manifest_keys=$$(echo "$$manifest_list" | jq -r '.Contents[]?.Key // empty' | grep -E "/LabKey$${version_pattern}([^0-9]|$$)" || true); \
-		manifest_count=$$(echo "$$manifest_keys" | grep -c . || true); \
-		if [ "$$manifest_count" -eq 0 ]; then \
-			echo "no LIMS manifest found for distribution '$(BUILD_DISTRIBUTION)' version '$(LABKEY_VERSION)' - leaving startup/manifest.properties as-is"; \
-		elif [ "$$manifest_count" -gt 1 ]; then \
-			echo "expected exactly one manifest under s3://$(LIMS_MANIFEST_BUCKET)/$(BUILD_DISTRIBUTION)/ for version '$(LABKEY_VERSION)', found $$manifest_count: $$manifest_keys" >&2; \
-			exit 1; \
+		all_keys=$$(echo "$$manifest_list" | jq -r '.Contents[]?.Key // empty'); \
+		if [ -n "$$version_release" ]; then \
+			manifest_key=$$(echo "$$all_keys" | grep -Fx "$$key_prefix$$version_release$$key_suffix" || true); \
+			if [ -z "$$manifest_key" ]; then \
+				manifest_key=$$(echo "$$all_keys" | grep -E "^$$(echo "$$key_prefix$$version_mm" | sed 's/\./\\./g')\.[0-9]+$$(echo "$$key_suffix" | sed 's/\./\\./g')$$" | sort -V | tail -n1); \
+			fi; \
 		else \
-			echo "fetching $$manifest_keys"; \
-			aws s3 cp "s3://$(LIMS_MANIFEST_BUCKET)/$$manifest_keys" startup/manifest.properties; \
+			manifest_key=$$(echo "$$all_keys" | grep -Fx "$$key_prefix$$version_mm-SNAPSHOT$$key_suffix" || true); \
+		fi; \
+		if [ -z "$$manifest_key" ]; then \
+			echo "no LIMS manifest found for distribution '$(BUILD_DISTRIBUTION)' version '$(LABKEY_VERSION)' - leaving startup/manifest.properties as-is"; \
+		else \
+			echo "fetching $$manifest_key"; \
+			aws s3 cp "s3://$(LIMS_MANIFEST_BUCKET)/$$manifest_key" startup/manifest.properties; \
 		fi; \
 	fi
 

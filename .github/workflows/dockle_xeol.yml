@@ -11,6 +11,9 @@ on:
       - develop
       - 'release*'
 
+permissions:
+  contents: read
+
 jobs:
   dockle:
     name: dockle/xeol
